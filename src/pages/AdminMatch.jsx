@@ -169,7 +169,7 @@ function AdminMatch() {
             </header>
 
             <section className="bet-card">
-                <h2>España vs {match.rival_flag} {match.rival}</h2>
+                <h2>🇪🇸 España vs {match.rival_flag} {match.rival}</h2>
 
                 {match.status === 'closed' && (
                     <p className="bet-warning">

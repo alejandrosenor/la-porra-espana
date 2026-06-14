@@ -9,6 +9,9 @@ function Match() {
 
     const [match, setMatch] = useState(null)
     const [existingBet, setExistingBet] = useState(null)
+    const [totalPlayers, setTotalPlayers] = useState(0)
+    const [totalBets, setTotalBets] = useState(0)
+
     const [winner, setWinner] = useState('')
     const [spainGoals, setSpainGoals] = useState(0)
     const [rivalGoals, setRivalGoals] = useState(0)
@@ -54,7 +57,18 @@ function Match() {
             .eq('match_id', id)
             .maybeSingle()
 
+        const { data: playersData } = await supabase
+            .from('players')
+            .select('id')
+
+        const { data: betsData } = await supabase
+            .from('bets')
+            .select('id')
+            .eq('match_id', id)
+
         setMatch(matchData)
+        setTotalPlayers(playersData?.length || 0)
+        setTotalBets(betsData?.length || 0)
 
         if (betData) {
             setExistingBet(betData)
@@ -96,6 +110,10 @@ function Match() {
         return now < openingDate
     }
 
+    function allPlayersHaveBet() {
+        return totalPlayers > 0 && totalBets >= totalPlayers
+    }
+
     const isValidBet = () => {
         if (!winner) return false
         if (winner === 'Empate') return spainGoals === rivalGoals
@@ -103,9 +121,23 @@ function Match() {
         return rivalGoals > spainGoals
     }
 
+    function canEditBet() {
+        if (!existingBet) return false
+        if (isClosed) return false
+        if (isBettingNotOpenYet()) return false
+        if (allPlayersHaveBet()) return false
+
+        return (existingBet.edit_count || 0) < 1
+    }
+
     const saveBet = async () => {
         if (isClosed) {
             alert('Las apuestas para este partido ya están cerradas')
+            return
+        }
+
+        if (isBettingNotOpenYet()) {
+            alert('Las apuestas para este partido todavía no están abiertas')
             return
         }
 
@@ -116,12 +148,40 @@ function Match() {
 
         const player = JSON.parse(localStorage.getItem('player'))
 
+        if (existingBet) {
+            if (!canEditBet()) {
+                alert('Ya no puedes editar esta apuesta')
+                return
+            }
+
+            const { error } = await supabase
+                .from('bets')
+                .update({
+                    winner,
+                    spain_goals: spainGoals,
+                    rival_goals: rivalGoals,
+                    edit_count: (existingBet.edit_count || 0) + 1
+                })
+                .eq('id', existingBet.id)
+
+            if (error) {
+                console.log(error)
+                alert('Error editando apuesta')
+                return
+            }
+
+            alert('Apuesta editada. Ya no podrás volver a cambiarla 🔒')
+            navigate('/dashboard')
+            return
+        }
+
         const { error } = await supabase.from('bets').insert({
             player_id: player.id,
             match_id: match.id,
             winner,
             spain_goals: spainGoals,
-            rival_goals: rivalGoals
+            rival_goals: rivalGoals,
+            edit_count: 0
         })
 
         if (error) {
@@ -137,7 +197,8 @@ function Match() {
     if (!match) return <h1>Cargando...</h1>
 
     const notOpenYet = isBettingNotOpenYet()
-    const locked = !!existingBet || isClosed || notOpenYet
+    const editable = canEditBet()
+    const locked = isClosed || notOpenYet || (existingBet && !editable)
 
     return (
         <main className="match-page">
@@ -147,9 +208,15 @@ function Match() {
             </header>
 
             <section className="bet-card">
-                {existingBet && (
+                {existingBet && !editable && (
                     <p className="bet-warning">
                         🔒 Ya has apostado este partido. Tu apuesta queda bloqueada.
+                    </p>
+                )}
+
+                {existingBet && editable && (
+                    <p className="edit-warning">
+                        ✏️ Puedes editar esta apuesta una única vez.
                     </p>
                 )}
 
@@ -162,6 +229,12 @@ function Match() {
                 {notOpenYet && !existingBet && (
                     <p className="bet-warning">
                         🔒 Las apuestas para este partido todavía no están abiertas.
+                    </p>
+                )}
+
+                {allPlayersHaveBet() && match.status !== 'closed' && (
+                    <p className="bet-warning">
+                        👀 Todos han apostado. Las apuestas ya están reveladas.
                     </p>
                 )}
 
@@ -247,13 +320,13 @@ function Match() {
                     Acertar resultado exacto: +5 puntos
                 </p>
 
-                {!existingBet && !isClosed && !notOpenYet && (
+                {(!existingBet || editable) && !isClosed && !notOpenYet && !allPlayersHaveBet() && (
                     <button
                         className="save-bet"
                         onClick={saveBet}
                         disabled={!isValidBet()}
                     >
-                        Guardar apuesta
+                        {existingBet ? 'Guardar cambio' : 'Guardar apuesta'}
                     </button>
                 )}
             </section>

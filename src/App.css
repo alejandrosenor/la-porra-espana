@@ -590,3 +590,11 @@
   font-size: 13px;
   font-weight: 900;
 }
+
+.edit-warning {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 216, 74, 0.14);
+  color: #ffd84a;
+  font-weight: 700;
+}
