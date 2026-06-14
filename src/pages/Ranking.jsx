@@ -33,54 +33,111 @@ function Ranking() {
             return
         }
 
-        setPlayers(playersData)
-        setBets(betsData)
+        setPlayers(playersData || [])
+        setBets(betsData || [])
     }
 
     function getLastBetForPlayer(playerId) {
         return bets.find((bet) => bet.player_id === playerId)
     }
 
+    function getMedal(index) {
+        if (index === 0) return '🥇'
+        if (index === 1) return '🥈'
+        if (index === 2) return '🥉'
+        return `#${index + 1}`
+    }
+
+    const podium = players.slice(0, 3)
+    const rest = players.slice(3)
+
     return (
-        <main className="ranking-page with-bottom-nav">
-            <header className="match-header">
+        <main className="ranking-page ranking-pretty-page with-bottom-nav">
+            <header className="ranking-hero">
                 <button onClick={() => navigate('/dashboard')}>←</button>
-                <h1>Ranking</h1>
+
+                <div>
+                    <p>Clasificación general</p>
+                    <h1>Ranking 🏆</h1>
+                </div>
             </header>
 
-            <section className="ranking-card">
+            {podium.length > 0 && (
+                <section className="podium-section">
+                    {podium.map((player, index) => (
+                        <article
+                            className={`podium-card podium-${index + 1}`}
+                            key={player.id}
+                        >
+                            <span className="podium-medal">
+                                {getMedal(index)}
+                            </span>
+
+                            <div className="podium-avatar">
+                                {player.avatar}
+                            </div>
+
+                            <h2>{player.name}</h2>
+
+                            <strong>{player.points} pts</strong>
+
+                            <p>
+                                {player.exact_hits} exactos · {player.winner_hits} ganadores
+                            </p>
+                        </article>
+                    ))}
+                </section>
+            )}
+
+            <section className="ranking-list">
+                <div className="section-title-row">
+                    <h2>Todos los jugadores</h2>
+                    <span>{players.length} jugadores</span>
+                </div>
+
                 {players.map((player, index) => {
                     const lastBet = getLastBetForPlayer(player.id)
 
                     return (
-                        <div className="ranking-row" key={player.id}>
-                            <div className="ranking-main-info">
-                                <span className="position">#{index + 1}</span>
+                        <article className="ranking-player-card" key={player.id}>
+                            <div className="ranking-player-top">
+                                <span className="ranking-position">
+                                    {getMedal(index)}
+                                </span>
 
-                                <div>
-                                    <span className="player-name">
-                                        {player.avatar} {player.name}
-                                    </span>
-
-                                    {lastBet?.result_message && (
-                                        <p
-                                            className={
-                                                lastBet.points > 0
-                                                    ? 'ranking-message-positive'
-                                                    : 'ranking-message-negative'
-                                            }
-                                        >
-                                            {lastBet.result_message}
-                                        </p>
-                                    )}
+                                <div className="ranking-avatar">
+                                    {player.avatar}
                                 </div>
+
+                                <div className="ranking-player-info">
+                                    <h3>{player.name}</h3>
+
+                                    <p>
+                                        {player.exact_hits} resultados exactos · {player.winner_hits} ganadores
+                                    </p>
+                                </div>
+
+                                <strong className="ranking-points">
+                                    {player.points} pts
+                                </strong>
                             </div>
 
-                            <strong>{player.points} pts</strong>
-                        </div>
+                            {lastBet?.result_message && (
+                                <p
+                                    className={
+                                        lastBet.points > 0
+                                            ? 'ranking-message-box positive'
+                                            : 'ranking-message-box negative'
+                                    }
+                                >
+                                    {lastBet.result_message}
+                                </p>
+                            )}
+                        </article>
                     )
                 })}
             </section>
+
             <BottomNav />
         </main>
     )
