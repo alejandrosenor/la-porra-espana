@@ -56,11 +56,17 @@ function Dashboard() {
 
     function isBettingClosed(match) {
         if (match.status === 'closed') return true
-
         const now = new Date()
         const closingDate = new Date(match.closing_date + 'Z')
-
         return closingDate <= now
+    }
+
+    function isBettingNotOpenYet(match) {
+        const now = new Date()
+        const matchDate = new Date(match.match_date + 'Z')
+        const openingDate = new Date(matchDate)
+        openingDate.setDate(openingDate.getDate() - 2)
+        return now < openingDate
     }
 
     function getMatchStatus(match, betDone, notOpenYet) {
@@ -72,62 +78,77 @@ function Dashboard() {
         return 'Pendiente'
     }
 
-    function isBettingNotOpenYet(match) {
-        const now = new Date()
-        const matchDate = new Date(match.match_date + 'Z')
-        const openingDate = new Date(matchDate)
-
-        openingDate.setDate(openingDate.getDate() - 2)
-
-        return now < openingDate
-    }
+    const nextMatch = matches.find((match) => match.status !== 'closed')
 
     return (
-        <main className="dashboard-page with-bottom-nav">
-            <header className="dashboard-header">
-                <h1>🇪🇸 La Porra de España</h1>
-
-                <p>
-                    Bienvenido, {player?.avatar} {player?.name}
-                </p>
+        <main className="dashboard-page dashboard-home with-bottom-nav">
+            <section className="home-hero">
+                <div>
+                    <p className="home-kicker">La Porra de España</p>
+                    <h1>
+                        {player?.avatar} {player?.name}
+                    </h1>
+                </div>
 
                 <button
-                    className="ranking-button"
+                    className="hero-ranking-button"
                     onClick={() => navigate('/ranking')}
                 >
-                    Ver ranking 🏆
+                    🏆 Ranking
                 </button>
-            </header>
+            </section>
 
-            <section className="matches-section">
-                <h2>Partidos</h2>
+            {nextMatch && (
+                <section className="next-match-card">
+                    <p className="next-label">Próximo partido</p>
+
+                    <h2>
+                        🇪🇸 España vs {nextMatch.rival_flag} {nextMatch.rival}
+                    </h2>
+
+                    <p className="next-date">
+                        {new Date(nextMatch.match_date + 'Z').toLocaleString('es-ES', {
+                            day: '2-digit',
+                            month: 'long',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                    </p>
+                </section>
+            )}
+
+            <section className="matches-section pretty-matches">
+                <div className="section-title-row">
+                    <h2>Partidos</h2>
+                    <span>{matches.length} partidos</span>
+                </div>
 
                 {matches.map((match) => {
                     const betDone = hasBet(match.id)
                     const bettingClosed = isBettingClosed(match)
                     const revealed = allPlayersHaveBet(match.id)
                     const notOpenYet = isBettingNotOpenYet(match)
-                    const statusText = getMatchStatus(match, betDone)
+                    const statusText = getMatchStatus(match, betDone, notOpenYet)
                     const missingBets = players.length - getBetsCount(match.id)
 
                     return (
-                        <div key={match.id} className="match-card">
-                            <div>
+                        <article key={match.id} className="pretty-match-card">
+                            <div className="pretty-match-main">
                                 {match.stage && (
-                                    <p className="match-stage">
-                                        🏆 {match.stage}
-                                    </p>
+                                    <p className="match-stage">🏆 {match.stage}</p>
                                 )}
 
-                                <strong>
-                                    🇪🇸 España vs {match.rival_flag} {match.rival}
-                                </strong>
+                                <h3>
+                                    <span>🇪🇸 España</span>
+                                    <small>vs</small>
+                                    <span>{match.rival_flag} {match.rival}</span>
+                                </h3>
 
-                                <p>
+                                <p className="match-date">
                                     {new Date(match.match_date + 'Z').toLocaleString('es-ES', {
+                                        weekday: 'short',
                                         day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric',
+                                        month: 'short',
                                         hour: '2-digit',
                                         minute: '2-digit'
                                     })}
@@ -140,7 +161,7 @@ function Dashboard() {
                                 )}
                             </div>
 
-                            <div className="match-actions">
+                            <div className="match-actions pretty-actions">
                                 <span
                                     className={
                                         match.status === 'closed'
@@ -149,7 +170,7 @@ function Dashboard() {
                                                 ? 'status done'
                                                 : betDone
                                                     ? 'status done'
-                                                    : bettingClosed
+                                                    : bettingClosed || notOpenYet
                                                         ? 'status closed-status'
                                                         : 'status'
                                     }
@@ -170,13 +191,9 @@ function Dashboard() {
                                         Ver apuesta
                                     </button>
                                 ) : bettingClosed ? (
-                                    <button disabled>
-                                        Cerradas
-                                    </button>
+                                    <button disabled>Cerradas</button>
                                 ) : notOpenYet ? (
-                                    <button disabled>
-                                        Próximamente
-                                    </button>
+                                    <button disabled>Próximamente</button>
                                 ) : (
                                     <button onClick={() => navigate(`/match/${match.id}`)}>
                                         Apostar
@@ -184,12 +201,15 @@ function Dashboard() {
                                 )}
 
                                 {player?.is_admin && (
-                                    <button onClick={() => navigate(`/admin/match/${match.id}`)}>
+                                    <button
+                                        className="admin-mini-button"
+                                        onClick={() => navigate(`/admin/match/${match.id}`)}
+                                    >
                                         Admin
                                     </button>
                                 )}
                             </div>
-                        </div>
+                        </article>
                     )
                 })}
             </section>
