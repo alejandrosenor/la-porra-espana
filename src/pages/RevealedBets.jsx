@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../services/supabase'
+import BottomNav from '../components/BottomNav'
 import '../App.css'
 
 function RevealedBets() {
@@ -9,6 +10,7 @@ function RevealedBets() {
 
     const [match, setMatch] = useState(null)
     const [bets, setBets] = useState([])
+    const [players, setPlayers] = useState([])
 
     useEffect(() => {
         loadData()
@@ -40,34 +42,84 @@ function RevealedBets() {
             .eq('match_id', id)
             .order('points', { ascending: false })
 
-        if (betsError) {
-            console.log(betsError)
+        const { data: playersData, error: playersError } = await supabase
+            .from('players')
+            .select('*')
+
+        if (betsError || playersError) {
+            console.log(betsError || playersError)
             alert('Error cargando apuestas')
             return
         }
 
         setMatch(matchData)
-        setBets(betsData)
+        setBets(betsData || [])
+        setPlayers(playersData || [])
     }
 
     if (!match) return <h1>Cargando...</h1>
 
+    const allPlayersHaveBet = players.length > 0 && bets.length === players.length
+    const missingBets = players.length - bets.length
+    const isClosed = match.status === 'closed'
+    const canReveal = allPlayersHaveBet || isClosed
+
+    if (!canReveal) {
+        return (
+            <main className="revealed-page with-bottom-nav">
+                <header className="match-header">
+                    <button onClick={() => navigate('/dashboard')}>←</button>
+                    <h1>Apuestas ocultas</h1>
+                </header>
+
+                <section className="revealed-summary">
+                    <p>{match.stage}</p>
+
+                    <h2>
+                        🇪🇸 España vs {match.rival_flag} {match.rival}
+                    </h2>
+
+                    <span className="hidden-bets-pill">
+                        Faltan {missingBets} por apostar
+                    </span>
+                </section>
+
+                <section className="hidden-bets-card">
+                    <h2>🔒 Apuestas todavía ocultas</h2>
+                    <p>
+                        Las apuestas se revelarán automáticamente cuando todos los jugadores hayan apostado.
+                    </p>
+                </section>
+
+                <BottomNav />
+            </main>
+        )
+    }
+
     return (
-        <main className="revealed-page">
+        <main className="revealed-page with-bottom-nav">
             <header className="match-header">
                 <button onClick={() => navigate('/dashboard')}>←</button>
-                <h1>Apuestas reveladas</h1>
+                <h1>{isClosed ? 'Resultados' : 'Apuestas reveladas'}</h1>
             </header>
 
             <section className="revealed-summary">
                 <p>{match.stage}</p>
 
-                <h2>
-                    🇪🇸 España {match.spain_goals} - {match.rival_goals} {match.rival_flag} {match.rival}
-                </h2>
+                {isClosed ? (
+                    <h2>
+                        🇪🇸 España {match.spain_goals} - {match.rival_goals} {match.rival_flag} {match.rival}
+                    </h2>
+                ) : (
+                    <h2>
+                        🇪🇸 España vs {match.rival_flag} {match.rival}
+                    </h2>
+                )}
 
                 <span>
-                    Partido cerrado
+                    {isClosed
+                        ? 'Partido cerrado'
+                        : 'Todos han apostado'}
                 </span>
             </section>
 
@@ -79,9 +131,15 @@ function RevealedBets() {
                                 {bet.players?.avatar} {bet.players?.name}
                             </strong>
 
-                            <span className={bet.points > 0 ? 'points-positive' : 'points-zero'}>
-                                {bet.points} pts
-                            </span>
+                            {isClosed ? (
+                                <span className={bet.points > 0 ? 'points-positive' : 'points-zero'}>
+                                    {bet.points} pts
+                                </span>
+                            ) : (
+                                <span className="pending-points">
+                                    Puntos pendientes
+                                </span>
+                            )}
                         </div>
 
                         <div className="revealed-bet">
@@ -96,7 +154,7 @@ function RevealedBets() {
                             </strong>
                         </div>
 
-                        {bet.result_message && (
+                        {isClosed && bet.result_message && (
                             <p
                                 className={
                                     bet.points > 0
@@ -110,6 +168,8 @@ function RevealedBets() {
                     </article>
                 ))}
             </section>
+
+            <BottomNav />
         </main>
     )
 }

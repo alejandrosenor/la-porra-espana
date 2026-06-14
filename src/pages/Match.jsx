@@ -86,6 +86,16 @@ function Match() {
         setIsClosed(false)
     }
 
+    function isBettingNotOpenYet() {
+        const now = new Date()
+        const matchDate = new Date(match.match_date + 'Z')
+        const openingDate = new Date(matchDate)
+
+        openingDate.setDate(openingDate.getDate() - 2)
+
+        return now < openingDate
+    }
+
     const isValidBet = () => {
         if (!winner) return false
         if (winner === 'Empate') return spainGoals === rivalGoals
@@ -126,7 +136,8 @@ function Match() {
 
     if (!match) return <h1>Cargando...</h1>
 
-    const locked = !!existingBet || isClosed
+    const notOpenYet = isBettingNotOpenYet()
+    const locked = !!existingBet || isClosed || notOpenYet
 
     return (
         <main className="match-page">
@@ -145,6 +156,12 @@ function Match() {
                 {isClosed && !existingBet && (
                     <p className="bet-warning">
                         ⏰ Las apuestas para este partido ya están cerradas.
+                    </p>
+                )}
+
+                {notOpenYet && !existingBet && (
+                    <p className="bet-warning">
+                        🔒 Las apuestas para este partido todavía no están abiertas.
                     </p>
                 )}
 
@@ -230,7 +247,7 @@ function Match() {
                     Acertar resultado exacto: +5 puntos
                 </p>
 
-                {!existingBet && !isClosed && (
+                {!existingBet && !isClosed && !notOpenYet && (
                     <button
                         className="save-bet"
                         onClick={saveBet}

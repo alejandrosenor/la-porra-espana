@@ -9,34 +9,49 @@ function Dashboard() {
     const player = JSON.parse(localStorage.getItem('player'))
 
     const [matches, setMatches] = useState([])
-    const [bets, setBets] = useState([])
+    const [myBets, setMyBets] = useState([])
+    const [allBets, setAllBets] = useState([])
+    const [players, setPlayers] = useState([])
 
     useEffect(() => {
         loadData()
     }, [])
 
     async function loadData() {
-        const { data: matchesData, error: matchesError } = await supabase
+        const { data: matchesData } = await supabase
             .from('matches')
             .select('*')
-            .order('match_date')
+            .order('match_order')
 
-        const { data: betsData, error: betsError } = await supabase
+        const { data: myBetsData } = await supabase
             .from('bets')
             .select('*')
             .eq('player_id', player.id)
 
-        if (matchesError || betsError) {
-            console.log(matchesError || betsError)
-            return
-        }
+        const { data: allBetsData } = await supabase
+            .from('bets')
+            .select('*')
 
-        setMatches(matchesData)
-        setBets(betsData)
+        const { data: playersData } = await supabase
+            .from('players')
+            .select('*')
+
+        setMatches(matchesData || [])
+        setMyBets(myBetsData || [])
+        setAllBets(allBetsData || [])
+        setPlayers(playersData || [])
     }
 
     function hasBet(matchId) {
-        return bets.some((bet) => bet.match_id === matchId)
+        return myBets.some((bet) => bet.match_id === matchId)
+    }
+
+    function getBetsCount(matchId) {
+        return allBets.filter((bet) => bet.match_id === matchId).length
+    }
+
+    function allPlayersHaveBet(matchId) {
+        return players.length > 0 && getBetsCount(matchId) === players.length
     }
 
     function isBettingClosed(match) {
@@ -48,11 +63,23 @@ function Dashboard() {
         return closingDate <= now
     }
 
-    function getMatchStatus(match, betDone) {
+    function getMatchStatus(match, betDone, notOpenYet) {
         if (match.status === 'closed') return 'Partido cerrado'
+        if (allPlayersHaveBet(match.id)) return 'Apuestas reveladas'
         if (betDone) return 'Apostado'
         if (isBettingClosed(match)) return 'Apuestas cerradas'
+        if (notOpenYet) return 'Próximamente'
         return 'Pendiente'
+    }
+
+    function isBettingNotOpenYet(match) {
+        const now = new Date()
+        const matchDate = new Date(match.match_date + 'Z')
+        const openingDate = new Date(matchDate)
+
+        openingDate.setDate(openingDate.getDate() - 2)
+
+        return now < openingDate
     }
 
     return (
@@ -78,7 +105,10 @@ function Dashboard() {
                 {matches.map((match) => {
                     const betDone = hasBet(match.id)
                     const bettingClosed = isBettingClosed(match)
+                    const revealed = allPlayersHaveBet(match.id)
+                    const notOpenYet = isBettingNotOpenYet(match)
                     const statusText = getMatchStatus(match, betDone)
+                    const missingBets = players.length - getBetsCount(match.id)
 
                     return (
                         <div key={match.id} className="match-card">
@@ -94,8 +124,20 @@ function Dashboard() {
                                 </strong>
 
                                 <p>
-                                    {new Date(match.match_date + 'Z').toLocaleString()}
+                                    {new Date(match.match_date + 'Z').toLocaleString('es-ES', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
                                 </p>
+
+                                {!revealed && match.status !== 'closed' && (
+                                    <p className="missing-bets">
+                                        Faltan {missingBets} por apostar
+                                    </p>
+                                )}
                             </div>
 
                             <div className="match-actions">
@@ -103,17 +145,23 @@ function Dashboard() {
                                     className={
                                         match.status === 'closed'
                                             ? 'status closed-status'
-                                            : betDone
+                                            : revealed
                                                 ? 'status done'
-                                                : bettingClosed
-                                                    ? 'status closed-status'
-                                                    : 'status'
+                                                : betDone
+                                                    ? 'status done'
+                                                    : bettingClosed
+                                                        ? 'status closed-status'
+                                                        : 'status'
                                     }
                                 >
                                     {statusText}
                                 </span>
 
                                 {match.status === 'closed' ? (
+                                    <button onClick={() => navigate(`/match/${match.id}/bets`)}>
+                                        Ver resultados
+                                    </button>
+                                ) : revealed ? (
                                     <button onClick={() => navigate(`/match/${match.id}/bets`)}>
                                         Ver apuestas
                                     </button>
@@ -124,6 +172,10 @@ function Dashboard() {
                                 ) : bettingClosed ? (
                                     <button disabled>
                                         Cerradas
+                                    </button>
+                                ) : notOpenYet ? (
+                                    <button disabled>
+                                        Próximamente
                                     </button>
                                 ) : (
                                     <button onClick={() => navigate(`/match/${match.id}`)}>
@@ -141,6 +193,7 @@ function Dashboard() {
                     )
                 })}
             </section>
+
             <BottomNav />
         </main>
     )

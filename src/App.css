@@ -555,3 +555,38 @@
   color: #2a080c;
   font-weight: 900;
 }
+
+.missing-bets {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hidden-bets-card {
+  padding: 22px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.hidden-bets-card h2 {
+  margin: 0 0 10px;
+}
+
+.hidden-bets-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.5;
+}
+
+.hidden-bets-pill {
+  background: rgba(255, 216, 74, 0.16) !important;
+  color: #ffd84a !important;
+}
+
+.pending-points {
+  color: #ffd84a;
+  font-size: 13px;
+  font-weight: 900;
+}
