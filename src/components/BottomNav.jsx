@@ -1,0 +1,25 @@
+import { NavLink } from 'react-router-dom'
+import '../App.css'
+
+function BottomNav() {
+    return (
+        <nav className="bottom-nav">
+            <NavLink to="/dashboard">
+                🏠
+                <span>Inicio</span>
+            </NavLink>
+
+            <NavLink to="/ranking">
+                🏆
+                <span>Ranking</span>
+            </NavLink>
+
+            <NavLink to="/profile">
+                👤
+                <span>Perfil</span>
+            </NavLink>
+        </nav>
+    )
+}
+
+export default BottomNav
