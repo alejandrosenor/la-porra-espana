@@ -9,6 +9,7 @@ function Stats() {
 
     const [players, setPlayers] = useState([])
     const [bets, setBets] = useState([])
+    const [drinks, setDrinks] = useState([])
 
     useEffect(() => {
         loadStats()
@@ -34,6 +35,17 @@ function Stats() {
         )
       `)
 
+        const { data: drinksData } = await supabase
+            .from('drinks')
+            .select(`
+    *,
+    players (
+      name,
+      avatar
+    )
+  `)
+
+        setDrinks(drinksData || [])
         setPlayers(playersData || [])
         setBets(betsData || [])
     }
@@ -95,6 +107,25 @@ function Stats() {
         })[0]
     }
 
+    function getDrunkestPlayer() {
+        const totals = {}
+
+        drinks.forEach((item) => {
+            const total = (item.beers || 0) + (item.drinks || 0)
+
+            if (!totals[item.player_id]) {
+                totals[item.player_id] = {
+                    total: 0,
+                    player: item.players
+                }
+            }
+
+            totals[item.player_id].total += total
+        })
+
+        return Object.values(totals).sort((a, b) => b.total - a.total)[0]
+    }
+
     const exactKing = topBy('exact_hits')
     const winnerKing = topBy('winner_hits')
     const pointsLeader = topBy('points')
@@ -102,6 +133,7 @@ function Stats() {
     const mostEdited = getMostEditedPlayer()
     const optimist = getMostOptimisticPlayer()
     const biggestPrediction = getBiggestPrediction()
+    const drunkest = getDrunkestPlayer()
 
     return (
         <main className="stats-page with-bottom-nav">
@@ -173,6 +205,19 @@ function Stats() {
                     </strong>
                     <small>
                         {optimist.count} apuestas a victoria de España
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🍻</span>
+                    <p>Rey de la barra</p>
+                    <strong>
+                        {drunkest?.player
+                            ? `${drunkest.player.avatar} ${drunkest.player.name}`
+                            : 'Sin datos'}
+                    </strong>
+                    <small>
+                        {drunkest ? `${drunkest.total} bebidas registradas` : ''}
                     </small>
                 </article>
 

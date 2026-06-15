@@ -309,6 +309,10 @@ function Dashboard() {
                                     </button>
                                 )}
 
+                                <button onClick={() => navigate(`/match/${match.id}/drinks`)}>
+                                    🍺 Bebidas
+                                </button>
+
                                 {player?.is_admin && (
                                     <button
                                         className="admin-mini-button"

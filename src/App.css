@@ -1788,3 +1788,45 @@
     grid-template-columns: 1fr;
   }
 }
+
+.drink-counter-card {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.drink-counter-card span {
+  font-size: 40px;
+}
+
+.drink-counter-card h3 {
+  margin: 8px 0 14px;
+}
+
+.drink-counter {
+  display: grid;
+  grid-template-columns: 54px 1fr 54px;
+  gap: 12px;
+  align-items: center;
+}
+
+.drink-counter button,
+.drink-counter strong {
+  height: 54px;
+  border-radius: 16px;
+  border: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.drink-counter button {
+  background: #ffd84a;
+  color: #2a080c;
+}
