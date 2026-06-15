@@ -14,6 +14,11 @@ function BottomNav() {
                 <span>Ranking</span>
             </NavLink>
 
+            <NavLink to="/stats">
+                📊
+                <span>Stats</span>
+            </NavLink>
+
             <NavLink to="/profile">
                 👤
                 <span>Perfil</span>

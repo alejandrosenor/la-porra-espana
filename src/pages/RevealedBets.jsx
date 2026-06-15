@@ -57,6 +57,31 @@ function RevealedBets() {
         setPlayers(playersData || [])
     }
 
+    function getCollectivePrediction() {
+        const spainVotes = bets.filter(
+            (bet) => bet.winner === 'España'
+        ).length
+
+        const drawVotes = bets.filter(
+            (bet) => bet.winner === 'Empate'
+        ).length
+
+        const rivalVotes = bets.filter(
+            (bet) => bet.winner === match.rival
+        ).length
+
+        const total = bets.length || 1
+
+        return {
+            spainVotes,
+            drawVotes,
+            rivalVotes,
+            spainPercent: Math.round((spainVotes / total) * 100),
+            drawPercent: Math.round((drawVotes / total) * 100),
+            rivalPercent: Math.round((rivalVotes / total) * 100)
+        }
+    }
+
     if (!match) return <h1>Cargando...</h1>
 
     const allPlayersHaveBet = players.length > 0 && bets.length === players.length
@@ -96,6 +121,8 @@ function RevealedBets() {
         )
     }
 
+    const prediction = getCollectivePrediction()
+
     return (
         <main className="revealed-page with-bottom-nav">
             <header className="match-header">
@@ -124,6 +151,64 @@ function RevealedBets() {
             </section>
 
             <section className="revealed-list">
+
+                <div className="prediction-card">
+                    <h2>Predicción colectiva</h2>
+
+                    <div className="prediction-row">
+                        <span>🇪🇸 España</span>
+
+                        <div className="prediction-bar">
+                            <div
+                                className="prediction-fill"
+                                style={{
+                                    width: `${prediction.spainPercent}%`
+                                }}
+                            />
+                        </div>
+
+                        <strong>
+                            {prediction.spainVotes} votos
+                        </strong>
+                    </div>
+
+                    <div className="prediction-row">
+                        <span>🤝 Empate</span>
+
+                        <div className="prediction-bar">
+                            <div
+                                className="prediction-fill"
+                                style={{
+                                    width: `${prediction.drawPercent}%`
+                                }}
+                            />
+                        </div>
+
+                        <strong>
+                            {prediction.drawVotes} votos
+                        </strong>
+                    </div>
+
+                    <div className="prediction-row">
+                        <span>
+                            {match.rival_flag} {match.rival}
+                        </span>
+
+                        <div className="prediction-bar">
+                            <div
+                                className="prediction-fill"
+                                style={{
+                                    width: `${prediction.rivalPercent}%`
+                                }}
+                            />
+                        </div>
+
+                        <strong>
+                            {prediction.rivalVotes} votos
+                        </strong>
+                    </div>
+                </div>
+
                 {bets.map((bet) => (
                     <article className="revealed-card" key={bet.id}>
                         <div className="revealed-top">

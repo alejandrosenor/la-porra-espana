@@ -11,6 +11,7 @@ import AdminCreatePlayer from './pages/AdminCreatePlayer'
 import AdminPlayers from './pages/AdminPlayers'
 import AdminMessage from './pages/AdminMessage'
 import AdminSettings from './pages/AdminSettings'
+import Stats from './pages/Stats'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <Route path="/admin/players" element={<AdminPlayers />} />
       <Route path="/admin/message" element={<AdminMessage />} />
       <Route path="/admin/settings" element={<AdminSettings />} />
+      <Route path="/stats" element={<Stats />} />
     </Routes>
   )
 }
