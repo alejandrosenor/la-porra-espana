@@ -81,6 +81,49 @@ function Profile() {
         return achievements
     }
 
+    function getCurrentStreak() {
+        const closed = myBets
+            .filter((bet) => bet.matches?.status === 'closed')
+            .sort((a, b) => b.created_at.localeCompare(a.created_at))
+
+        if (closed.length === 0) {
+            return {
+                type: 'empty',
+                text: 'Todavía no hay racha',
+                detail: 'Cuando se cierre algún partido aparecerá aquí.'
+            }
+        }
+
+        const firstIsHit = closed[0].points > 0
+        let count = 0
+
+        for (const bet of closed) {
+            const isHit = bet.points > 0
+
+            if (isHit === firstIsHit) {
+                count++
+            } else {
+                break
+            }
+        }
+
+        if (firstIsHit) {
+            return {
+                type: 'positive',
+                text: `🔥 ${count} acierto${count > 1 ? 's' : ''} seguido${count > 1 ? 's' : ''}`,
+                detail: 'Vienes en buena dinámica.'
+            }
+        }
+
+        return {
+            type: 'negative',
+            text: `🥶 ${count} fallo${count > 1 ? 's' : ''} seguido${count > 1 ? 's' : ''}`,
+            detail: 'Toca remontar en el próximo partido.'
+        }
+    }
+
+    const streak = getCurrentStreak()
+
     return (
         <main className="profile-page profile-pretty-page with-bottom-nav">
             <section className="profile-hero-card">
@@ -133,6 +176,12 @@ function Profile() {
                     <p>Apuestas</p>
                     <strong>{totalBets}</strong>
                 </article>
+            </section>
+
+            <section className={`streak-card ${streak.type}`}>
+                <span>Racha actual</span>
+                <strong>{streak.text}</strong>
+                <p>{streak.detail}</p>
             </section>
 
             <section className="achievements-card">

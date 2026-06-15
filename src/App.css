@@ -1830,3 +1830,41 @@
   background: #ffd84a;
   color: #2a080c;
 }
+
+.streak-card {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 18px;
+}
+
+.streak-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #ffd84a;
+  font-size: 13px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.streak-card strong {
+  display: block;
+  font-size: 22px;
+}
+
+.streak-card p {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 700;
+}
+
+.streak-card.positive {
+  background: rgba(61, 220, 132, 0.12);
+  border-color: rgba(61, 220, 132, 0.22);
+}
+
+.streak-card.negative {
+  background: rgba(255, 122, 122, 0.12);
+  border-color: rgba(255, 122, 122, 0.22);
+}
