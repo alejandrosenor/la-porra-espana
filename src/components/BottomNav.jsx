@@ -5,7 +5,7 @@ function BottomNav() {
     return (
         <nav className="bottom-nav">
             <NavLink to="/dashboard">
-                🏠
+                🆕
                 <span>Inicio</span>
             </NavLink>
 
@@ -16,7 +16,7 @@ function BottomNav() {
 
             <NavLink to="/stats">
                 📊
-                <span>Stats</span>
+                <span>Estadísticas</span>
             </NavLink>
 
             <NavLink to="/profile">
