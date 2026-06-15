@@ -13,6 +13,7 @@ function Dashboard() {
     const [allBets, setAllBets] = useState([])
     const [players, setPlayers] = useState([])
     const [globalMessage, setGlobalMessage] = useState(null)
+    const [potAmount, setPotAmount] = useState(0)
 
     useEffect(() => {
         loadData()
@@ -45,8 +46,14 @@ function Dashboard() {
             .limit(1)
             .maybeSingle()
 
-        setGlobalMessage(messageData)
+        const { data: settingsData } = await supabase
+            .from('competition_settings')
+            .select('*')
+            .eq('id', 1)
+            .single()
 
+        setPotAmount(settingsData?.pot_amount || 0)
+        setGlobalMessage(messageData)
         setMatches(matchesData || [])
         setMyBets(myBetsData || [])
         setAllBets(allBetsData || [])
@@ -157,6 +164,15 @@ function Dashboard() {
                         📢 Mensaje global
                     </button>
                 )}
+
+                {player?.is_admin && (
+                    <button
+                        className="hero-admin-button"
+                        onClick={() => navigate('/admin/settings')}
+                    >
+                        ⚙️ Configuración
+                    </button>
+                )}
             </section>
 
             {globalMessage && (
@@ -165,6 +181,28 @@ function Dashboard() {
                     <p>{globalMessage.message}</p>
                 </section>
             )}
+
+            <section className="pot-card">
+                <span>💰 Bote de La Porra</span>
+
+                {potAmount > 0 ? (
+                    <>
+                        <strong>{potAmount} €</strong>
+
+                        <p>
+                            El ganador final de la porra se llevará el bote completo.
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <strong>Pendiente de definir</strong>
+
+                        <p>
+                            La organización anunciará próximamente el premio de esta edición.
+                        </p>
+                    </>
+                )}
+            </section>
 
             {nextMatch && (
                 <section className="next-match-card">

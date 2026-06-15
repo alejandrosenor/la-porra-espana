@@ -10,6 +10,7 @@ import AdminCreateMatch from './pages/AdminCreateMatch'
 import AdminCreatePlayer from './pages/AdminCreatePlayer'
 import AdminPlayers from './pages/AdminPlayers'
 import AdminMessage from './pages/AdminMessage'
+import AdminSettings from './pages/AdminSettings'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <Route path="/admin/create-player" element={<AdminCreatePlayer />} />
       <Route path="/admin/players" element={<AdminPlayers />} />
       <Route path="/admin/message" element={<AdminMessage />} />
+      <Route path="/admin/settings" element={<AdminSettings />} />
     </Routes>
   )
 }

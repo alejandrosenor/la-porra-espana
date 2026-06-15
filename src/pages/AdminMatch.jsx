@@ -12,6 +12,8 @@ function AdminMatch() {
     const [match, setMatch] = useState(null)
     const [spainGoals, setSpainGoals] = useState(0)
     const [rivalGoals, setRivalGoals] = useState(0)
+    const [players, setPlayers] = useState([])
+    const [bets, setBets] = useState([])
 
     useEffect(() => {
         if (!player?.is_admin) {
@@ -37,6 +39,19 @@ function AdminMatch() {
         }
 
         setMatch(data)
+
+        const { data: playersData } = await supabase
+            .from('players')
+            .select('*')
+            .order('name')
+
+        const { data: betsData } = await supabase
+            .from('bets')
+            .select('*')
+            .eq('match_id', id)
+
+        setPlayers(playersData || [])
+        setBets(betsData || [])
 
         if (data.spain_goals !== null) setSpainGoals(data.spain_goals)
         if (data.rival_goals !== null) setRivalGoals(data.rival_goals)
@@ -186,6 +201,14 @@ function AdminMatch() {
         navigate('/dashboard')
     }
 
+    function playerHasBet(playerId) {
+        return bets.some((bet) => bet.player_id === playerId)
+    }
+
+    function getBetForPlayer(playerId) {
+        return bets.find((bet) => bet.player_id === playerId)
+    }
+
     if (!player?.is_admin) return null
     if (!match) return <h1>Cargando...</h1>
 
@@ -198,6 +221,69 @@ function AdminMatch() {
 
             <section className="bet-card">
                 <h2>🇪🇸 España vs {match.rival_flag} {match.rival}</h2>
+
+                <div className="admin-bets-status-card">
+                    <div className="section-title-row">
+                        <h2>Estado de apuestas</h2>
+                        <span>{bets.length}/{players.length}</span>
+                    </div>
+
+                    <div className="admin-bets-info">
+                        <strong>👀 ¿QUÉ MUESTRA ESTA SECCIÓN?</strong>
+
+                        <p>
+                            Aquí puedes comprobar qué jugadores han realizado ya su apuesta para este partido.
+                        </p>
+
+                        <p>
+                            Mientras las apuestas permanezcan ocultas, solo se mostrará si cada jugador ha apostado o no.
+                        </p>
+
+                        <p>
+                            El contenido de las apuestas permanecerá secreto para todos, incluidos los administradores, hasta que:
+                        </p>
+
+                        <ul>
+                            <li>✅ Todos los jugadores hayan apostado.</li>
+                        </ul>
+
+                        <p>
+                            Esto garantiza que ningún participante pueda obtener ventaja viendo las apuestas de los demás antes de tiempo.
+                        </p>
+                    </div>
+
+                    <div className="admin-bets-list">
+                        {players.map((player) => {
+                            const bet = getBetForPlayer(player.id)
+                            const hasBet = playerHasBet(player.id)
+
+                            return (
+                                <article
+                                    className={hasBet ? 'admin-bet-player done' : 'admin-bet-player pending'}
+                                    key={player.id}
+                                >
+                                    <div>
+                                        <strong>{player.avatar} {player.name}</strong>
+
+                                        {hasBet ? (
+                                            <p>
+                                                {match.status === 'closed' || bets.length === players.length
+                                                    ? `Apostó: ${bet.winner} · España ${bet.spain_goals}-${bet.rival_goals} ${match.rival}`
+                                                    : 'Ha apostado. Pero la apuesta permanece oculta hasta que todos hayan apostado, aunque seas un administrador.'}
+                                            </p>
+                                        ) : (
+                                            <p>Todavía no ha apostado</p>
+                                        )}
+                                    </div>
+
+                                    <span>
+                                        {hasBet ? '✅' : '❌'}
+                                    </span>
+                                </article>
+                            )
+                        })}
+                    </div>
+                </div>
 
                 {match.status === 'closed' && (
                     <p className="bet-warning">
