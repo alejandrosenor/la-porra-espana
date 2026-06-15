@@ -12,6 +12,7 @@ function Dashboard() {
     const [myBets, setMyBets] = useState([])
     const [allBets, setAllBets] = useState([])
     const [players, setPlayers] = useState([])
+    const [globalMessage, setGlobalMessage] = useState(null)
 
     useEffect(() => {
         loadData()
@@ -35,6 +36,16 @@ function Dashboard() {
         const { data: playersData } = await supabase
             .from('players')
             .select('*')
+
+        const { data: messageData } = await supabase
+            .from('global_messages')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+        setGlobalMessage(messageData)
 
         setMatches(matchesData || [])
         setMyBets(myBetsData || [])
@@ -110,7 +121,50 @@ function Dashboard() {
                 >
                     🏆 Ranking
                 </button>
+
+                {player?.is_admin && (
+                    <button
+                        className="hero-admin-button"
+                        onClick={() => navigate('/admin/create-match')}
+                    >
+                        ➕ Nuevo partido
+                    </button>
+                )}
+
+                {player?.is_admin && (
+                    <button
+                        className="hero-admin-button"
+                        onClick={() => navigate('/admin/create-player')}
+                    >
+                        👤 Nuevo jugador
+                    </button>
+                )}
+
+                {player?.is_admin && (
+                    <button
+                        className="hero-admin-button"
+                        onClick={() => navigate('/admin/players')}
+                    >
+                        ✏️ Editar jugadores
+                    </button>
+                )}
+
+                {player?.is_admin && (
+                    <button
+                        className="hero-admin-button"
+                        onClick={() => navigate('/admin/message')}
+                    >
+                        📢 Mensaje global
+                    </button>
+                )}
             </section>
+
+            {globalMessage && (
+                <section className="dashboard-global-message">
+                    <span>📢 Aviso (realizado por el administrador)</span>
+                    <p>{globalMessage.message}</p>
+                </section>
+            )}
 
             {nextMatch && (
                 <section className="next-match-card">

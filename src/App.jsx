@@ -6,6 +6,10 @@ import Ranking from './pages/Ranking'
 import AdminMatch from './pages/AdminMatch'
 import RevealedBets from './pages/RevealedBets'
 import Profile from './pages/Profile'
+import AdminCreateMatch from './pages/AdminCreateMatch'
+import AdminCreatePlayer from './pages/AdminCreatePlayer'
+import AdminPlayers from './pages/AdminPlayers'
+import AdminMessage from './pages/AdminMessage'
 
 function App() {
   return (
@@ -18,6 +22,10 @@ function App() {
       <Route path="/admin/match/:id" element={<AdminMatch />} />
       <Route path="/match/:id/bets" element={<RevealedBets />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/admin/create-match" element={<AdminCreateMatch />}/>
+      <Route path="/admin/create-player" element={<AdminCreatePlayer />} />
+      <Route path="/admin/players" element={<AdminPlayers />} />
+      <Route path="/admin/message" element={<AdminMessage />} />
     </Routes>
   )
 }

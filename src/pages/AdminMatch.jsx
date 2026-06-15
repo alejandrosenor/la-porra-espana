@@ -158,6 +158,34 @@ function AdminMatch() {
         navigate('/ranking')
     }
 
+    async function deleteMatch() {
+        const confirmed = confirm(
+            '¿Seguro que quieres eliminar este partido? Se borrarán también todas sus apuestas. Esta acción no se puede deshacer.'
+        )
+
+        if (!confirmed) return
+
+        const secondConfirm = confirm(
+            'Última confirmación: vas a borrar el partido definitivamente.'
+        )
+
+        if (!secondConfirm) return
+
+        const { error } = await supabase
+            .from('matches')
+            .delete()
+            .eq('id', id)
+
+        if (error) {
+            console.log(error)
+            alert('Error eliminando partido')
+            return
+        }
+
+        alert('Partido eliminado')
+        navigate('/dashboard')
+    }
+
     if (!player?.is_admin) return null
     if (!match) return <h1>Cargando...</h1>
 
@@ -219,12 +247,32 @@ function AdminMatch() {
                     Ganador real: <strong>{getRealWinner()}</strong>
                 </p>
 
+                <div className="admin-warning">
+                    <strong>⚠️ IMPORTANTE</strong>
+
+                    <p>
+                        <strong>⚠️ NO LE DES AL BOTÓN SIN HABER FINALIZADO EL PARTIDO. </strong> No cierres el partido hasta que haya terminado oficialmente.
+                        Al cerrarlo se reparten los puntos y se actualiza el ranking.
+                    </p>
+
+                    <p>
+                        Si introduces un resultado incorrecto o cierras sin querer podrías alterar toda la clasificación.
+                    </p>
+                </div>
+
                 <button
                     className="save-bet"
                     onClick={closeMatch}
                     disabled={match.status === 'closed'}
                 >
                     Cerrar partido y calcular puntos
+                </button>
+
+                <button
+                    className="delete-match-button"
+                    onClick={deleteMatch}
+                >
+                    Eliminar partido
                 </button>
             </section>
         </main>
