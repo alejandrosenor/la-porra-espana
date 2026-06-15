@@ -13,6 +13,8 @@ import AdminMessage from './pages/AdminMessage'
 import AdminSettings from './pages/AdminSettings'
 import Stats from './pages/Stats'
 import MatchDrinks from './pages/MatchDrinks'
+import WorldCupCalendar from './pages/WorldCupCalendar'
+import AdminWorldCupMatch from './pages/AdminWorldCupMatch'
 
 function App() {
   return (
@@ -25,13 +27,15 @@ function App() {
       <Route path="/admin/match/:id" element={<AdminMatch />} />
       <Route path="/match/:id/bets" element={<RevealedBets />} />
       <Route path="/profile" element={<Profile />} />
-      <Route path="/admin/create-match" element={<AdminCreateMatch />}/>
+      <Route path="/admin/create-match" element={<AdminCreateMatch />} />
       <Route path="/admin/create-player" element={<AdminCreatePlayer />} />
       <Route path="/admin/players" element={<AdminPlayers />} />
       <Route path="/admin/message" element={<AdminMessage />} />
       <Route path="/admin/settings" element={<AdminSettings />} />
       <Route path="/stats" element={<Stats />} />
       <Route path="/match/:id/drinks" element={<MatchDrinks />} />
+      <Route path="/world-cup" element={<WorldCupCalendar />} />
+      <Route path="/admin/world-cup-match/:id" element={<AdminWorldCupMatch />} />
     </Routes>
   )
 }

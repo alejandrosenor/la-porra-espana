@@ -14,6 +14,11 @@ function BottomNav() {
                 <span>Ranking</span>
             </NavLink>
 
+            <NavLink to="/world-cup">
+                📅
+                <span>Mundial</span>
+            </NavLink>
+
             <NavLink to="/stats">
                 📊
                 <span>Estadísticas</span>
