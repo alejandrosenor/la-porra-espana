@@ -78,6 +78,20 @@ function Dashboard() {
         return 'Pendiente'
     }
 
+    function getMissingPlayers(matchId) {
+        const betsForMatch = allBets.filter(
+            (bet) => bet.match_id === matchId
+        )
+
+        const playerIdsWhoBet = betsForMatch.map(
+            (bet) => bet.player_id
+        )
+
+        return players.filter(
+            (player) => !playerIdsWhoBet.includes(player.id)
+        )
+    }
+
     const nextMatch = matches.find((match) => match.status !== 'closed')
 
     return (
@@ -130,6 +144,7 @@ function Dashboard() {
                     const notOpenYet = isBettingNotOpenYet(match)
                     const statusText = getMatchStatus(match, betDone, notOpenYet)
                     const missingBets = players.length - getBetsCount(match.id)
+                    const missingPlayers = getMissingPlayers(match.id)
 
                     return (
                         <article key={match.id} className="pretty-match-card">
@@ -156,7 +171,9 @@ function Dashboard() {
 
                                 {!revealed && match.status !== 'closed' && (
                                     <p className="missing-bets">
-                                        Faltan {missingBets} por apostar
+                                        {missingPlayers.length === 0
+                                            ? '✅ Todos han apostado'
+                                            : `Faltan ${missingPlayers.map(p => p.name).join(', ')} por apostar`}
                                     </p>
                                 )}
                             </div>
