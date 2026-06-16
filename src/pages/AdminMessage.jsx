@@ -138,7 +138,7 @@ function AdminMessage() {
                 </label>
 
                 <p className="message-counter">
-                    {message.length}/180 caracteres
+                    {message.length}/300 caracteres
                 </p>
 
                 <div className="admin-create-actions">
