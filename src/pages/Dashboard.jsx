@@ -205,17 +205,15 @@ function Dashboard() {
                     <span>📜</span>
 
                     <div>
-                        <strong>Reglas del La Porra del Mundial</strong>
+                        <strong>Reglamento oficial de La Porra</strong>
 
                         <p>
-                            Puntuación, goleadores, bote y funcionamiento de la competición.
+                            Puntos, apuestas, goleadores, bote, rachas, hidratación, etc.
                         </p>
                     </div>
                 </div>
 
-                <button
-                    onClick={() => navigate('/rules')}
-                >
+                <button onClick={() => navigate('/rules')}>
                     Ver reglas
                 </button>
             </section>

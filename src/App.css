@@ -2219,49 +2219,103 @@
 }
 
 .rules-card {
+  position: relative;
+  overflow: hidden;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 
-  padding: 18px;
-  margin-bottom: 18px;
+  padding: 22px;
+  margin-bottom: 20px;
 
-  border-radius: 22px;
+  border-radius: 28px;
 
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top left, rgba(255, 216, 74, 0.22), transparent 32%),
+    linear-gradient(135deg, rgba(90, 24, 31, 0.9), rgba(35, 12, 17, 0.95));
+
+  border: 1px solid rgba(255, 216, 74, 0.22);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
+.rules-card::after {
+  content: "🏆";
+  position: absolute;
+  right: 115px;
+  top: -18px;
+  font-size: 90px;
+  opacity: 0.06;
+  transform: rotate(-12deg);
 }
 
 .rules-card>div:first-child {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   align-items: center;
+  z-index: 1;
 }
 
 .rules-card span {
-  font-size: 26px;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(255, 216, 74, 0.16);
+  border: 1px solid rgba(255, 216, 74, 0.24);
+
+  font-size: 28px;
 }
 
 .rules-card strong {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
+
+  font-size: 19px;
+  color: white;
 }
 
 .rules-card p {
   margin: 0;
-  opacity: .75;
-  font-size: 13px;
+
+  max-width: 560px;
+
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  line-height: 1.35;
 }
 
 .rules-card button {
+  z-index: 1;
+
   border: 0;
   border-radius: 999px;
 
-  padding: 10px 16px;
+  padding: 13px 20px;
 
-  background: #ffd84a;
+  background: linear-gradient(135deg, #ffd84a, #ffad00);
   color: #2a080c;
 
-  font-weight: 900;
+  font-weight: 950;
+  box-shadow: 0 10px 24px rgba(255, 176, 0, 0.22);
+}
+
+@media (max-width: 620px) {
+  .rules-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rules-card button {
+    width: 100%;
+  }
+
+  .rules-card::after {
+    right: 20px;
+    top: 8px;
+  }
 }
