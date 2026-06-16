@@ -15,6 +15,8 @@ function Dashboard() {
     const [globalMessage, setGlobalMessage] = useState(null)
     const [potAmount, setPotAmount] = useState(0)
     const [, setTimer] = useState(0)
+    const [boardPosts, setBoardPosts] = useState([])
+    const [fakePress, setFakePress] = useState('')
 
     useEffect(() => {
         loadData()
@@ -61,6 +63,23 @@ function Dashboard() {
             .eq('id', 1)
             .single()
 
+        const { data: boardData } = await supabase
+            .from('board_posts')
+            .select(`
+                *,
+                players (
+                    name,
+                    avatar
+                )
+            `)
+            .eq('is_active', true)
+            .order('created_at', { ascending: false })
+            .limit(3)
+
+        setBoardPosts(boardData || [])
+        setFakePress(
+            FAKE_PRESS[Math.floor(Math.random() * FAKE_PRESS.length)]
+        )
         setPotAmount(settingsData?.pot_amount || 0)
         setGlobalMessage(messageData)
         setMatches(matchesData || [])
@@ -180,7 +199,32 @@ function Dashboard() {
         return now >= openingDate && now < closingDate
     }
 
+    async function deletePost(id) {
+        const confirmDelete = window.confirm(
+            '¿Eliminar este anuncio?'
+        )
+
+        if (!confirmDelete) return
+
+        await supabase
+            .from('board_posts')
+            .delete()
+            .eq('id', id)
+
+        loadPosts()
+    }
+
     const nextMatch = matches.find((match) => match.status !== 'closed')
+
+    const FAKE_PRESS = [
+        '📰 La Gaceta de La Porra: Señor promete que esta vez sí acertará.',
+        '📰 Marca Porra: Pilu denuncia una conspiración arbitral contra Cucu.',
+        '📰 As Porra: Dani asegura otro 6-0 contra Arabia Saudita. ¿Acertará esta vez?.',
+        '📰 Mundo Porra: Ángel estudia estadísticas a las 3 de la mañana.',
+        '📰 La Gaceta de La Porra: Nacho pide repetir el partido.',
+        '📰 El Chiringuito de La Porra: Blanca confía plenamente en el goleador sorpresa.',
+        '📰 Porra Today: Adri afirma que todavía no ha enseñado todas sus cartas. Claro, aún no ha jugado...'
+    ]
 
     return (
         <main className="dashboard-page dashboard-home with-bottom-nav">
@@ -268,6 +312,74 @@ function Dashboard() {
                 <button onClick={() => navigate('/rules')}>
                     Ver reglas
                 </button>
+            </section>
+
+            <section className="world-board">
+                <div className="world-board-header">
+                    <div>
+                        <span>📢</span>
+                        <div>
+                            <h2>Tablón del Mundial</h2>
+                            <p>Anuncios, noticias y prensa absurda de La Porra.</p>
+                        </div>
+                    </div>
+
+                    {player?.is_admin && (
+                        <button onClick={() => navigate('/admin/board/new')}>
+                            Publicar
+                        </button>
+                    )}
+                </div>
+
+                <article className="press-card">
+                    <span>🗞️ Prensa de La Porra</span>
+                    <p>{fakePress}</p>
+                </article>
+
+                {boardPosts.length === 0 ? (
+                    <article className="board-empty-card">
+                        <strong>Sin anuncios todavía</strong>
+                        <p>Cuando un admin publique algo aparecerá aquí.</p>
+                    </article>
+                ) : (
+                    <div className="board-posts-list">
+                        {boardPosts.map((post) => (
+                            <article className="board-post-card" key={post.id}>
+                                {player?.is_admin && (
+                                    <button
+                                        className="delete-post-btn"
+                                        onClick={() => deletePost(post.id)}
+                                    >
+                                        🗑️
+                                    </button>
+                                )}
+
+                                {post.image_url && (
+                                    <img src={post.image_url} alt={post.title} />
+                                )}
+
+                                <div>
+                                    <span>
+                                        {post.type === 'automatic' ? '🤖 Noticia automática' : '📣 Anuncio'}
+                                    </span>
+
+                                    <h3>{post.title}</h3>
+                                    <p>{post.description}</p>
+
+                                    <small>
+                                        {post.players?.avatar} {post.players?.name || 'Sistema'} ·{' '}
+                                        {new Date(post.created_at).toLocaleString('es-ES', {
+                                            day: '2-digit',
+                                            month: 'short',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </small>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
             </section>
 
             <section className="pot-card">

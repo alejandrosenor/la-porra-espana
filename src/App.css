@@ -2319,3 +2319,200 @@
     top: 8px;
   }
 }
+
+.world-board {
+  margin-bottom: 22px;
+  padding: 20px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 216, 74, 0.18), transparent 36%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(255, 216, 74, 0.18);
+}
+
+.world-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.world-board-header>div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.world-board-header span {
+  font-size: 34px;
+}
+
+.world-board-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.world-board-header p {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.world-board-header button {
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #ffd84a, #ffb000);
+  color: #2a080c;
+  font-weight: 950;
+}
+
+.press-card {
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 20px;
+  background: rgba(255, 216, 74, 0.12);
+  border: 1px solid rgba(255, 216, 74, 0.22);
+}
+
+.press-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: #ffd84a;
+  font-size: 13px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.press-card p {
+  margin: 0;
+  color: white;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.board-posts-list {
+  display: grid;
+  gap: 12px;
+}
+
+.board-post-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.board-post-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.board-post-card>div {
+  padding: 15px;
+}
+
+.board-post-card span {
+  color: #ffd84a;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.board-post-card h3 {
+  margin: 7px 0;
+  color: white;
+  font-size: 20px;
+}
+
+.board-post-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.board-post-card small {
+  display: block;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 800;
+}
+
+.board-empty-card {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+}
+
+.board-empty-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.board-empty-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.board-preview-card {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.board-preview-card img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 12px;
+}
+
+.board-preview-card span {
+  color: #ffd84a;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.board-preview-card h2 {
+  margin: 8px 0;
+}
+
+.board-preview-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.delete-post-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff6b6b;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.delete-post-btn:hover {
+  background: rgba(255, 80, 80, 0.3);
+  transform: scale(1.1);
+}
