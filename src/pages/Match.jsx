@@ -18,6 +18,7 @@ function Match() {
     const [timeLeft, setTimeLeft] = useState('Calculando...')
     const [isClosed, setIsClosed] = useState(false)
     const [allMatchBets, setAllMatchBets] = useState([])
+    const [keyPlayer, setKeyPlayer] = useState('')
 
     useEffect(() => {
         loadData()
@@ -77,6 +78,7 @@ function Match() {
             setWinner(betData.winner)
             setSpainGoals(betData.spain_goals)
             setRivalGoals(betData.rival_goals)
+            setKeyPlayer(betData.key_player || '')
         }
     }
 
@@ -172,7 +174,8 @@ function Match() {
                     winner,
                     spain_goals: spainGoals,
                     rival_goals: rivalGoals,
-                    edit_count: (existingBet.edit_count || 0) + 1
+                    edit_count: (existingBet.edit_count || 0) + 1,
+                    key_player: keyPlayer
                 })
                 .eq('id', existingBet.id)
 
@@ -193,7 +196,8 @@ function Match() {
             winner,
             spain_goals: spainGoals,
             rival_goals: rivalGoals,
-            edit_count: 0
+            edit_count: 0,
+            key_player: keyPlayer
         })
 
         if (error) {
@@ -205,6 +209,41 @@ function Match() {
         alert('Apuesta guardada 🔥')
         navigate('/dashboard')
     }
+
+    const SPAIN_PLAYERS = [
+        '🚫 Nadie marca',
+
+        '⭐ Lamine Yamal',
+        '⭐ Nico Williams',
+        '⭐ Mikel Oyarzabal',
+        '⭐ Ferran Torres',
+        '⭐ Dani Olmo',
+        '⭐ Pedri',
+
+        'Unai Simón',
+        'Joan García',
+        'David Raya',
+
+        'Marc Cucurella',
+        'Alejandro Grimaldo',
+        'Pau Cubarsí',
+        'Aymeric Laporte',
+        'Marc Pubill',
+        'Eric García',
+        'Marcos Llorente',
+        'Pedro Porro',
+
+        'Fabián Ruiz',
+        'Martín Zubimendi',
+        'Gavi',
+        'Rodri',
+        'Álex Baena',
+        'Mikel Merino',
+
+        'Yeremy Pino',
+        'Borja Iglesias',
+        'Víctor Muñoz'
+    ]
 
     if (!match) return <h1>Cargando...</h1>
 
@@ -334,9 +373,32 @@ function Match() {
                     </p>
                 )}
 
+                <h2>Goleador. ¿Quién marca gol?</h2>
+
+                <div className="bet-section">
+
+                    <select
+                        value={keyPlayer}
+                        disabled={locked}
+                        onChange={(e) => setKeyPlayer(e.target.value)}
+                    >
+                        <option value="">Seleccionar...</option>
+
+                        {SPAIN_PLAYERS.map((player) => (
+                            <option
+                                key={player}
+                                value={player}
+                            >
+                                {player}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
                 <p className="rules">
                     Acertar ganador: +3 puntos<br />
-                    Acertar resultado exacto: +5 puntos
+                    Acertar resultado exacto: +5 puntos<br />
+                    Acertar goleador: +1 punto
                 </p>
 
                 {(!existingBet || editable) && !isClosed && !notOpenYet && !allPlayersHaveBet() && (

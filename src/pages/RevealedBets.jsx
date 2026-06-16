@@ -261,6 +261,13 @@ function RevealedBets() {
                             </strong>
                         </div>
 
+                        <div className="revealed-key-player">
+                            <p>Goleador</p>
+                            <strong>
+                                {bet.key_player || '-'}
+                            </strong>
+                        </div>
+
                         {isClosed && bet.result_message && (
                             <p
                                 className={

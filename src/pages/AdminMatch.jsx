@@ -3,15 +3,45 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import '../App.css'
 
+const SPAIN_PLAYERS = [
+    '🚫 Nadie marca',
+    '⭐ Lamine Yamal',
+    '⭐ Nico Williams',
+    '⭐ Mikel Oyarzabal',
+    '⭐ Ferran Torres',
+    '⭐ Dani Olmo',
+    '⭐ Pedri',
+    'Unai Simón',
+    'Joan García',
+    'David Raya',
+    'Marc Cucurella',
+    'Alejandro Grimaldo',
+    'Pau Cubarsí',
+    'Aymeric Laporte',
+    'Marc Pubill',
+    'Eric García',
+    'Marcos Llorente',
+    'Pedro Porro',
+    'Fabián Ruiz',
+    'Martín Zubimendi',
+    'Gavi',
+    'Rodri',
+    'Álex Baena',
+    'Mikel Merino',
+    'Yeremy Pino',
+    'Borja Iglesias',
+    'Víctor Muñoz'
+]
+
 function AdminMatch() {
     const navigate = useNavigate()
     const { id } = useParams()
-
     const player = JSON.parse(localStorage.getItem('player'))
 
     const [match, setMatch] = useState(null)
     const [spainGoals, setSpainGoals] = useState(0)
     const [rivalGoals, setRivalGoals] = useState(0)
+    const [keyPlayerResult, setKeyPlayerResult] = useState('')
     const [players, setPlayers] = useState([])
     const [bets, setBets] = useState([])
 
@@ -55,12 +85,21 @@ function AdminMatch() {
 
         if (data.spain_goals !== null) setSpainGoals(data.spain_goals)
         if (data.rival_goals !== null) setRivalGoals(data.rival_goals)
+        setKeyPlayerResult(data.key_player_result || '')
     }
 
     function getRealWinner() {
         if (spainGoals === rivalGoals) return 'Empate'
         if (spainGoals > rivalGoals) return 'España'
         return match.rival
+    }
+
+    function isKeyPlayerHit(bet) {
+        return (
+            bet.key_player &&
+            keyPlayerResult &&
+            bet.key_player === keyPlayerResult
+        )
     }
 
     function calculatePoints(bet) {
@@ -73,6 +112,7 @@ function AdminMatch() {
 
         if (winnerHit) points += 3
         if (exactHit) points += 5
+        if (isKeyPlayerHit(bet)) points += 1
 
         return points
     }
@@ -83,6 +123,8 @@ function AdminMatch() {
             bet.spain_goals === spainGoals &&
             bet.rival_goals === rivalGoals
 
+        const keyPlayerHit = isKeyPlayerHit(bet)
+
         let message = ''
 
         if (winnerHit) {
@@ -92,9 +134,15 @@ function AdminMatch() {
         }
 
         if (exactHit) {
-            message += `🟢 +5 Clavó el resultado exacto (${spainGoals}-${rivalGoals}).`
+            message += `🟢 +5 Clavó el resultado exacto (${spainGoals}-${rivalGoals}). `
         } else {
-            message += `🔴 Falló el resultado exacto. Apostó ${bet.spain_goals}-${bet.rival_goals}.`
+            message += `🔴 Falló el resultado exacto. Apostó ${bet.spain_goals}-${bet.rival_goals}. `
+        }
+
+        if (keyPlayerHit) {
+            message += `🟢 +1 Acertó goleador (${keyPlayerResult}).`
+        } else {
+            message += `🔴 Falló goleador. Apostó ${bet.key_player || 'Sin elegir'}.`
         }
 
         return message
@@ -109,6 +157,11 @@ function AdminMatch() {
 
         if (match.status === 'closed') {
             alert('Este partido ya está cerrado. No se pueden volver a sumar puntos.')
+            return
+        }
+
+        if (!keyPlayerResult) {
+            alert('Selecciona el goleador del partido antes de cerrar')
             return
         }
 
@@ -165,6 +218,7 @@ function AdminMatch() {
             .update({
                 spain_goals: spainGoals,
                 rival_goals: rivalGoals,
+                key_player_result: keyPlayerResult,
                 status: 'closed'
             })
             .eq('id', id)
@@ -240,15 +294,7 @@ function AdminMatch() {
                         </p>
 
                         <p>
-                            El contenido de las apuestas permanecerá secreto para todos, incluidos los administradores, hasta que:
-                        </p>
-
-                        <ul>
-                            <li>✅ Todos los jugadores hayan apostado.</li>
-                        </ul>
-
-                        <p>
-                            Esto garantiza que ningún participante pueda obtener ventaja viendo las apuestas de los demás antes de tiempo.
+                            El contenido de las apuestas permanecerá secreto para todos, incluidos los administradores, hasta que se revelen.
                         </p>
                     </div>
 
@@ -268,17 +314,15 @@ function AdminMatch() {
                                         {hasBet ? (
                                             <p>
                                                 {match.status === 'closed' || bets.length === players.length
-                                                    ? `Apostó: ${bet.winner} · España ${bet.spain_goals}-${bet.rival_goals} ${match.rival}`
-                                                    : 'Ha apostado. Pero la apuesta permanece oculta hasta que todos hayan apostado, aunque seas un administrador.'}
+                                                    ? `Apostó: ${bet.winner} · España ${bet.spain_goals}-${bet.rival_goals} ${match.rival} · Jugador clave: ${bet.key_player || '-'}`
+                                                    : 'Ha apostado. Pero la apuesta permanece oculta hasta que se revele, aunque seas administrador.'}
                                             </p>
                                         ) : (
                                             <p>Todavía no ha apostado</p>
                                         )}
                                     </div>
 
-                                    <span>
-                                        {hasBet ? '✅' : '❌'}
-                                    </span>
+                                    <span>{hasBet ? '✅' : '❌'}</span>
                                 </article>
                             )
                         })}
@@ -329,20 +373,41 @@ function AdminMatch() {
                     </button>
                 </div>
 
+                <div className="bet-section">
+                    <label>Goleador del partido</label>
+
+                    <select
+                        value={keyPlayerResult}
+                        disabled={match.status === 'closed'}
+                        onChange={(e) => setKeyPlayerResult(e.target.value)}
+                    >
+                        <option value="">Seleccionar goleador...</option>
+
+                        {SPAIN_PLAYERS.map((player) => (
+                            <option key={player} value={player}>
+                                {player}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
                 <p className="rules">
                     Ganador real: <strong>{getRealWinner()}</strong>
+                    <br />
+                    Goleador: <strong>{keyPlayerResult || 'Sin seleccionar'}</strong>
                 </p>
 
                 <div className="admin-warning">
                     <strong>⚠️ IMPORTANTE</strong>
 
                     <p>
-                        <strong>⚠️ NO LE DES AL BOTÓN SIN HABER FINALIZADO EL PARTIDO. </strong> No cierres el partido hasta que haya terminado oficialmente.
+                        <strong>⚠️ NO LE DES AL BOTÓN SIN HABER FINALIZADO EL PARTIDO. </strong>
+                        No cierres el partido hasta que haya terminado oficialmente.
                         Al cerrarlo se reparten los puntos y se actualiza el ranking.
                     </p>
 
                     <p>
-                        Si introduces un resultado incorrecto o cierras sin querer podrías alterar toda la clasificación.
+                        Si introduces un resultado incorrecto, jugador clave incorrecto o cierras sin querer podrías alterar toda la clasificación.
                     </p>
                 </div>
 
