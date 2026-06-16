@@ -166,6 +166,20 @@ function Dashboard() {
         return `Se abren en ${days}d ${hours}h ${minutes}m ${seconds}s`
     }
 
+    function isBettingOpen(match) {
+        const now = new Date()
+
+        const matchDate = new Date(match.match_date)
+
+        const openingDate = new Date(matchDate)
+        openingDate.setDate(openingDate.getDate() - 2)
+
+        const closingDate = new Date(matchDate)
+        closingDate.setHours(closingDate.getHours() - 2)
+
+        return now >= openingDate && now < closingDate
+    }
+
     const nextMatch = matches.find((match) => match.status !== 'closed')
 
     return (
@@ -383,13 +397,22 @@ function Dashboard() {
                                     </button>
                                 )}
 
-                                <button
-                                    className="drinks-button"
-                                    disabled={match.status === 'closed'}
-                                    onClick={() => navigate(`/match/${match.id}/drinks`)}
-                                >
-                                    {match.status === 'closed' ? 'Hidratado' : '🍺 Bebidas'}
-                                </button>
+                                {match.status === 'closed' ? (
+                                    <button disabled className="disabled-drinks-btn">
+                                        Hidratado
+                                    </button>
+                                ) : !isBettingOpen(match) ? (
+                                    <button disabled className="disabled-drinks-btn">
+                                        Te hidratarás
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="drinks-btn"
+                                        onClick={() => navigate(`/drinks/${match.id}`)}
+                                    >
+                                        Bebidas
+                                    </button>
+                                )}
 
                                 {player?.is_admin && (
                                     <button
