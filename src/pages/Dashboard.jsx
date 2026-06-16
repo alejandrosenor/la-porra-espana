@@ -72,11 +72,29 @@ function Dashboard() {
         return players.length > 0 && getBetsCount(matchId) === players.length
     }
 
+    function shouldRevealBets(match) {
+        return isBettingClosed(match) || allPlayersUsedEdit(match.id)
+    }
+
     function isBettingClosed(match) {
         if (match.status === 'closed') return true
+
         const now = new Date()
-        const closingDate = new Date(match.closing_date + 'Z')
-        return closingDate <= now
+        const matchDate = new Date(match.match_date)
+        const closingDate = new Date(matchDate)
+
+        closingDate.setHours(closingDate.getHours() - 2)
+
+        return now >= closingDate
+    }
+
+    function allPlayersUsedEdit(matchId) {
+        const betsForMatch = allBets.filter((bet) => bet.match_id === matchId)
+
+        if (players.length === 0) return false
+        if (betsForMatch.length < players.length) return false
+
+        return betsForMatch.every((bet) => (bet.edit_count || 0) >= 1)
     }
 
     function isBettingNotOpenYet(match) {
@@ -232,7 +250,7 @@ function Dashboard() {
                 {matches.map((match) => {
                     const betDone = hasBet(match.id)
                     const bettingClosed = isBettingClosed(match)
-                    const revealed = allPlayersHaveBet(match.id)
+                    const revealed = shouldRevealBets(match)
                     const notOpenYet = isBettingNotOpenYet(match)
                     const statusText = getMatchStatus(match, betDone, notOpenYet)
                     const missingBets = players.length - getBetsCount(match.id)

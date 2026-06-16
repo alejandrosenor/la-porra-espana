@@ -82,12 +82,34 @@ function RevealedBets() {
         }
     }
 
+    function isBettingClosedByTime() {
+        if (!match) return false
+
+        const now = new Date()
+        const matchDate = new Date(match.match_date)
+        const closingDate = new Date(matchDate)
+
+        closingDate.setHours(closingDate.getHours() - 2)
+
+        return now >= closingDate
+    }
+
+    function allPlayersUsedEdit() {
+        if (players.length === 0) return false
+        if (bets.length < players.length) return false
+
+        return bets.every((bet) => (bet.edit_count || 0) >= 1)
+    }
+
     if (!match) return <h1>Cargando...</h1>
 
     const allPlayersHaveBet = players.length > 0 && bets.length === players.length
     const missingBets = players.length - bets.length
     const isClosed = match.status === 'closed'
-    const canReveal = allPlayersHaveBet || isClosed
+    const canReveal =
+        match.status === 'closed' ||
+        isBettingClosedByTime() ||
+        allPlayersUsedEdit()
 
     if (!canReveal) {
         return (

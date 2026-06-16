@@ -17,6 +17,7 @@ function Match() {
     const [rivalGoals, setRivalGoals] = useState(0)
     const [timeLeft, setTimeLeft] = useState('Calculando...')
     const [isClosed, setIsClosed] = useState(false)
+    const [allMatchBets, setAllMatchBets] = useState([])
 
     useEffect(() => {
         loadData()
@@ -63,12 +64,13 @@ function Match() {
 
         const { data: betsData } = await supabase
             .from('bets')
-            .select('id')
+            .select('*')
             .eq('match_id', id)
 
         setMatch(matchData)
         setTotalPlayers(playersData?.length || 0)
         setTotalBets(betsData?.length || 0)
+        setAllMatchBets(betsData || [])
 
         if (betData) {
             setExistingBet(betData)
@@ -80,7 +82,10 @@ function Match() {
 
     function updateCountdown() {
         const now = new Date()
-        const closingDate = new Date(match.closing_date + 'Z')
+        const matchDate = new Date(match.match_date)
+
+        const closingDate = new Date(matchDate)
+        closingDate.setHours(closingDate.getHours() - 2)
         const difference = closingDate - now
 
         if (difference <= 0 || match.status === 'closed') {
@@ -114,6 +119,13 @@ function Match() {
         return totalPlayers > 0 && totalBets >= totalPlayers
     }
 
+    function allPlayersUsedEdit() {
+        if (totalPlayers === 0) return false
+        if (allMatchBets.length < totalPlayers) return false
+
+        return allMatchBets.every((bet) => (bet.edit_count || 0) >= 1)
+    }
+
     const isValidBet = () => {
         if (!winner) return false
         if (winner === 'Empate') return spainGoals === rivalGoals
@@ -125,7 +137,7 @@ function Match() {
         if (!existingBet) return false
         if (isClosed) return false
         if (isBettingNotOpenYet()) return false
-        if (allPlayersHaveBet()) return false
+        if (allPlayersUsedEdit()) return false
 
         return (existingBet.edit_count || 0) < 1
     }
@@ -198,7 +210,8 @@ function Match() {
 
     const notOpenYet = isBettingNotOpenYet()
     const editable = canEditBet()
-    const locked = isClosed || notOpenYet || (existingBet && !editable)
+    const revealByEdits = allPlayersUsedEdit()
+    const locked = isClosed || notOpenYet || revealByEdits || (existingBet && !editable)
 
     return (
         <main className="match-page">
@@ -235,6 +248,12 @@ function Match() {
                 {allPlayersHaveBet() && match.status !== 'closed' && (
                     <p className="bet-warning">
                         👀 Todos han apostado. Las apuestas ya están reveladas.
+                    </p>
+                )}
+
+                {revealByEdits && (
+                    <p className="bet-warning">
+                        👀 Todos han usado su edición. Las apuestas ya están cerradas y reveladas.
                     </p>
                 )}
 

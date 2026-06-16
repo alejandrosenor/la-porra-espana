@@ -33,7 +33,7 @@ function AdminCreateMatch() {
         const matchDate = `${date} ${time}:00`
 
         const closingDate = new Date(matchDate)
-        closingDate.setMinutes(closingDate.getMinutes() - 5)
+        closingDate.setHours(closingDate.getHours() - 2)
 
         const { data: matches } = await supabase
             .from('matches')
