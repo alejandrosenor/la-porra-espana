@@ -121,7 +121,7 @@ function Rules() {
                     </small>
 
                     <small>
-                        🔥 📝 Fiel apostador
+                        📝 Fiel apostador
                         <br />
                         Apostar 3 o más veces.
                     </small>
