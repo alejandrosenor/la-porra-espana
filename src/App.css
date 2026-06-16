@@ -2217,3 +2217,51 @@
 .key-player-chip.no-scorer {
   margin-top: 12px;
 }
+
+.rules-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  padding: 18px;
+  margin-bottom: 18px;
+
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rules-card>div:first-child {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.rules-card span {
+  font-size: 26px;
+}
+
+.rules-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.rules-card p {
+  margin: 0;
+  opacity: .75;
+  font-size: 13px;
+}
+
+.rules-card button {
+  border: 0;
+  border-radius: 999px;
+
+  padding: 10px 16px;
+
+  background: #ffd84a;
+  color: #2a080c;
+
+  font-weight: 900;
+}

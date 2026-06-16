@@ -200,6 +200,26 @@ function Dashboard() {
                 </section>
             )}
 
+            <section className="rules-card">
+                <div>
+                    <span>📜</span>
+
+                    <div>
+                        <strong>Reglas del La Porra del Mundial</strong>
+
+                        <p>
+                            Puntuación, goleadores, bote y funcionamiento de la competición.
+                        </p>
+                    </div>
+                </div>
+
+                <button
+                    onClick={() => navigate('/rules')}
+                >
+                    Ver reglas
+                </button>
+            </section>
+
             <section className="pot-card">
                 <span>💰 Bote de La Porra</span>
 
