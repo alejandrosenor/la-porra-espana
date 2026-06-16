@@ -14,9 +14,18 @@ function Dashboard() {
     const [players, setPlayers] = useState([])
     const [globalMessage, setGlobalMessage] = useState(null)
     const [potAmount, setPotAmount] = useState(0)
+    const [, setTimer] = useState(0)
 
     useEffect(() => {
         loadData()
+    }, [])
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTimer(Date.now())
+        }, 1000)
+
+        return () => clearInterval(interval)
     }, [])
 
     async function loadData() {
@@ -110,7 +119,9 @@ function Dashboard() {
         if (allPlayersHaveBet(match.id)) return 'Apuestas reveladas'
         if (betDone) return 'Apostado'
         if (isBettingClosed(match)) return 'Apuestas cerradas'
-        if (notOpenYet) return 'Próximamente'
+        if (notOpenYet) return <span className="match-status-pill upcoming">
+            {getOpeningCountdown(match)}
+        </span>
         return 'Pendiente'
     }
 
@@ -126,6 +137,33 @@ function Dashboard() {
         return players.filter(
             (player) => !playerIdsWhoBet.includes(player.id)
         )
+    }
+
+    function getOpeningDate(match) {
+        const matchDate = new Date(match.match_date)
+        const openingDate = new Date(matchDate)
+        openingDate.setDate(openingDate.getDate() - 2)
+        return openingDate
+    }
+
+    function getOpeningCountdown(match) {
+        const now = new Date()
+        const openingDate = getOpeningDate(match)
+
+        const difference = openingDate - now
+
+        if (difference <= 0) {
+            return 'Ya puedes apostar'
+        }
+
+        const totalSeconds = Math.floor(difference / 1000)
+
+        const days = Math.floor(totalSeconds / 86400)
+        const hours = Math.floor((totalSeconds % 86400) / 3600)
+        const minutes = Math.floor((totalSeconds % 3600) / 60)
+        const seconds = totalSeconds % 60
+
+        return `Se abren en ${days}d ${hours}h ${minutes}m ${seconds}s`
     }
 
     const nextMatch = matches.find((match) => match.status !== 'closed')
