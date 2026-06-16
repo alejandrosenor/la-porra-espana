@@ -133,7 +133,7 @@ function AdminMessage() {
                         placeholder="Ej: Recordad apostar antes de las 17:55"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        maxLength={180}
+                        maxLength={300}
                     />
                 </label>
 
