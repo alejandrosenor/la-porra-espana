@@ -4,7 +4,6 @@ import { supabase } from '../services/supabase'
 import '../App.css'
 
 const SPAIN_PLAYERS = [
-    '🚫 Nadie marca',
     '⭐ Lamine Yamal',
     '⭐ Nico Williams',
     '⭐ Mikel Oyarzabal',
@@ -41,7 +40,7 @@ function AdminMatch() {
     const [match, setMatch] = useState(null)
     const [spainGoals, setSpainGoals] = useState(0)
     const [rivalGoals, setRivalGoals] = useState(0)
-    const [keyPlayerResult, setKeyPlayerResult] = useState('')
+    const [keyPlayerResults, setKeyPlayerResults] = useState([])
     const [players, setPlayers] = useState([])
     const [bets, setBets] = useState([])
 
@@ -85,7 +84,7 @@ function AdminMatch() {
 
         if (data.spain_goals !== null) setSpainGoals(data.spain_goals)
         if (data.rival_goals !== null) setRivalGoals(data.rival_goals)
-        setKeyPlayerResult(data.key_player_result || '')
+        setKeyPlayerResults(data.key_player_results || [])
     }
 
     function getRealWinner() {
@@ -97,8 +96,7 @@ function AdminMatch() {
     function isKeyPlayerHit(bet) {
         return (
             bet.key_player &&
-            keyPlayerResult &&
-            bet.key_player === keyPlayerResult
+            keyPlayerResults.includes(bet.key_player)
         )
     }
 
@@ -140,7 +138,7 @@ function AdminMatch() {
         }
 
         if (keyPlayerHit) {
-            message += `🟢 +1 Acertó goleador (${keyPlayerResult}).`
+            message += `🟢 +1 Acertó goleador (${bet.key_player}).`
         } else {
             message += `🔴 Falló goleador. Apostó ${bet.key_player || 'Sin elegir'}.`
         }
@@ -160,8 +158,8 @@ function AdminMatch() {
             return
         }
 
-        if (!keyPlayerResult) {
-            alert('Selecciona el goleador del partido antes de cerrar')
+        if (keyPlayerResults.length === 0) {
+            alert('Selecciona al menos un goleador del partido antes de cerrar')
             return
         }
 
@@ -218,7 +216,7 @@ function AdminMatch() {
             .update({
                 spain_goals: spainGoals,
                 rival_goals: rivalGoals,
-                key_player_result: keyPlayerResult,
+                key_player_results: keyPlayerResults,
                 status: 'closed'
             })
             .eq('id', id)
@@ -261,6 +259,23 @@ function AdminMatch() {
 
     function getBetForPlayer(playerId) {
         return bets.find((bet) => bet.player_id === playerId)
+    }
+
+    function toggleKeyPlayer(playerName) {
+        const noScorer = '🚫 Ningún jugador decisivo'
+
+        if (playerName === noScorer) {
+            setKeyPlayerResults([noScorer])
+            return
+        }
+
+        const cleanResults = keyPlayerResults.filter((p) => p !== noScorer)
+
+        if (cleanResults.includes(playerName)) {
+            setKeyPlayerResults(cleanResults.filter((p) => p !== playerName))
+        } else {
+            setKeyPlayerResults([...cleanResults, playerName])
+        }
     }
 
     if (!player?.is_admin) return null
@@ -335,6 +350,8 @@ function AdminMatch() {
                     </p>
                 )}
 
+                <h2><br/>Resultado real del partido</h2>
+
                 <p className="closing-text">Resultado real</p>
 
                 <div className="score-picker">
@@ -374,27 +391,48 @@ function AdminMatch() {
                 </div>
 
                 <div className="bet-section">
-                    <label>Goleador del partido</label>
+                    <h2>Goleadores de España del partido</h2>
 
-                    <select
-                        value={keyPlayerResult}
+                    <div className="key-players-grid">
+                        {SPAIN_PLAYERS
+                            .filter((p) => p !== '🚫 Ningún jugador decisivo')
+                            .map((player) => (
+                                <button
+                                    type="button"
+                                    key={player}
+                                    disabled={match.status === 'closed'}
+                                    className={
+                                        keyPlayerResults.includes(player)
+                                            ? 'key-player-chip selected'
+                                            : 'key-player-chip'
+                                    }
+                                    onClick={() => toggleKeyPlayer(player)}
+                                >
+                                    {player}
+                                </button>
+                            ))}
+                    </div>
+
+                    <button
+                        type="button"
                         disabled={match.status === 'closed'}
-                        onChange={(e) => setKeyPlayerResult(e.target.value)}
+                        className={
+                            keyPlayerResults.includes('🚫 Ningún jugador decisivo')
+                                ? 'key-player-chip selected no-scorer'
+                                : 'key-player-chip no-scorer'
+                        }
+                        onClick={() => toggleKeyPlayer('🚫 Ningún jugador decisivo')}
                     >
-                        <option value="">Seleccionar goleador...</option>
-
-                        {SPAIN_PLAYERS.map((player) => (
-                            <option key={player} value={player}>
-                                {player}
-                            </option>
-                        ))}
-                    </select>
+                        🚫 Ningún goleador español
+                    </button>
                 </div>
 
                 <p className="rules">
-                    Ganador real: <strong>{getRealWinner()}</strong>
-                    <br />
-                    Goleador: <strong>{keyPlayerResult || 'Sin seleccionar'}</strong>
+                    Goleadores: <strong>
+                        {keyPlayerResults.length > 0
+                            ? keyPlayerResults.join(', ')
+                            : 'Sin seleccionar'}
+                    </strong>
                 </p>
 
                 <div className="admin-warning">
