@@ -11,6 +11,9 @@ function MatchDrinks() {
     const [match, setMatch] = useState(null)
     const [beers, setBeers] = useState(0)
     const [drinks, setDrinks] = useState(0)
+    const [summerWines, setSummerWines] = useState(0)
+    const [softDrinks, setSoftDrinks] = useState(0)
+    const [waters, setWaters] = useState(0)
 
     useEffect(() => {
         loadData()
@@ -33,19 +36,34 @@ function MatchDrinks() {
         setMatch(matchData)
 
         if (drinksData) {
-            setBeers(drinksData.beers)
-            setDrinks(drinksData.drinks)
+            setBeers(drinksData.beers || 0)
+            setDrinks(drinksData.drinks || 0)
+            setSummerWines(drinksData.summer_wines || 0)
+            setSoftDrinks(drinksData.soft_drinks || 0)
+            setWaters(drinksData.waters || 0)
         }
     }
 
+    function isLocked() {
+        return match?.status === 'closed'
+    }
+
     async function saveDrinks() {
+        if (isLocked()) {
+            alert('Este partido ya está cerrado. Te hidrataste bien')
+            return
+        }
+
         const { error } = await supabase
             .from('drinks')
             .upsert({
                 player_id: player.id,
                 match_id: id,
                 beers,
-                drinks
+                drinks,
+                summer_wines: summerWines,
+                soft_drinks: softDrinks,
+                waters
             }, {
                 onConflict: 'player_id,match_id'
             })
@@ -56,8 +74,23 @@ function MatchDrinks() {
             return
         }
 
-        alert('Hidratación guardada 🍻')
+        alert('Hidratación guardada')
         navigate('/dashboard')
+    }
+
+    function CounterCard({ emoji, title, value, onMinus, onPlus }) {
+        return (
+            <div className="drink-counter-card">
+                <span>{emoji}</span>
+                <h3>{title}</h3>
+
+                <div className="drink-counter">
+                    <button disabled={isLocked()} onClick={onMinus}>−</button>
+                    <strong>{value}</strong>
+                    <button disabled={isLocked()} onClick={onPlus}>+</button>
+                </div>
+            </div>
+        )
     }
 
     if (!match) return <h1>Cargando...</h1>
@@ -74,35 +107,65 @@ function MatchDrinks() {
                     🇪🇸 España vs {match.rival_flag} {match.rival}
                 </h2>
 
-                <p className="rules">
-                    🍺 Cuenta tus cervezas y copas de este partido.
-                    Esto no afecta al ranking, solo a las estadísticas absurdas.
-                </p>
+                {isLocked() ? (
+                    <p className="bet-warning">
+                        🔒 Te hidrataste bien. Este contador ya está cerrado para este partido.
+                    </p>
+                ) : (
+                    <p className="rules">
+                        Cuenta lo que cae durante el partido. Esto no afecta al ranking,
+                        solo a las estadísticas absurdas.<br/>
+                        Bebe con responsabilidad.<br/>
+                        O no...
+                    </p>
+                )}
 
-                <div className="drink-counter-card">
-                    <span>🍺</span>
-                    <h3>Cervezas</h3>
+                <CounterCard
+                    emoji="🍺"
+                    title="Cervezas"
+                    value={beers}
+                    onMinus={() => setBeers(Math.max(0, beers - 1))}
+                    onPlus={() => setBeers(beers + 1)}
+                />
 
-                    <div className="drink-counter">
-                        <button onClick={() => setBeers(Math.max(0, beers - 1))}>−</button>
-                        <strong>{beers}</strong>
-                        <button onClick={() => setBeers(beers + 1)}>+</button>
-                    </div>
-                </div>
+                <CounterCard
+                    emoji="🥃"
+                    title="Copas"
+                    value={drinks}
+                    onMinus={() => setDrinks(Math.max(0, drinks - 1))}
+                    onPlus={() => setDrinks(drinks + 1)}
+                />
 
-                <div className="drink-counter-card">
-                    <span>🥃</span>
-                    <h3>Copas</h3>
+                <CounterCard
+                    emoji="🍷"
+                    title="Tintos de verano"
+                    value={summerWines}
+                    onMinus={() => setSummerWines(Math.max(0, summerWines - 1))}
+                    onPlus={() => setSummerWines(summerWines + 1)}
+                />
 
-                    <div className="drink-counter">
-                        <button onClick={() => setDrinks(Math.max(0, drinks - 1))}>−</button>
-                        <strong>{drinks}</strong>
-                        <button onClick={() => setDrinks(drinks + 1)}>+</button>
-                    </div>
-                </div>
+                <CounterCard
+                    emoji="🥤"
+                    title="Refrescos"
+                    value={softDrinks}
+                    onMinus={() => setSoftDrinks(Math.max(0, softDrinks - 1))}
+                    onPlus={() => setSoftDrinks(softDrinks + 1)}
+                />
 
-                <button className="save-bet" onClick={saveDrinks}>
-                    Guardar contador
+                <CounterCard
+                    emoji="💧"
+                    title="Aguas"
+                    value={waters}
+                    onMinus={() => setWaters(Math.max(0, waters - 1))}
+                    onPlus={() => setWaters(waters + 1)}
+                />
+
+                <button
+                    className="save-bet"
+                    onClick={saveDrinks}
+                    disabled={isLocked()}
+                >
+                    {isLocked() ? 'Te hidrataste bien' : 'Guardar contador'}
                 </button>
             </section>
         </main>

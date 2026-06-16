@@ -327,8 +327,12 @@ function Dashboard() {
                                     </button>
                                 )}
 
-                                <button onClick={() => navigate(`/match/${match.id}/drinks`)}>
-                                    🍺 Bebidas
+                                <button
+                                    className="drinks-button"
+                                    disabled={match.status === 'closed'}
+                                    onClick={() => navigate(`/match/${match.id}/drinks`)}
+                                >
+                                    {match.status === 'closed' ? 'Hidratado' : '🍺 Bebidas'}
                                 </button>
 
                                 {player?.is_admin && (

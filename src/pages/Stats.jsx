@@ -9,7 +9,7 @@ function Stats() {
 
     const [players, setPlayers] = useState([])
     const [bets, setBets] = useState([])
-    const [drinks, setDrinks] = useState([])
+    const [drinksData, setDrinksData] = useState([])
 
     useEffect(() => {
         loadStats()
@@ -23,31 +23,31 @@ function Stats() {
         const { data: betsData } = await supabase
             .from('bets')
             .select(`
-        *,
-        players (
-          name,
-          avatar
-        ),
-        matches (
-          rival,
-          rival_flag,
-          status
-        )
-      `)
+                *,
+                players (
+                    name,
+                    avatar
+                ),
+                matches (
+                    rival,
+                    rival_flag,
+                    status
+                )
+            `)
 
-        const { data: drinksData } = await supabase
+        const { data: hydrationData } = await supabase
             .from('drinks')
             .select(`
-    *,
-    players (
-      name,
-      avatar
-    )
-  `)
+                *,
+                players (
+                    name,
+                    avatar
+                )
+            `)
 
-        setDrinks(drinksData || [])
         setPlayers(playersData || [])
         setBets(betsData || [])
+        setDrinksData(hydrationData || [])
     }
 
     function topBy(field) {
@@ -107,11 +107,33 @@ function Stats() {
         })[0]
     }
 
-    function getDrunkestPlayer() {
+    function getHydrationWinner(type) {
         const totals = {}
 
-        drinks.forEach((item) => {
-            const total = (item.beers || 0) + (item.drinks || 0)
+        drinksData.forEach((item) => {
+            const value = item[type] || 0
+
+            if (!totals[item.player_id]) {
+                totals[item.player_id] = {
+                    total: 0,
+                    player: item.players
+                }
+            }
+
+            totals[item.player_id].total += value
+        })
+
+        return Object.values(totals).sort((a, b) => b.total - a.total)[0]
+    }
+
+    function getBarKing() {
+        const totals = {}
+
+        drinksData.forEach((item) => {
+            const total =
+                (item.beers || 0) +
+                (item.drinks || 0) +
+                (item.summer_wines || 0)
 
             if (!totals[item.player_id]) {
                 totals[item.player_id] = {
@@ -133,7 +155,13 @@ function Stats() {
     const mostEdited = getMostEditedPlayer()
     const optimist = getMostOptimisticPlayer()
     const biggestPrediction = getBiggestPrediction()
-    const drunkest = getDrunkestPlayer()
+
+    const barKing = getBarKing()
+    const beerKing = getHydrationWinner('beers')
+    const drinkKing = getHydrationWinner('drinks')
+    const summerWineKing = getHydrationWinner('summer_wines')
+    const healthyKing = getHydrationWinner('soft_drinks')
+    const waterKing = getHydrationWinner('waters')
 
     return (
         <main className="stats-page with-bottom-nav">
@@ -209,19 +237,6 @@ function Stats() {
                 </article>
 
                 <article className="stat-card">
-                    <span>🍻</span>
-                    <p>Rey de la barra</p>
-                    <strong>
-                        {drunkest?.player
-                            ? `${drunkest.player.avatar} ${drunkest.player.name}`
-                            : 'Sin datos'}
-                    </strong>
-                    <small>
-                        {drunkest ? `${drunkest.total} bebidas registradas` : ''}
-                    </small>
-                </article>
-
-                <article className="stat-card">
                     <span>✏️</span>
                     <p>Más indeciso</p>
                     <strong>
@@ -231,6 +246,84 @@ function Stats() {
                     </strong>
                     <small>
                         {mostEdited.edits} cambios de apuesta
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🍻</span>
+                    <p>Rey de la barra</p>
+                    <strong>
+                        {barKing?.player
+                            ? `${barKing.player.avatar} ${barKing.player.name}`
+                            : 'Sin datos'}
+                    </strong>
+                    <small>
+                        {barKing ? `${barKing.total} bebidas alcohólicas` : ''}
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🍺</span>
+                    <p>Cervecero oficial</p>
+                    <strong>
+                        {beerKing?.player
+                            ? `${beerKing.player.avatar} ${beerKing.player.name}`
+                            : 'Sin datos'}
+                    </strong>
+                    <small>
+                        {beerKing ? `${beerKing.total} cervezas` : ''}
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🥃</span>
+                    <p>Borrachera</p>
+                    <strong>
+                        {drinkKing?.player
+                            ? `${drinkKing.player.avatar} ${drinkKing.player.name}`
+                            : 'Sin datos'}
+                    </strong>
+                    <small>
+                        {drinkKing ? `${drinkKing.total} copas` : ''}
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🍷</span>
+                    <p>Amante del tinto de verano</p>
+                    <strong>
+                        {summerWineKing?.player
+                            ? `${summerWineKing.player.avatar} ${summerWineKing.player.name}`
+                            : 'Sin datos'}
+                    </strong>
+                    <small>
+                        {summerWineKing ? `${summerWineKing.total} tintos de verano` : ''}
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🥤</span>
+                    <p>Coca-Cola lovers</p>
+                    <strong>
+                        {healthyKing?.player
+                            ? `${healthyKing.player.avatar} ${healthyKing.player.name}`
+                            : 'Sin datos'}
+                    </strong>
+                    <small>
+                        {healthyKing ? `${healthyKing.total} refrescos` : ''}
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>💧</span>
+                    <p>Hidratado premium</p>
+                    <strong>
+                        {waterKing?.player
+                            ? `${waterKing.player.avatar} ${waterKing.player.name}`
+                            : 'Sin datos'}
+                    </strong>
+                    <small>
+                        {waterKing ? `${waterKing.total} aguas` : ''}
                     </small>
                 </article>
             </section>
