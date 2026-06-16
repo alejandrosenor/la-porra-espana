@@ -10,6 +10,47 @@ function Profile() {
 
     const [ranking, setRanking] = useState([])
     const [myBets, setMyBets] = useState([])
+    const [selectedAvatar, setSelectedAvatar] = useState(player.avatar)
+    const [allPlayers, setAllPlayers] = useState([])
+
+    const AVATAR_OPTIONS = [
+        // Originales
+        '🦐', '🧀', '🤍', '🥊', '🦊', '🐐', '🐺', '🦁',
+        '🐸', '🌸', '🦅', '🌻', '🔥', '⚡', '🍺', '🍷',
+        '🥤', '⚽', '🏆', '🎯', '🧠', '👑', '🕺', '💃',
+
+        // Animales
+        '🎠', '🐼', '🐧', '🦖', '🐝',
+        '🦇', '🦈', '🐍', '🦉', '🦥',
+        '🐯', '🐻', '🐨', '🦘', '🦒',
+        '🐗', '🦌', '🦝', '🦜', '🐬',
+
+        // Comida y bebida
+        '🍕', '🌮', '🍔', '🌭', '🍩',
+        '🍟', '🍗', '🌯', '🍿', '🥨',
+        '☕', '🧃', '🍹', '🍸', '🥃',
+
+        // Deportes y competición
+        '⚽', '🏀', '🏈', '⚾', '🎾',
+        '🏉', '🥇', '🥈', '🥉', '🏅',
+
+        // Tecnología y objetos
+        '🚀', '🛸', '🚁', '🏎️', '🛵',
+        '💎', '🪙', '⛵', '📈', '💻',
+        '📱', '🎮', '⌚', '🎧', '📷',
+
+        // Personajes
+        '🥷', '🧙', '🧛', '🦸', '🤖',
+        '👨‍🚀', '🕵️', '🤴', '👸', '🧞',
+
+        // Caras divertidas
+        '👻', '💀', '😎', '🤡', '🤠',
+        '🥳', '😈', '🤪', '🫡', '😏',
+
+        // Aleatorios épicos
+        '🌋', '🌪️', '☄️', '⭐', '🌙',
+        '☀️', '🗿', '🎸', '🎹', '🎤'
+    ]
 
     useEffect(() => {
         loadProfile()
@@ -26,21 +67,27 @@ function Profile() {
         const { data: betsData } = await supabase
             .from('bets')
             .select(`
-        *,
-        matches (
-          rival,
-          rival_flag,
-          stage,
-          spain_goals,
-          rival_goals,
-          status
-        )
-      `)
+                *,
+                matches (
+                rival,
+                rival_flag,
+                stage,
+                spain_goals,
+                rival_goals,
+                status
+                )
+            `)
             .eq('player_id', player.id)
             .order('created_at', { ascending: false })
 
+        const { data: playerData } = await supabase
+            .from('players')
+            .select('*')
+
+        setAllPlayers(playerData || [])
         setRanking(playersData || [])
         setMyBets(betsData || [])
+        setSelectedAvatar(playerData.avatar)
     }
 
     function logout() {
@@ -120,6 +167,42 @@ function Profile() {
             text: `🥶 ${count} fallo${count > 1 ? 's' : ''} seguido${count > 1 ? 's' : ''}`,
             detail: 'Toca remontar en el próximo partido.'
         }
+    }
+
+    async function saveAvatar() {
+        if (isAvatarTaken(selectedAvatar)) {
+            alert('Ese avatar ya lo tiene otro jugador')
+            return
+        }
+        
+        const { error } = await supabase
+            .from('players')
+            .update({
+                avatar: selectedAvatar
+            })
+            .eq('id', player.id)
+
+        if (error) {
+            console.log(error)
+            alert('Error actualizando avatar')
+            return
+        }
+
+        const updatedPlayer = {
+            ...player,
+            avatar: selectedAvatar
+        }
+
+        localStorage.setItem('player', JSON.stringify(updatedPlayer))
+
+        alert('Avatar actualizado')
+        window.location.reload()
+    }
+
+    function isAvatarTaken(emoji) {
+        return allPlayers.some(
+            (p) => p.avatar === emoji && p.id !== player.id
+        )
     }
 
     const streak = getCurrentStreak()
@@ -234,6 +317,44 @@ function Profile() {
                         </article>
                     ))
                 )}
+            </section>
+
+            <section className="avatar-editor-card">
+                <span>Avatar</span>
+
+                <div className="current-avatar-preview">
+                    {selectedAvatar}
+                </div>
+
+                <p>
+                    Elige tu emoji para representar tu leyenda en La Porra.
+                </p>
+
+                <div className="avatar-options-grid">
+                    {AVATAR_OPTIONS.map((emoji) => (
+                        <button
+                            key={emoji}
+                            disabled={isAvatarTaken(emoji)}
+                            className={
+                                selectedAvatar === emoji
+                                    ? 'avatar-option selected'
+                                    : isAvatarTaken(emoji)
+                                        ? 'avatar-option taken'
+                                        : 'avatar-option'
+                            }
+                            onClick={() => setSelectedAvatar(emoji)}
+                        >
+                            {emoji}
+                        </button>
+                    ))}
+                </div>
+
+                <button
+                    className="save-avatar-button"
+                    onClick={saveAvatar}
+                >
+                    Guardar avatar
+                </button>
             </section>
 
             <button className="logout-button" onClick={logout}>

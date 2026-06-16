@@ -2516,3 +2516,75 @@
   background: rgba(255, 80, 80, 0.3);
   transform: scale(1.1);
 }
+
+.avatar-editor-card {
+  margin-bottom: 18px;
+  padding: 20px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.avatar-editor-card>span {
+  display: block;
+  margin-bottom: 10px;
+  color: #ffd84a;
+  font-size: 13px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.current-avatar-preview {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 12px;
+  border-radius: 26px;
+  display: grid;
+  place-items: center;
+  font-size: 42px;
+  background: rgba(255, 216, 74, 0.14);
+  border: 1px solid rgba(255, 216, 74, 0.26);
+}
+
+.avatar-editor-card p {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+}
+
+.avatar-options-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.avatar-option {
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 24px;
+}
+
+.avatar-option.selected {
+  background: #ffd84a;
+  box-shadow: 0 0 0 2px rgba(255, 216, 74, 0.32);
+}
+
+.save-avatar-button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffd84a, #ffb000);
+  color: #2a080c;
+  font-weight: 950;
+}
+
+.avatar-option.taken {
+  opacity: 0.28;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
