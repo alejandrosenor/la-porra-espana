@@ -17,6 +17,9 @@ function Dashboard() {
     const [, setTimer] = useState(0)
     const [boardPosts, setBoardPosts] = useState([])
     const [fakePress, setFakePress] = useState('')
+    const [comments, setComments] = useState([])
+    const [commentTexts, setCommentTexts] = useState({})
+    const [openComments, setOpenComments] = useState({})
 
     useEffect(() => {
         loadData()
@@ -78,6 +81,20 @@ function Dashboard() {
             .order('created_at', { ascending: false })
             .limit(3)
 
+        const { data: commentsData } = await supabase
+            .from('board_comments')
+            .select(`
+                *,
+                players (
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                )
+            `)
+            .order('created_at', { ascending: true })
+
+        setComments(commentsData || [])
         setBoardPosts(boardData || [])
         setFakePress(
             FAKE_PRESS[Math.floor(Math.random() * FAKE_PRESS.length)]
@@ -214,6 +231,114 @@ function Dashboard() {
             .eq('id', id)
 
         loadPosts()
+    }
+
+    function getCommentsForPost(postId) {
+        return comments.filter((comment) => comment.post_id === postId)
+    }
+
+    function toggleComments(postId) {
+        setOpenComments({
+            ...openComments,
+            [postId]: !openComments[postId]
+        })
+    }
+
+    function getCommentText(postId) {
+        return commentTexts[postId] || ''
+    }
+
+    function setCommentText(postId, value) {
+        setCommentTexts({
+            ...commentTexts,
+            [postId]: value
+        })
+    }
+
+    function renderMiniAvatar(playerData) {
+        if (playerData?.avatar_type === 'sticker' && playerData?.avatar_image_url) {
+            return (
+                <img
+                    src={playerData.avatar_image_url}
+                    alt={playerData.name}
+                    className="comment-avatar-img"
+                />
+            )
+        }
+
+        return (
+            <span className="comment-avatar-emoji">
+                {playerData?.avatar || '👤'}
+            </span>
+        )
+    }
+
+    async function publishComment(postId) {
+        const text = getCommentText(postId).trim()
+
+        if (!text) {
+            alert('Escribe un comentario primero')
+            return
+        }
+
+        if (text.length > 200) {
+            alert('Máximo 200 caracteres')
+            return
+        }
+
+        const { error } = await supabase
+            .from('board_comments')
+            .insert({
+                post_id: postId,
+                player_id: player.id,
+                comment: text
+            })
+
+        if (error) {
+            console.log(error)
+            alert('Error publicando comentario')
+            return
+        }
+
+        setCommentText(postId, '')
+
+        const { data: commentsData } = await supabase
+            .from('board_comments')
+            .select(`
+                *,
+                players (
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                )
+            `)
+            .order('created_at', { ascending: true })
+
+        setComments(commentsData || [])
+    }
+
+    async function deleteComment(comment) {
+        const canDelete =
+            player?.is_admin || comment.player_id === player?.id
+
+        if (!canDelete) return
+
+        const confirmed = confirm('¿Eliminar este comentario?')
+        if (!confirmed) return
+
+        const { error } = await supabase
+            .from('board_comments')
+            .delete()
+            .eq('id', comment.id)
+
+        if (error) {
+            console.log(error)
+            alert('Error eliminando comentario')
+            return
+        }
+
+        setComments(comments.filter((item) => item.id !== comment.id))
     }
 
     const nextMatch = matches.find((match) => match.status !== 'closed')
@@ -401,6 +526,76 @@ function Dashboard() {
                                             minute: '2-digit'
                                         })}
                                     </small>
+
+                                    <div className="post-comments-box">
+                                        <button
+                                            className="comments-toggle-button"
+                                            onClick={() => toggleComments(post.id)}
+                                        >
+                                            💬 {getCommentsForPost(post.id).length} comentarios
+                                        </button>
+
+                                        {openComments[post.id] && (
+                                            <div className="comments-panel">
+                                                {getCommentsForPost(post.id).length === 0 ? (
+                                                    <p className="no-comments-text">
+                                                        Todavía no hay comentarios. Sé el primero en meter cizaña.
+                                                    </p>
+                                                ) : (
+                                                    <div className="comments-list">
+                                                        {getCommentsForPost(post.id).map((comment) => (
+                                                            <article className="comment-item" key={comment.id}>
+                                                                <div className="comment-avatar">
+                                                                    {renderMiniAvatar(comment.players)}
+                                                                </div>
+
+                                                                <div>
+                                                                    <strong>{comment.players?.name}</strong>
+
+                                                                    <p>{comment.comment}</p>
+
+                                                                    <small>
+                                                                        {new Date(comment.created_at).toLocaleString('es-ES', {
+                                                                            day: '2-digit',
+                                                                            month: 'short',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit'
+                                                                        })}
+                                                                    </small>
+                                                                </div>
+
+                                                                {(player?.is_admin || comment.player_id === player?.id) && (
+                                                                    <button
+                                                                        className="delete-comment-button"
+                                                                        onClick={() => deleteComment(comment)}
+                                                                    >
+                                                                        🗑️
+                                                                    </button>
+                                                                )}
+                                                            </article>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <div className="comment-form">
+                                                    <input
+                                                        placeholder="Escribe un comentario..."
+                                                        value={getCommentText(post.id)}
+                                                        maxLength={200}
+                                                        onChange={(e) => setCommentText(post.id, e.target.value)}
+                                                    />
+
+                                                    <button onClick={() => publishComment(post.id)}>
+                                                        Enviar
+                                                    </button>
+                                                </div>
+
+                                                <small className="comment-counter">
+                                                    {getCommentText(post.id).length}/200
+                                                </small>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </article>
                         ))}
