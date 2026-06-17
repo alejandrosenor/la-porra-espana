@@ -2718,6 +2718,11 @@
 
 .loading-content {
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
   padding: 30px;
 }
 
@@ -2762,6 +2767,9 @@
 .loading-bar {
   width: 240px;
   height: 10px;
+
+  margin-left: auto;
+  margin-right: auto;
 
   overflow: hidden;
 
@@ -2972,27 +2980,4 @@
   color: rgba(255, 255, 255, 0.78);
   line-height: 1.4;
   font-weight: 700;
-}
-
-.ai-prediction-card {
-  margin-bottom: 18px;
-  padding: 22px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(255, 216, 74, 0.18), transparent 34%),
-    linear-gradient(135deg, rgba(80, 40, 120, 0.28), rgba(255, 255, 255, 0.045));
-  border: 1px solid rgba(255, 216, 74, 0.18);
-}
-
-.ai-prediction-card>p {
-  margin: 14px 0 10px;
-  color: rgba(255, 255, 255, 0.86);
-  line-height: 1.55;
-  font-weight: 800;
-}
-
-.ai-prediction-card small {
-  display: block;
-  color: rgba(255, 255, 255, 0.52);
-  font-weight: 800;
 }

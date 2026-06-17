@@ -32,7 +32,7 @@ function Login() {
         setLoading(true)
         setTimeout(() => {
             navigate('/dashboard')
-        }, 4500)
+        }, 5500)
     }
 
     if (loading) {

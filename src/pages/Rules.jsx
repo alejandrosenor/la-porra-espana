@@ -8,9 +8,6 @@ function Rules() {
     const navigate = useNavigate()
 
     const [playersCount, setPlayersCount] = useState(0)
-    const [players, setPlayers] = useState([])
-    const [bets, setBets] = useState([])
-    const [drinks, setDrinks] = useState([])
     const entryFee = 5
     const knockoutFee = 2
 
@@ -23,127 +20,8 @@ function Rules() {
             .from('players')
             .select('*', { count: 'exact', head: true })
 
-        const { data: playersData } = await supabase
-            .from('players')
-            .select('*')
-
-        const { data: betsData } = await supabase
-            .from('bets')
-            .select('*')
-
-        const { data: drinksData } = await supabase
-            .from('drinks')
-            .select(`
-                *,
-                players (
-                    name,
-                    avatar,
-                    avatar_type,
-                    avatar_image_url
-                )
-            `)
-
-        setPlayers(playersData || [])
-        setBets(betsData || [])
-        setDrinks(drinksData || [])
         setPlayersCount(count || 0)
     }
-
-    function getLeader() {
-        return [...players].sort((a, b) => (b.points || 0) - (a.points || 0))[0]
-    }
-
-    function getLastPlayer() {
-        return [...players].sort((a, b) => (a.points || 0) - (b.points || 0))[0]
-    }
-
-    function getMostOptimistic() {
-        const totals = {}
-
-        bets.forEach((bet) => {
-            if (bet.winner === 'España') {
-                totals[bet.player_id] = (totals[bet.player_id] || 0) + 1
-            }
-        })
-
-        const winnerId = Object.keys(totals).sort((a, b) => totals[b] - totals[a])[0]
-
-        return players.find((p) => p.id === winnerId)
-    }
-
-    function getMostEdited() {
-        const totals = {}
-
-        bets.forEach((bet) => {
-            totals[bet.player_id] =
-                (totals[bet.player_id] || 0) + (bet.edit_count || 0)
-        })
-
-        const winnerId = Object.keys(totals).sort((a, b) => totals[b] - totals[a])[0]
-
-        return players.find((p) => p.id === winnerId)
-    }
-
-    function getBarKing() {
-        const totals = {}
-
-        drinks.forEach((item) => {
-            const total =
-                (item.beers || 0) +
-                (item.drinks || 0) +
-                (item.summer_wines || 0)
-
-            totals[item.player_id] = (totals[item.player_id] || 0) + total
-        })
-
-        const winnerId = Object.keys(totals).sort((a, b) => totals[b] - totals[a])[0]
-
-        return players.find((p) => p.id === winnerId)
-    }
-
-    function getAiPrediction() {
-        const leader = getLeader()
-        const lastPlayer = getLastPlayer()
-        const optimist = getMostOptimistic()
-        const edited = getMostEdited()
-        const barKing = getBarKing()
-
-        if (!players.length) {
-            return {
-                title: 'La IA está calentando',
-                text: 'Todavía no hay suficientes datos para humillar a nadie con rigor científico.'
-            }
-        }
-
-        const lines = []
-
-        if (leader) {
-            lines.push(`🏆 Favorito provisional: ${leader.name}. La máquina detecta olor a líder.`)
-        }
-
-        if (lastPlayer && leader?.id !== lastPlayer.id) {
-            lines.push(`📉 Candidato al drama: ${lastPlayer.name}. La remontada empieza por aceptar la realidad.`)
-        }
-
-        if (optimist) {
-            lines.push(`🇪🇸 Patriota máximo: ${optimist.name}. Confía en España aunque juegue contra Brasil 2002.`)
-        }
-
-        if (edited) {
-            lines.push(`✏️ Más dudas que un VAR mal calibrado: ${edited.name}. Editar no siempre es mejorar.`)
-        }
-
-        if (barKing) {
-            lines.push(`🍻 Variable externa detectada: ${barKing.name} podría alterar la clasificación desde la barra.`)
-        }
-
-        return {
-            title: 'Predicción IA de La Porra',
-            text: lines.slice(0, 3).join(' ')
-        }
-    }
-
-    const aiPrediction = getAiPrediction()
 
     return (
         <main className="stats-page with-bottom-nav">
@@ -352,23 +230,6 @@ function Rules() {
                     <li>Los milagros en el descuento sí cuentan.</li>
                     <li>Ganar la porra no te convierte en seleccionador nacional, pero casi.</li>
                 </ul>
-            </section>
-
-            <section className="ai-prediction-card">
-                <div className="absurd-rules-header">
-                    <span>🤖</span>
-
-                    <div>
-                        <p>Análisis automático</p>
-                        <h2>{aiPrediction.title}</h2>
-                    </div>
-                </div>
-
-                <p>{aiPrediction.text}</p>
-
-                <small>
-                    La IA de La Porra no tiene validez oficial, pero sí mala leche.
-                </small>
             </section>
 
             <section className="changelog-card">
