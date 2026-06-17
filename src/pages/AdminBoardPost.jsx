@@ -60,7 +60,7 @@ function AdminBoardPost() {
         setUploadingImage(true)
 
         const fileExt = file.name.split('.').pop()
-        const fileName = `${player.id}-${Date.now()}.${fileExt}`
+        const fileName = `posts/${player.id}-${Date.now()}.${fileExt}`
 
         const { error } = await supabase.storage
             .from('board-posts')
@@ -70,7 +70,7 @@ function AdminBoardPost() {
 
         if (error) {
             console.log(error)
-            alert('Error subiendo imagen')
+            alert(`Error subiendo imagen: ${error.message}`)
             setUploadingImage(false)
             return
         }
