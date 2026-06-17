@@ -69,7 +69,9 @@ function Dashboard() {
                 *,
                 players (
                     name,
-                    avatar
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
                 )
             `)
             .eq('is_active', true)
@@ -232,7 +234,22 @@ function Dashboard() {
                 <div>
                     <p className="home-kicker">La Porra de España</p>
                     <h1>
-                        {player?.avatar} {player?.name}
+                        <h1 className="home-player-name">
+
+                            {player?.avatar_type === 'sticker' &&
+                                player?.avatar_image_url ? (
+                                <img
+                                    src={player.avatar_image_url}
+                                    alt={player.name}
+                                    className="home-player-avatar"
+                                />
+                            ) : (
+                                player?.avatar
+                            )}
+
+                            {player?.name}
+
+                        </h1>
                     </h1>
                 </div>
 
@@ -366,8 +383,17 @@ function Dashboard() {
                                     <h3>{post.title}</h3>
                                     <p>{post.description}</p>
 
-                                    <small>
-                                        {post.players?.avatar} {post.players?.name || 'Sistema'} ·{' '}
+                                    <small className='board-post-meta'>
+                                        {post.players?.avatar_type === 'sticker' && post.players?.avatar_image_url ? (
+                                            <img
+                                                src={post.players.avatar_image_url}
+                                                alt={post.players.name}
+                                                className="inline-player-avatar"
+                                            />
+                                        ) : (
+                                            post.players?.avatar
+                                        )}{' '}
+                                        {post.players?.name || 'Sistema'}
                                         {new Date(post.created_at).toLocaleString('es-ES', {
                                             day: '2-digit',
                                             month: 'short',

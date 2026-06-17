@@ -48,6 +48,20 @@ function Ranking() {
         return `#${index + 1}`
     }
 
+    function renderPlayerAvatar(player, className) {
+        if (player.avatar_type === 'sticker' && player.avatar_image_url) {
+            return (
+                <img
+                    src={player.avatar_image_url}
+                    alt={player.name}
+                    className={className}
+                />
+            )
+        }
+
+        return player.avatar
+    }
+
     const podium = players.slice(0, 3)
     const rest = players.slice(3)
 
@@ -74,7 +88,7 @@ function Ranking() {
                             </span>
 
                             <div className="podium-avatar">
-                                {player.avatar}
+                                {renderPlayerAvatar(player, 'ranking-sticker-avatar')}
                             </div>
 
                             <h2>{player.name}</h2>
@@ -106,7 +120,7 @@ function Ranking() {
                                 </span>
 
                                 <div className="ranking-avatar">
-                                    {player.avatar}
+                                    {renderPlayerAvatar(player, 'ranking-sticker-avatar')}
                                 </div>
 
                                 <div className="ranking-player-info">

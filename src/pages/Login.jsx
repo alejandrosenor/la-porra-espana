@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import '../App.css'
+import LoadingScreen from '../components/LoadingScreen'
 
 function Login() {
     const [code, setCode] = useState('')
     const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
@@ -26,7 +28,15 @@ function Login() {
         }
 
         localStorage.setItem('player', JSON.stringify(data))
-        navigate('/dashboard')
+
+        setLoading(true)
+        setTimeout(() => {
+            navigate('/dashboard')
+        }, 4500)
+    }
+
+    if (loading) {
+        return <LoadingScreen />
     }
 
     return (

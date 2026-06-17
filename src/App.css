@@ -2698,3 +2698,164 @@
   background: #ffd84a;
   box-shadow: 0 0 0 2px rgba(255, 216, 74, 0.32);
 }
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at top,
+      rgba(255, 215, 0, 0.18),
+      transparent 50%),
+    #120006;
+}
+
+.loading-content {
+  text-align: center;
+  padding: 30px;
+}
+
+.loading-logo {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 18px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 58px;
+
+  border-radius: 28px;
+  background: rgba(255, 216, 74, 0.12);
+  border: 1px solid rgba(255, 216, 74, 0.22);
+
+  animation: trophyBounce 1.5s infinite;
+}
+
+.loading-logo img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  display: block;
+}
+
+.loading-content h1 {
+  color: #ffd84a;
+  margin-top: 15px;
+  margin-bottom: 8px;
+
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.loading-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 30px;
+}
+
+.loading-bar {
+  width: 240px;
+  height: 10px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.loading-bar-fill {
+  height: 100%;
+
+  background: #ffd84a;
+
+  animation: loadingBar 2s infinite;
+}
+
+@keyframes loadingBar {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes trophyBounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.inline-player-avatar {
+  width: 22px !important;
+  height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+
+  object-fit: contain;
+  object-position: center;
+
+  display: inline-block;
+  vertical-align: middle;
+
+  margin-right: 6px;
+  border-radius: 50%;
+}
+
+.board-post-meta {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+.home-player-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home-player-avatar {
+  width: 42px;
+  height: 42px;
+
+  object-fit: contain;
+
+  flex-shrink: 0;
+}
+
+.ranking-sticker-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  padding: 3px;
+}
+
+.stats-player-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.stats-inline-avatar {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  flex-shrink: 0;
+}

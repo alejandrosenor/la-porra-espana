@@ -26,7 +26,9 @@ function Stats() {
                 *,
                 players (
                     name,
-                    avatar
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
                 ),
                 matches (
                     rival,
@@ -41,7 +43,9 @@ function Stats() {
                 *,
                 players (
                     name,
-                    avatar
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
                 )
             `)
 

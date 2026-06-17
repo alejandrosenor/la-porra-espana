@@ -64,7 +64,8 @@ function Profile() {
         '/stickers/haaland.png',
         '/stickers/curtois.png',
         '/stickers/espa.png',
-        '/stickers/flag.png'
+        '/stickers/flag.png',
+        '/stickers/logo.png'
     ]
 
     useEffect(() => {
