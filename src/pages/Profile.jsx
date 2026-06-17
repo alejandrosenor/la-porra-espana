@@ -63,6 +63,7 @@ function Profile() {
         '/stickers/vini.png',
         '/stickers/haaland.png',
         '/stickers/curtois.png',
+        '/stickers/mister.png',
         '/stickers/espa.png',
         '/stickers/flag.png',
         '/stickers/logo.png'
