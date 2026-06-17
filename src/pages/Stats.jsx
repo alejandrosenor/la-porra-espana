@@ -54,6 +54,41 @@ function Stats() {
         setDrinksData(hydrationData || [])
     }
 
+    function renderAvatar(player) {
+        if (player?.avatar_type === 'sticker' && player?.avatar_image_url) {
+            return (
+                <img
+                    src={player.avatar_image_url}
+                    alt={player.name}
+                    className="stats-inline-avatar"
+                />
+            )
+        }
+
+        return (
+            <span className="stats-inline-emoji">
+                {player?.avatar || '👤'}
+            </span>
+        )
+    }
+
+    function PlayerName({ player, large = false }) {
+        if (!player) return <>Sin datos</>
+
+        return (
+            <span
+                className={
+                    large
+                        ? 'stats-player-name stats-player-name-large'
+                        : 'stats-player-name'
+                }
+            >
+                {renderAvatar(player)}
+                <span>{player.name}</span>
+            </span>
+        )
+    }
+
     function topBy(field) {
         if (!players.length) return null
 
@@ -183,9 +218,7 @@ function Stats() {
                     <span>👑</span>
                     <p>Líder actual</p>
                     <strong>
-                        {pointsLeader
-                            ? `${pointsLeader.avatar} ${pointsLeader.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={pointsLeader} />
                     </strong>
                     <small>
                         {pointsLeader ? `${pointsLeader.points} puntos` : 'Todavía no hay ranking'}
@@ -196,7 +229,7 @@ function Stats() {
                     <span>🎯</span>
                     <p>Rey del exacto</p>
                     <strong>
-                        {exactKing ? `${exactKing.avatar} ${exactKing.name}` : 'Sin datos'}
+                        <PlayerName player={exactKing} />
                     </strong>
                     <small>
                         {exactKing ? `${exactKing.exact_hits} resultados exactos` : ''}
@@ -207,7 +240,7 @@ function Stats() {
                     <span>⚽</span>
                     <p>Más ganadores</p>
                     <strong>
-                        {winnerKing ? `${winnerKing.avatar} ${winnerKing.name}` : 'Sin datos'}
+                        <PlayerName player={winnerKing} />
                     </strong>
                     <small>
                         {winnerKing ? `${winnerKing.winner_hits} ganadores acertados` : ''}
@@ -218,9 +251,7 @@ function Stats() {
                     <span>🔥</span>
                     <p>Mejor apuesta</p>
                     <strong>
-                        {bestBet?.players
-                            ? `${bestBet.players.avatar} ${bestBet.players.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={bestBet?.players} />
                     </strong>
                     <small>
                         {bestBet ? `${bestBet.points} puntos en un partido` : ''}
@@ -231,9 +262,7 @@ function Stats() {
                     <span>🇪🇸</span>
                     <p>Más optimista</p>
                     <strong>
-                        {optimist.player
-                            ? `${optimist.player.avatar} ${optimist.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={optimist.player} />
                     </strong>
                     <small>
                         {optimist.count} apuestas a victoria de España
@@ -244,9 +273,7 @@ function Stats() {
                     <span>✏️</span>
                     <p>Más indeciso</p>
                     <strong>
-                        {mostEdited.player
-                            ? `${mostEdited.player.avatar} ${mostEdited.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={mostEdited.player} />
                     </strong>
                     <small>
                         {mostEdited.edits} cambios de apuesta
@@ -257,9 +284,7 @@ function Stats() {
                     <span>🍻</span>
                     <p>Rey de la barra</p>
                     <strong>
-                        {barKing?.player
-                            ? `${barKing.player.avatar} ${barKing.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={barKing?.player} />
                     </strong>
                     <small>
                         {barKing ? `${barKing.total} bebidas alcohólicas` : ''}
@@ -270,9 +295,7 @@ function Stats() {
                     <span>🍺</span>
                     <p>Cervecero oficial</p>
                     <strong>
-                        {beerKing?.player
-                            ? `${beerKing.player.avatar} ${beerKing.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={beerKing?.player} />
                     </strong>
                     <small>
                         {beerKing ? `${beerKing.total} cervezas` : ''}
@@ -283,9 +306,7 @@ function Stats() {
                     <span>🥃</span>
                     <p>Borrachera</p>
                     <strong>
-                        {drinkKing?.player
-                            ? `${drinkKing.player.avatar} ${drinkKing.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={drinkKing?.player} />
                     </strong>
                     <small>
                         {drinkKing ? `${drinkKing.total} copas` : ''}
@@ -296,9 +317,7 @@ function Stats() {
                     <span>🍷</span>
                     <p>Amante del tinto de verano</p>
                     <strong>
-                        {summerWineKing?.player
-                            ? `${summerWineKing.player.avatar} ${summerWineKing.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={summerWineKing?.player} />
                     </strong>
                     <small>
                         {summerWineKing ? `${summerWineKing.total} tintos de verano` : ''}
@@ -309,9 +328,7 @@ function Stats() {
                     <span>🥤</span>
                     <p>Coca-Cola lovers</p>
                     <strong>
-                        {healthyKing?.player
-                            ? `${healthyKing.player.avatar} ${healthyKing.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={healthyKing?.player} />
                     </strong>
                     <small>
                         {healthyKing ? `${healthyKing.total} refrescos` : ''}
@@ -322,9 +339,7 @@ function Stats() {
                     <span>💧</span>
                     <p>Hidratado premium</p>
                     <strong>
-                        {waterKing?.player
-                            ? `${waterKing.player.avatar} ${waterKing.player.name}`
-                            : 'Sin datos'}
+                        <PlayerName player={waterKing?.player} />
                     </strong>
                     <small>
                         {waterKing ? `${waterKing.total} aguas` : ''}
@@ -337,7 +352,10 @@ function Stats() {
                     <span>Apuesta más loca</span>
 
                     <h2>
-                        {biggestPrediction.players?.avatar} {biggestPrediction.players?.name}
+                        <PlayerName
+                            player={biggestPrediction.players}
+                            large={true}
+                        />
                     </h2>
 
                     <p>

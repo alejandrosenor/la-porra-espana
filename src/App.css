@@ -1845,6 +1845,25 @@ select {
   font-weight: 700;
 }
 
+.stats-player-name-large {
+  font-size: 32px !important;
+  font-weight: 950 !important;
+}
+
+.stats-player-name-large span:last-child {
+  font-size: 32px !important;
+  font-weight: 950 !important;
+}
+
+.stats-player-name-large .stats-inline-avatar {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.stats-player-name-large .stats-inline-emoji {
+  font-size: 40px !important;
+}
+
 @media (max-width: 620px) {
   .stats-grid {
     grid-template-columns: 1fr;
@@ -2867,17 +2886,24 @@ select {
 }
 
 .stats-player-name {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   justify-content: center;
 }
 
 .stats-inline-avatar {
-  width: 26px;
-  height: 26px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
+  object-position: center;
   flex-shrink: 0;
+  display: inline-block;
+}
+
+.stats-inline-emoji {
+  font-size: 22px;
+  line-height: 1;
 }
 
 .absurd-rules-card {
