@@ -10,6 +10,7 @@ function AdminBoardPost() {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [imageUrl, setImageUrl] = useState('')
+    const [uploadingImage, setUploadingImage] = useState(false)
 
     if (!player?.is_admin) {
         navigate('/dashboard')
@@ -44,6 +45,42 @@ function AdminBoardPost() {
 
         alert('Anuncio publicado 📢')
         navigate('/dashboard')
+    }
+
+    async function uploadBoardImage(event) {
+        const file = event.target.files[0]
+
+        if (!file) return
+
+        if (!file.type.startsWith('image/')) {
+            alert('Solo puedes subir imágenes')
+            return
+        }
+
+        setUploadingImage(true)
+
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${player.id}-${Date.now()}.${fileExt}`
+
+        const { error } = await supabase.storage
+            .from('board-posts')
+            .upload(fileName, file, {
+                upsert: true
+            })
+
+        if (error) {
+            console.log(error)
+            alert('Error subiendo imagen')
+            setUploadingImage(false)
+            return
+        }
+
+        const { data } = supabase.storage
+            .from('board-posts')
+            .getPublicUrl(fileName)
+
+        setImageUrl(data.publicUrl)
+        setUploadingImage(false)
     }
 
     return (
@@ -98,6 +135,21 @@ function AdminBoardPost() {
                         onChange={(e) => setImageUrl(e.target.value)}
                     />
                 </label>
+
+                <label>
+                    Subir imagen desde galería
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={uploadBoardImage}
+                    />
+                </label>
+
+                {uploadingImage && (
+                    <p className="uploading-text">
+                        Subiendo imagen...
+                    </p>
+                )}
 
                 <div className="board-preview-card">
                     {imageUrl && (
