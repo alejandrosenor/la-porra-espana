@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Match from './pages/Match'
@@ -19,6 +20,21 @@ import Rules from './pages/Rules'
 import AdminBoardPost from './pages/AdminBoardPost'
 
 function App() {
+
+  useEffect(() => {
+    function preventZoom(event) {
+      if (event.touches && event.touches.length > 1) {
+        event.preventDefault()
+      }
+    }
+
+    document.addEventListener('touchmove', preventZoom, { passive: false })
+
+    return () => {
+      document.removeEventListener('touchmove', preventZoom)
+    }
+  }, [])
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" />} />
