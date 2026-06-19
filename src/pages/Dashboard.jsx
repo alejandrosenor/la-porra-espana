@@ -146,9 +146,8 @@ function Dashboard() {
 
     function isBettingNotOpenYet(match) {
         const now = new Date()
-        const matchDate = new Date(match.match_date + 'Z')
-        const openingDate = new Date(matchDate)
-        openingDate.setDate(openingDate.getDate() - 2)
+        const openingDate = getOpeningDate(match)
+
         return now < openingDate
     }
 
@@ -230,7 +229,7 @@ function Dashboard() {
             .delete()
             .eq('id', id)
 
-        loadPosts()
+        loadData()
     }
 
     function getCommentsForPost(postId) {
