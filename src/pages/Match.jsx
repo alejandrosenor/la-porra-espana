@@ -107,14 +107,18 @@ function Match() {
         setIsClosed(false)
     }
 
-    function isBettingNotOpenYet() {
-        const now = new Date()
-        const matchDate = new Date(match.match_date + 'Z')
+    function getOpeningDate() {
+        const matchDate = new Date(match.match_date)
         const openingDate = new Date(matchDate)
 
         openingDate.setDate(openingDate.getDate() - 2)
 
-        return now < openingDate
+        return openingDate
+    }
+
+    function isBettingNotOpenYet() {
+        const now = new Date()
+        return now < getOpeningDate()
     }
 
     function allPlayersHaveBet() {
