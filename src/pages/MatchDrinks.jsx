@@ -6,7 +6,9 @@ import '../App.css'
 function MatchDrinks() {
     const navigate = useNavigate()
     const { id } = useParams()
-    const player = JSON.parse(localStorage.getItem('player'))
+
+    const storedPlayer = localStorage.getItem('player')
+    const player = storedPlayer ? JSON.parse(storedPlayer) : null
 
     const [match, setMatch] = useState(null)
     const [beers, setBeers] = useState(0)
@@ -16,31 +18,49 @@ function MatchDrinks() {
     const [waters, setWaters] = useState(0)
 
     useEffect(() => {
+        if (!player) {
+            navigate('/')
+            return
+        }
+
         loadData()
     }, [])
 
     async function loadData() {
-        const { data: matchData } = await supabase
-            .from('matches')
-            .select('*')
-            .eq('id', id)
-            .single()
+        try {
+            console.log('PLAYER:', player)
+            console.log('MATCH ID:', id)
 
-        const { data: drinksData } = await supabase
-            .from('drinks')
-            .select('*')
-            .eq('player_id', player.id)
-            .eq('match_id', id)
-            .maybeSingle()
+            const { data: matchData, error: matchError } = await supabase
+                .from('matches')
+                .select('*')
+                .eq('id', id)
+                .single()
 
-        setMatch(matchData)
+            if (matchError) throw matchError
 
-        if (drinksData) {
-            setBeers(drinksData.beers || 0)
-            setDrinks(drinksData.drinks || 0)
-            setSummerWines(drinksData.summer_wines || 0)
-            setSoftDrinks(drinksData.soft_drinks || 0)
-            setWaters(drinksData.waters || 0)
+            const { data: drinksData, error: drinksError } = await supabase
+                .from('drinks')
+                .select('*')
+                .eq('player_id', player.id)
+                .eq('match_id', id)
+                .maybeSingle()
+
+            if (drinksError) throw drinksError
+
+            setMatch(matchData)
+
+            if (drinksData) {
+                setBeers(drinksData.beers || 0)
+                setDrinks(drinksData.drinks || 0)
+                setSummerWines(drinksData.summer_wines || 0)
+                setSoftDrinks(drinksData.soft_drinks || 0)
+                setWaters(drinksData.waters || 0)
+            }
+        } catch (error) {
+            console.log('ERROR EN BEBIDAS:', error)
+            alert(error.message || 'Error desconocido en bebidas')
+            navigate('/dashboard')
         }
     }
 
@@ -49,6 +69,11 @@ function MatchDrinks() {
     }
 
     async function saveDrinks() {
+        if (!player) {
+            navigate('/')
+            return
+        }
+
         if (isLocked()) {
             alert('Este partido ya está cerrado. Te hidrataste bien')
             return
@@ -70,7 +95,7 @@ function MatchDrinks() {
 
         if (error) {
             console.log(error)
-            alert('Error guardando hidratación')
+            alert(`Error guardando hidratación: ${error.message}`)
             return
         }
 
@@ -93,7 +118,13 @@ function MatchDrinks() {
         )
     }
 
-    if (!match) return <h1>Cargando...</h1>
+    if (!match) {
+        return (
+            <main className="match-page">
+                <h1>Cargando hidratación...</h1>
+            </main>
+        )
+    }
 
     return (
         <main className="match-page">
@@ -114,8 +145,8 @@ function MatchDrinks() {
                 ) : (
                     <p className="rules">
                         Cuenta lo que cae durante el partido. Esto no afecta al ranking,
-                        solo a las estadísticas absurdas.<br/>
-                        Bebe con responsabilidad.<br/>
+                        solo a las estadísticas absurdas.<br />
+                        Bebe con responsabilidad.<br />
                         O no...
                     </p>
                 )}

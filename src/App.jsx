@@ -51,7 +51,7 @@ function App() {
       <Route path="/admin/message" element={<AdminMessage />} />
       <Route path="/admin/settings" element={<AdminSettings />} />
       <Route path="/stats" element={<Stats />} />
-      <Route path="/match/:id/drinks" element={<MatchDrinks />} />
+      <Route path="/drinks/:id" element={<MatchDrinks />} />
       <Route path="/world-cup" element={<WorldCupCalendar />} />
       <Route path="/admin/world-cup-match/:id" element={<AdminWorldCupMatch />} />
       <Route path="/rules" element={<Rules />} />
