@@ -733,7 +733,7 @@ function Dashboard() {
                                     <button disabled className="disabled-drinks-btn">
                                         Hidratado
                                     </button>
-                                ) : !isBettingOpen(match) ? (
+                                ) : notOpenYet ? (
                                     <button disabled className="disabled-drinks-btn">
                                         Te hidratarás
                                     </button>
