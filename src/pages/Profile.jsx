@@ -133,10 +133,12 @@ function Profile() {
 
         if (position === 1) achievements.push('🥇 Líder actual')
         if (currentPlayer.exact_hits > 0) achievements.push('🎯 Resultado exacto')
-        if (currentPlayer.winner_hits >= 2) achievements.push('⚽ Buen ojo para ganadores')
+        if (currentPlayer.winner_hits >= 2) achievements.push('⭐ Buen ojo para ganadores')
         if (totalBets >= 3) achievements.push('📝 Fiel apostador')
         if (closedBets.some((bet) => bet.points === 8)) achievements.push('🧠 Vidente')
         if (closedBets.some((bet) => bet.points === 0)) achievements.push('💀 Fracaso')
+        if (currentPlayer.key_player_hits >= 1) achievements.push('🥅 Primer goleador acertado')
+        if (currentPlayer.key_player_hits >= 5) achievements.push('👟 Rey del gol')
 
         if (achievements.length === 0) {
             achievements.push('🌱 Primeros pasos')
@@ -154,35 +156,51 @@ function Profile() {
             return {
                 type: 'empty',
                 text: 'Todavía no hay racha',
-                detail: 'Cuando se cierre algún partido aparecerá aquí.'
+                detail: 'Cuando se cierre algún partido aparecerá aquí.',
+                winnerPoints: 0,
+                exactPoints: 0,
+                keyPlayerPoints: 0
             }
         }
 
-        const firstIsHit = closed[0].points > 0
+        const firstHasPoints = closed[0].points > 0
         let count = 0
+        let winnerPoints = 0
+        let exactPoints = 0
+        let keyPlayerPoints = 0
 
         for (const bet of closed) {
-            const isHit = bet.points > 0
+            const hasPoints = bet.points > 0
 
-            if (isHit === firstIsHit) {
-                count++
-            } else {
+            if (hasPoints !== firstHasPoints) {
                 break
             }
+
+            count++
+
+            winnerPoints += bet.winner_points || 0
+            exactPoints += bet.exact_points || 0
+            keyPlayerPoints += bet.key_player_points || 0
         }
 
-        if (firstIsHit) {
+        if (firstHasPoints) {
             return {
                 type: 'positive',
-                text: `🔥 ${count} acierto${count > 1 ? 's' : ''} seguido${count > 1 ? 's' : ''}`,
-                detail: 'Vienes en buena dinámica.'
+                text: `🔥 ${count} partido${count > 1 ? 's' : ''} puntuando`,
+                detail: `Has sumado puntos en ${count} partido${count > 1 ? 's' : ''} seguido${count > 1 ? 's' : ''}.`,
+                winnerPoints,
+                exactPoints,
+                keyPlayerPoints
             }
         }
 
         return {
             type: 'negative',
-            text: `🥶 ${count} fallo${count > 1 ? 's' : ''} seguido${count > 1 ? 's' : ''}`,
-            detail: 'Toca remontar en el próximo partido.'
+            text: `🥶 ${count} partido${count > 1 ? 's' : ''} sin puntuar`,
+            detail: `Llevas ${count} partido${count > 1 ? 's' : ''} seguido${count > 1 ? 's' : ''} sin sumar puntos. Toca remontar.`,
+            winnerPoints,
+            exactPoints,
+            keyPlayerPoints
         }
     }
 
@@ -323,9 +341,15 @@ function Profile() {
                 </article>
 
                 <article>
-                    <span>⚽</span>
+                    <span>⭐</span>
                     <p>Ganadores</p>
                     <strong>{currentPlayer.winner_hits}</strong>
+                </article>
+
+                <article>
+                    <span>🥅</span>
+                    <p>Goleadores</p>
+                    <strong>{currentPlayer.key_player_hits || 0}</strong>
                 </article>
 
                 <article>
@@ -336,9 +360,29 @@ function Profile() {
             </section>
 
             <section className={`streak-card ${streak.type}`}>
-                <span>Racha actual</span>
+                <span>Racha de puntuación</span>
                 <strong>{streak.text}</strong>
                 <p>{streak.detail}</p>
+
+                <div className="streak-breakdown">
+                    <div>
+                        <span>⭐</span>
+                        <strong>+{streak.winnerPoints}</strong>
+                        <small>Ganador</small>
+                    </div>
+
+                    <div>
+                        <span>🥅</span>
+                        <strong>+{streak.keyPlayerPoints}</strong>
+                        <small>Goleador</small>
+                    </div>
+
+                    <div>
+                        <span>🎯</span>
+                        <strong>+{streak.exactPoints}</strong>
+                        <small>Exacto</small>
+                    </div>
+                </div>
             </section>
 
             <section className="achievements-card">

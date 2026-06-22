@@ -76,6 +76,10 @@ function Rules() {
                     <small>
                         Cada jugador puede modificar su apuesta una sola vez.
                     </small>
+
+                    <small>
+                        Cuando las apuestas se cierren, ya no se podrá editar, aunque no hayas usado tu cambio.
+                    </small>
                 </article>
 
                 <article className="stat-card">
@@ -104,15 +108,15 @@ function Rules() {
                     <p>Rachas</p>
 
                     <small>
-                        La app muestra tu racha actual en el perfil:
+                        La app muestra tu racha actual en el perfil (cuántos partidos seguidos llevas sumando puntos):
                     </small>
 
                     <small>
-                        🔥 aciertos seguidos si vienes acertando.
+                        🔥 Cuenta cualquier punto conseguido: ganador, resultado exacto o goleador.
                     </small>
 
                     <small>
-                        🥶 fallos seguidos si toca remontar.
+                        🥶 Si no puntúas en un partido cerrado, la racha se corta.
                     </small>
                 </article>
 
@@ -121,7 +125,7 @@ function Rules() {
                     <p>Logros</p>
 
                     <small>
-                        👑 Líder actual
+                        🥇 Líder actual
                         <br />
                         Ser primero en el ranking.
                     </small>
@@ -129,13 +133,25 @@ function Rules() {
                     <small>
                         🎯 Resultado exacto
                         <br />
-                        Acertar 3 resultados exactos.
+                        Acertar un resultado exacto.
                     </small>
 
                     <small>
-                        ⚽ Ojo para ganadores
+                        ⭐ Ojo para ganadores
                         <br />
                         Acertar 5 ganadores.
+                    </small>
+
+                    <small>
+                        🥅 Primer goleador acertado
+                        <br />
+                        Acertar un goleador por primera vez.
+                    </small>
+
+                    <small>
+                        👟 Rey del gol
+                        <br />
+                        Acertar 5 o más goleadores.
                     </small>
 
                     <small>

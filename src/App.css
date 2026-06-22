@@ -3174,3 +3174,36 @@ select {
 .result-message-error {
   color: #ff5c5c;
 }
+
+.streak-breakdown {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.streak-breakdown div {
+  padding: 12px 8px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.streak-breakdown div>span {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.streak-breakdown strong {
+  display: block;
+  font-size: 24px;
+  color: #ffd84a;
+}
+
+.streak-breakdown small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 800;
+}

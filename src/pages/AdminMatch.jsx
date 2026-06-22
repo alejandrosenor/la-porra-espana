@@ -179,18 +179,26 @@ function AdminMatch() {
         }
 
         for (const bet of bets) {
-            const points = calculatePoints(bet)
-            const resultMessage = buildResultMessage(bet)
-
             const winnerHit = bet.winner === getRealWinner()
             const exactHit =
                 bet.spain_goals === spainGoals &&
                 bet.rival_goals === rivalGoals
+            const keyPlayerHit = isKeyPlayerHit(bet)
+
+            const winnerPoints = winnerHit ? 3 : 0
+            const exactPoints = exactHit ? 5 : 0
+            const keyPlayerPoints = keyPlayerHit ? 1 : 0
+
+            const points = winnerPoints + exactPoints + keyPlayerPoints
+            const resultMessage = buildResultMessage(bet)
 
             await supabase
                 .from('bets')
                 .update({
                     points,
+                    winner_points: winnerPoints,
+                    exact_points: exactPoints,
+                    key_player_points: keyPlayerPoints,
                     result_message: resultMessage
                 })
                 .eq('id', bet.id)
