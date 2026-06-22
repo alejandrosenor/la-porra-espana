@@ -79,7 +79,7 @@ function Dashboard() {
             `)
             .eq('is_active', true)
             .order('created_at', { ascending: false })
-            .limit(3)
+            .limit(4)
 
         const { data: commentsData } = await supabase
             .from('board_comments')
