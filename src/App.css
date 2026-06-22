@@ -3259,3 +3259,133 @@ select {
   font-size: 13px;
   font-weight: 950;
 }
+
+.profile-hydration-card {
+  margin-top: 22px;
+  margin-bottom: 22px;
+  padding: 22px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-hydration-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.profile-hydration-grid div {
+  padding: 14px 8px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.07);
+  text-align: center;
+}
+
+.profile-hydration-grid span {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.profile-hydration-grid strong {
+  display: block;
+  color: #ffd84a;
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.profile-hydration-grid small {
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 850;
+}
+
+.profile-rules-link {
+  margin-top: 14px;
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: rgba(255, 216, 74, 0.16);
+  color: #ffd84a;
+  font-weight: 950;
+}
+
+.achievement-rules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.achievement-rule {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.achievement-rule>span {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.achievement-rule strong {
+  display: block;
+  color: #ffd84a;
+  font-weight: 950;
+  margin-bottom: 4px;
+}
+
+.achievement-rule p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+@media (max-width: 650px) {
+  .achievement-rules-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.achievement-rarity {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.achievement-rarity.common {
+  background: rgba(80, 255, 120, 0.15);
+  color: #4dff7c;
+}
+
+.achievement-rarity.rare {
+  background: rgba(70, 140, 255, 0.15);
+  color: #6ea8ff;
+}
+
+.achievement-rarity.epic {
+  background: rgba(180, 90, 255, 0.15);
+  color: #c27dff;
+}
+
+.achievement-rarity.legendary {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffb300;
+}
+
+.achievement-rarity.secret {
+  background: rgba(255, 70, 70, 0.15);
+  color: #ff6b6b;
+}

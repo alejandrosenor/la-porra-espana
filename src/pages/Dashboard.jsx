@@ -535,7 +535,7 @@ function Dashboard() {
                                         ) : (
                                             post.players?.avatar
                                         )}{' '}
-                                        {post.players?.name || 'Sistema'}
+                                        {post.players?.name || 'Sistema'}{'. '}
                                         {new Date(post.created_at).toLocaleString('es-ES', {
                                             day: '2-digit',
                                             month: 'short',

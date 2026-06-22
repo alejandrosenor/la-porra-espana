@@ -14,6 +14,7 @@ function Profile() {
     const [avatarType, setAvatarType] = useState(player.avatar_type || 'emoji')
     const [selectedAvatar, setSelectedAvatar] = useState(player.avatar || '')
     const [selectedSticker, setSelectedSticker] = useState(player.avatar_image_url || '')
+    const [drinksData, setDrinksData] = useState([])
 
     const AVATAR_OPTIONS = [
         // Originales
@@ -101,10 +102,16 @@ function Profile() {
             .from('players')
             .select('*')
 
+        const { data: hydrationData } = await supabase
+            .from('drinks')
+            .select('*')
+            .eq('player_id', player.id)
+
         setAllPlayers(playerData || [])
         setRanking(playersData || [])
         setMyBets(betsData || [])
         setSelectedAvatar(playerData.avatar)
+        setDrinksData(hydrationData || [])
     }
 
     function logout() {
@@ -119,6 +126,24 @@ function Profile() {
     const totalBets = myBets.length
     const closedBets = myBets.filter((bet) => bet.matches?.status === 'closed')
     const pointsFromBets = myBets.reduce((acc, bet) => acc + (bet.points || 0), 0)
+    const totalBeers = drinksData.reduce((acc, d) => acc + (d.beers || 0), 0)
+    const totalDrinks = drinksData.reduce((acc, d) => acc + (d.drinks || 0), 0)
+    const totalSummerWines = drinksData.reduce(
+        (acc, d) => acc + (d.summer_wines || 0),
+        0
+    )
+    const totalSoftDrinks = drinksData.reduce(
+        (acc, d) => acc + (d.soft_drinks || 0),
+        0
+    )
+    const totalWaters = drinksData.reduce(
+        (acc, d) => acc + (d.waters || 0),
+        0
+    )
+    const totalAlcohol =
+        totalBeers +
+        totalDrinks +
+        totalSummerWines
 
     function getPlayerTitle() {
         if (position === 1) return 'Oráculo del Mundial'
@@ -132,13 +157,28 @@ function Profile() {
         const achievements = []
 
         if (position === 1) achievements.push('🥇 Líder actual')
-        if (currentPlayer.exact_hits > 0) achievements.push('🎯 Resultado exacto')
-        if (currentPlayer.winner_hits >= 2) achievements.push('⭐ Buen ojo para ganadores')
         if (totalBets >= 3) achievements.push('📝 Fiel apostador')
-        if (closedBets.some((bet) => bet.points === 8)) achievements.push('🧠 Vidente')
-        if (closedBets.some((bet) => bet.points === 0)) achievements.push('💀 Fracaso')
+        if (currentPlayer.winner_hits >= 1) achievements.push('⭐ Primer ganador acertado')
+        if (currentPlayer.winner_hits >= 5) achievements.push('🏅 Buen ojo para ganadores')
         if (currentPlayer.key_player_hits >= 1) achievements.push('🥅 Primer goleador acertado')
-        if (currentPlayer.key_player_hits >= 5) achievements.push('👟 Rey del gol')
+        if (currentPlayer.key_player_hits >= 3) achievements.push('⚽ Hat-trick')
+        if (currentPlayer.key_player_hits >= 5) achievements.push('👟 Especialista en goleadores')
+        if (currentPlayer.exact_hits >= 1) achievements.push('🎯 Resultado exacto')
+        if (currentPlayer.exact_hits >= 3) achievements.push('🏹 Das en el clavo')
+        if (closedBets.some((bet) => bet.points === 0)) achievements.push('💀 Fracaso')
+        if (closedBets.some((bet) => bet.points >= 4 && bet.result_message?.includes('Acertó goleador'))) achievements.push('‼️ Doble acierto')
+        if (closedBets.some((bet) => bet.points === 8)) achievements.push('🧠 Vidente')
+        if (closedBets.some((bet) => bet.points === 9)) achievements.push('👏 Partido perfecto')
+        if (currentPlayer.points >= 10) achievements.push('🏃‍➡️ Pistoletazo de salida')
+        if (currentPlayer.points >= 20) achievements.push('🔝 Buen ritmo de carrera')
+        if (currentPlayer.points >= 25) achievements.push('🏆 Leyenda')
+        if (totalBeers >= 1) achievements.push('🍺 Primera cerveza')
+        if (totalBeers >= 10) achievements.push('🍻 Catador de cervezas')
+        if (totalSummerWines >= 10) achievements.push('🍷 Veranito')
+        if (totalDrinks >= 1) achievements.push('🥴 Noche complicada')
+        if (totalAlcohol >= 30) achievements.push('🍻 Rey de la barra')
+        if (totalSoftDrinks >= 10) achievements.push('🥤 Coca-Cola adicto')
+        if (totalWaters >= 10) achievements.push('🚰 Fuente pública')
 
         if (achievements.length === 0) {
             achievements.push('🌱 Primeros pasos')
@@ -287,7 +327,28 @@ function Profile() {
         setUploadingAvatar(false)
     }
 
+    function getHydrationTotals() {
+        return drinksData.reduce(
+            (totals, item) => ({
+                beers: totals.beers + (item.beers || 0),
+                drinks: totals.drinks + (item.drinks || 0),
+                summerWines: totals.summerWines + (item.summer_wines || 0),
+                softDrinks: totals.softDrinks + (item.soft_drinks || 0),
+                waters: totals.waters + (item.waters || 0)
+            }),
+            {
+                beers: 0,
+                drinks: 0,
+                summerWines: 0,
+                softDrinks: 0,
+                waters: 0
+            }
+        )
+    }
+
     const streak = getCurrentStreak()
+
+    const hydration = getHydrationTotals()
 
     return (
         <main className="profile-page profile-pretty-page with-bottom-nav">
@@ -385,6 +446,52 @@ function Profile() {
                 </div>
             </section>
 
+            <section className="profile-hydration-card">
+                <div className="section-title-row">
+                    <h2>Hidratación</h2>
+                    <span>
+                        {hydration.beers +
+                            hydration.drinks +
+                            hydration.summerWines +
+                            hydration.softDrinks +
+                            hydration.waters}{' '}
+                        bebidas
+                    </span>
+                </div>
+
+                <div className="profile-hydration-grid">
+                    <div>
+                        <span>🍺</span>
+                        <strong>{hydration.beers}</strong>
+                        <small>Cervezas</small>
+                    </div>
+
+                    <div>
+                        <span>🥃</span>
+                        <strong>{hydration.drinks}</strong>
+                        <small>Copas</small>
+                    </div>
+
+                    <div>
+                        <span>🍷</span>
+                        <strong>{hydration.summerWines}</strong>
+                        <small>Tintos</small>
+                    </div>
+
+                    <div>
+                        <span>🥤</span>
+                        <strong>{hydration.softDrinks}</strong>
+                        <small>Refrescos</small>
+                    </div>
+
+                    <div>
+                        <span>💧</span>
+                        <strong>{hydration.waters}</strong>
+                        <small>Aguas</small>
+                    </div>
+                </div>
+            </section>
+
             <section className="achievements-card">
                 <div className="section-title-row">
                     <h2>Logros</h2>
@@ -398,6 +505,13 @@ function Profile() {
                         </span>
                     ))}
                 </div>
+
+                <button
+                    className="profile-rules-link"
+                    onClick={() => navigate('/rules')}
+                >
+                    Ver qué significa cada logro
+                </button>
             </section>
 
             <section className="history-card">

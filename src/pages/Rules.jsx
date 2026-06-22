@@ -124,53 +124,258 @@ function Rules() {
                     <span>🏅</span>
                     <p>Logros</p>
 
-                    <small>
-                        🥇 Líder actual
-                        <br />
-                        Ser primero en el ranking.
-                    </small>
+                    <div className="achievement-rule">
+                        <span>🥇</span>
+                        <div>
+                            <strong>Líder actual</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Ser primero en el ranking.</p>
+                        </div>
+                    </div>
 
-                    <small>
-                        🎯 Resultado exacto
-                        <br />
-                        Acertar un resultado exacto.
-                    </small>
+                    <div className="achievement-rule">
+                        <span>📝</span>
+                        <div>
+                            <strong>Fiel apostador</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Apostar 3 o más veces.</p>
+                        </div>
+                    </div>
 
-                    <small>
-                        ⭐ Ojo para ganadores
-                        <br />
-                        Acertar 5 ganadores.
-                    </small>
+                    <div className="achievement-rule">
+                        <span>⭐</span>
+                        <div>
+                            <strong>Primer ganador acertado</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Acertar el ganador de un partido por primera vez.</p>
+                        </div>
+                    </div>
 
-                    <small>
-                        🥅 Primer goleador acertado
-                        <br />
-                        Acertar un goleador por primera vez.
-                    </small>
+                    <div className="achievement-rule">
+                        <span>🏅</span>
+                        <div>
+                            <strong>Buen ojo para ganadores</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Acertar 5 o más ganadores.</p>
+                        </div>
+                    </div>
 
-                    <small>
-                        👟 Rey del gol
-                        <br />
-                        Acertar 5 o más goleadores.
-                    </small>
+                    <div className="achievement-rule">
+                        <span>🥅</span>
+                        <div>
+                            <strong>Primer goleador acertado</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Acertar un goleador por primera vez.</p>
+                        </div>
+                    </div>
 
-                    <small>
-                        📝 Fiel apostador
-                        <br />
-                        Apostar 3 o más veces.
-                    </small>
+                    <div className="achievement-rule">
+                        <span>⚽</span>
+                        <div>
+                            <strong>Hat-trick</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Acertar 3 goleadores.</p>
+                        </div>
+                    </div>
 
-                    <small>
-                        🧠 Vidente
-                        <br />
-                        Conseguir un mínimo de 8 puntos en un único partido (siendo 9 el máximo posible).
-                    </small>
+                    <div className="achievement-rule">
+                        <span>👟</span>
+                        <div>
+                            <strong>Especialista en goleadores</strong>
+                            <div className="achievement-rarity epic">
+                                ÉPICO
+                            </div>
+                            <p>Acertar 5 o más goleadores.</p>
+                        </div>
+                    </div>
 
-                    <small>
-                        💀 Fracaso
-                        <br />
-                        No ganar ni 1 punto en un partido.
-                    </small>
+                    <div className="achievement-rule">
+                        <span>🎯</span>
+                        <div>
+                            <strong>Resultado exacto</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Acertar un resultado exacto.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🏹</span>
+                        <div>
+                            <strong>Das en el clavo</strong>
+                            <div className="achievement-rarity legendary">
+                                LEGENDARIO
+                            </div>
+                            <p>Acertar 3 o más resultados exactos.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>💀</span>
+                        <div>
+                            <strong>Fracaso</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>No ganar ni 1 punto en un partido.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>‼️</span>
+                        <div>
+                            <strong>Doble acierto</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Acertar ganador y goleador en el mismo partido.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🧠</span>
+                        <div>
+                            <strong>Vidente</strong>
+                            <div className="achievement-rarity epic">
+                                ÉPICO
+                            </div>
+                            <p>Acertar ganador y resultado exacto en el mismo partido.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>👏</span>
+                        <div>
+                            <strong>Partido perfecto</strong>
+                            <div className="achievement-rarity legendary">
+                                LEGENDARIO
+                            </div>
+                            <p>Conseguir 9 puntos en un partido: ganador, resultado exacto y goleador.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🏃‍➡️</span>
+                        <div>
+                            <strong>Pistoletazo de salida</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Alcanzar 10 puntos en la clasificación.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🔝</span>
+                        <div>
+                            <strong>Buen ritmo de carrera</strong>
+                            <div className="achievement-rarity epic">
+                                ÉPICO
+                            </div>
+                            <p>Alcanzar 20 puntos en la clasificación.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🏆</span>
+                        <div>
+                            <strong>Leyenda</strong>
+                            <div className="achievement-rarity legendary">
+                                LEGENDARIO
+                            </div>
+                            <p>Alcanzar 25 puntos en la clasificación.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🍺</span>
+                        <div>
+                            <strong>Primera cerveza</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Registrar al menos una cerveza.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🍻</span>
+                        <div>
+                            <strong>Catador de cervezas</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Registrar 10 cervezas.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🍷</span>
+                        <div>
+                            <strong>Veranito</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Registrar 10 tintos de verano.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🥴</span>
+                        <div>
+                            <strong>Noche complicada</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Registrar al menos una copa.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🥂</span>
+                        <div>
+                            <strong>Rey de la barra</strong>
+                            <div className="achievement-rarity epic">
+                                ÉPICO
+                            </div>
+                            <p>Registrar 30 bebidas alcohólicas entre cervezas, copas y tintos.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🥤</span>
+                        <div>
+                            <strong>Coca-Cola adicto</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Registrar 10 refrescos.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🚰</span>
+                        <div>
+                            <strong>Fuente pública</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Registrar 10 aguas.</p>
+                        </div>
+                    </div>
                 </article>
 
                 <article className="stat-card">
