@@ -3,8 +3,8 @@ import '../App.css'
 
 function LoadingScreen() {
     const loadingMessages = [
-        'Calculando las posibilidades de Señor...',
-        'Comprobando si Nacho ya ha apostado...',
+        'Calculando las posibilidades de Nacho...',
+        'Comprobando si Adri ya ha apostado...',
         'Buscando el próximo goleador...',
         'Contando los tintos de verano...',
         'Consultando la Gaceta de La Porra...',
@@ -24,15 +24,19 @@ function LoadingScreen() {
         'Analizando quién va último...',
         'Generando polémicas deportivas...',
         'Buscando una apuesta peor que la de Dani...',
-        'Comprobando si Blanca sigue líder...',
+        'Comprobando si Dani sigue líder...',
         'Intentando entender la apuesta de Adri...',
         'Calculando cuántas cervezas lleva Ángel...',
-        'Comprobando si Señor acertará por fin...',
+        'Comprobando si Nacho acertará por fin...',
         'Generando excusas para el último del ranking...',
         'Consultando el VAR...',
         'Recontando los tintos de verano...',
         'Buscando al rey del exacto...',
-        'Calculando quién invita a la siguiente ronda...'
+        'Calculando quién invita a la siguiente ronda...',
+        'Verificando los goles de Oyarzabal...',
+        'Comprobando el fuera de juego de Ferrán...',
+        'Calculando el récord mundial de pipas por minuto...',
+        'Cargando las estadísticas absurdas...'
     ]
 
     const [message, setMessage] = useState('')

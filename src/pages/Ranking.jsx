@@ -37,6 +37,33 @@ function Ranking() {
         setBets(betsData || [])
     }
 
+    function renderResultMessage(message) {
+        if (!message) return null
+
+        const parts = message
+            .split(/(?=🟢|🔴)/g)
+            .filter(Boolean)
+
+        return (
+            <p className="ranking-message-box">
+                {parts.map((part, index) => (
+                    <span
+                        key={index}
+                        className={
+                            part.trim().startsWith('🟢')
+                                ? 'result-message-success'
+                                : part.trim().startsWith('🔴')
+                                    ? 'result-message-error'
+                                    : ''
+                        }
+                    >
+                        {part.trim()}{' '}
+                    </span>
+                ))}
+            </p>
+        )
+    }
+
     function getLastBetForPlayer(playerId) {
         return bets.find((bet) => bet.player_id === playerId)
     }
@@ -144,7 +171,7 @@ function Ranking() {
                                             : 'ranking-message-box negative'
                                     }
                                 >
-                                    {lastBet.result_message}
+                                    {renderResultMessage(lastBet.result_message)}
                                 </p>
                             )}
                         </article>

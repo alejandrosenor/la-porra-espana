@@ -57,6 +57,33 @@ function RevealedBets() {
         setPlayers(playersData || [])
     }
 
+    function renderResultMessage(message) {
+        if (!message) return null
+
+        const parts = message
+            .split(/(?=🟢|🔴)/g)
+            .filter(Boolean)
+
+        return (
+            <p className="ranking-message-box">
+                {parts.map((part, index) => (
+                    <span
+                        key={index}
+                        className={
+                            part.trim().startsWith('🟢')
+                                ? 'result-message-success'
+                                : part.trim().startsWith('🔴')
+                                    ? 'result-message-error'
+                                    : ''
+                        }
+                    >
+                        {part.trim()}{' '}
+                    </span>
+                ))}
+            </p>
+        )
+    }
+
     function getCollectivePrediction() {
         const spainVotes = bets.filter(
             (bet) => bet.winner === 'España'
@@ -134,7 +161,7 @@ function RevealedBets() {
                 <section className="hidden-bets-card">
                     <h2>🔒 Apuestas todavía ocultas</h2>
                     <p>
-                        Las apuestas se revelarán automáticamente cuando todos los jugadores hayan apostado.
+                        Las apuestas se revelarán automáticamente 2 horas antes del partido o cuando todos los jugadores hayan editado su apuesta.
                     </p>
                 </section>
 
@@ -276,7 +303,7 @@ function RevealedBets() {
                                         : 'ranking-message-negative'
                                 }
                             >
-                                {bet.result_message}
+                                {renderResultMessage(bet.result_message)}
                             </p>
                         )}
                     </article>

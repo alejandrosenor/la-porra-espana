@@ -343,13 +343,17 @@ function Dashboard() {
     const nextMatch = matches.find((match) => match.status !== 'closed')
 
     const FAKE_PRESS = [
-        '📰 La Gaceta de La Porra: Señor promete que esta vez sí acertará.',
-        '📰 Marca Porra: Pilu denuncia una conspiración arbitral contra Cucu.',
-        '📰 As Porra: Dani asegura otro 6-0 contra Arabia Saudita. ¿Acertará esta vez?.',
-        '📰 Mundo Porra: Ángel estudia estadísticas a las 3 de la mañana.',
-        '📰 La Gaceta de La Porra: Nacho pide repetir el partido.',
-        '📰 El Chiringuito de La Porra: Blanca confía plenamente en el goleador sorpresa.',
-        '📰 Porra Today: Adri afirma que todavía no ha enseñado todas sus cartas. Claro, aún no ha jugado...'
+        '📰 La Gaceta de La Porra: Pilu sigue defendiendo que el gol fue de Cucurella. La FIFA discrepa.',
+        '📰 Marca Porra: Cámara todavía reclama el gol anulado de Ferran Torres.',
+        '📰 Mundo Deportivo de La Porra: Ferran marcó. El fuera de juego también.',
+        '📰 Diario As Porra: Gabi asegura que Mikel Merino estuvo a punto de marcar. Muy a punto.',
+        '📰 Mundo Porra: Adri continúa negociando con la tecnología para poder apostar.',
+        '📰 Última Hora: Pilu ha llenado una segunda botella de cáscaras de pipas.',
+        '📰 20 Minutos Porra: Dani sigue defendiendo el trono de la apuesta más loca.',
+        '📰 El Chiringuito de La Porra: Nacho sigue buscando a Dani Olmo sobre el césped.',
+        '📰 Porra Today: ¿Blanca liderará la clasificación de refrescos tras el España - Arabia?.',
+        '📰 La Voz de La Porra: Ángel acierta el goleador y pide respeto para los visionarios.',
+        '📰 Noticias FIFA: Arabia Saudita solicita que Pilu deje de contar goles en propia como asistencias de Cucurella.'
     ]
 
     return (

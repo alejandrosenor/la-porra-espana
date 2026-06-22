@@ -4,12 +4,12 @@ import { supabase } from '../services/supabase'
 import '../App.css'
 
 const SPAIN_PLAYERS = [
-    '⭐ Lamine Yamal',
-    '⭐ Nico Williams',
-    '⭐ Mikel Oyarzabal',
-    '⭐ Ferran Torres',
-    '⭐ Dani Olmo',
-    '⭐ Pedri',
+    'Lamine Yamal',
+    'Nico Williams',
+    'Mikel Oyarzabal',
+    'Ferran Torres',
+    'Dani Olmo',
+    'Pedri',
     'Unai Simón',
     'Joan García',
     'David Raya',
@@ -350,7 +350,7 @@ function AdminMatch() {
                     </p>
                 )}
 
-                <h2><br/>Resultado real del partido</h2>
+                <h2><br />Resultado real del partido</h2>
 
                 <p className="closing-text">Resultado real</p>
 
