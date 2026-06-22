@@ -514,8 +514,8 @@ function Dashboard() {
 
                 <button onClick={toggleDaiDai}>
                     {isPlaying
-                        ? '⏸ Pausar himno'
-                        : '▶ Reproducir temazo'}
+                        ? '⏸ Pausar'
+                        : '▶ Reproducir'}
                 </button>
             </section>
 
