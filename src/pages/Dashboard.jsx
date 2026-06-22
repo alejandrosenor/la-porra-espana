@@ -7,7 +7,6 @@ import '../App.css'
 function Dashboard() {
     const navigate = useNavigate()
     const player = JSON.parse(localStorage.getItem('player'))
-    const audioRef = useRef(null)
 
     const [matches, setMatches] = useState([])
     const [myBets, setMyBets] = useState([])
@@ -21,7 +20,6 @@ function Dashboard() {
     const [comments, setComments] = useState([])
     const [commentTexts, setCommentTexts] = useState({})
     const [openComments, setOpenComments] = useState({})
-    const [isPlaying, setIsPlaying] = useState(false)
 
     useEffect(() => {
         loadData()
@@ -33,18 +31,6 @@ function Dashboard() {
         }, 1000)
 
         return () => clearInterval(interval)
-    }, [])
-
-    useEffect(() => {
-        if (!audioRef.current) return
-
-        const handleEnded = () => setIsPlaying(false)
-
-        audioRef.current.addEventListener('ended', handleEnded)
-
-        return () => {
-            audioRef.current?.removeEventListener('ended', handleEnded)
-        }
     }, [])
 
     async function loadData() {
@@ -370,20 +356,6 @@ function Dashboard() {
         return date.toLocaleString('es-ES', options)
     }
 
-    function toggleDaiDai() {
-        if (!audioRef.current) {
-            audioRef.current = new Audio('/audio/dai-dai.mp3')
-        }
-
-        if (isPlaying) {
-            audioRef.current.pause()
-            setIsPlaying(false)
-        } else {
-            audioRef.current.play()
-            setIsPlaying(true)
-        }
-    }
-
     const nextMatch = matches.find((match) => match.status !== 'closed')
 
     const FAKE_PRESS = [
@@ -500,22 +472,6 @@ function Dashboard() {
 
                 <button onClick={() => navigate('/rules')}>
                     Ver reglas
-                </button>
-            </section>
-
-            <section className="anthem-card">
-                <div>
-                    <span>🎵</span>
-                    <div>
-                        <h2>Himno oficial del Mundial 2026</h2>
-                        <p>Dai Dai. Solo apto para días de Mundial.</p>
-                    </div>
-                </div>
-
-                <button onClick={toggleDaiDai}>
-                    {isPlaying
-                        ? '⏸ Pausar'
-                        : '▶ Reproducir'}
                 </button>
             </section>
 

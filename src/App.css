@@ -3482,3 +3482,58 @@ select {
 .anthem-card button:active {
   transform: scale(0.98);
 }
+
+.anthem-player {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+}
+
+.anthem-progress-bar {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.anthem-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd84a, #ff9f1c, #ff3d3d);
+  box-shadow: 0 0 14px rgba(255, 216, 74, 0.45);
+  transition: width 0.2s linear;
+}
+
+.anthem-time-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.anthem-now-playing {
+  margin: 10px 0 0;
+  text-align: center;
+  color: #ffd84a !important;
+  font-weight: 950 !important;
+  animation: anthemPulse 1.2s infinite;
+}
+
+@keyframes anthemPulse {
+  0% {
+    opacity: .55;
+    transform: scale(.99);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: .55;
+    transform: scale(.99);
+  }
+}

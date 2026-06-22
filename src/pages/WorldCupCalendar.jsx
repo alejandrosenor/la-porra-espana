@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import BottomNav from '../components/BottomNav'
@@ -7,13 +7,27 @@ import '../App.css'
 function WorldCupCalendar() {
     const navigate = useNavigate()
     const player = JSON.parse(localStorage.getItem('player'))
+    const audioRef = useRef(null)
 
     const [matches, setMatches] = useState([])
     const [filter, setFilter] = useState('Todos')
     const [view, setView] = useState('Partidos')
+    const [isPlaying, setIsPlaying] = useState(false)
 
     useEffect(() => {
         loadMatches()
+    }, [])
+
+    useEffect(() => {
+        if (!audioRef.current) return
+
+        const handleEnded = () => setIsPlaying(false)
+
+        audioRef.current.addEventListener('ended', handleEnded)
+
+        return () => {
+            audioRef.current?.removeEventListener('ended', handleEnded)
+        }
     }, [])
 
     async function loadMatches() {
@@ -161,6 +175,25 @@ function WorldCupCalendar() {
         return [...groupTeams].sort((a, b) => b.goalsFor - a.goalsFor)[0]
     }
 
+    function toggleDaiDai() {
+        if (!audioRef.current) {
+            audioRef.current = new Audio('/audio/dai-dai.mp3')
+            audioRef.current.volume = 0.7
+
+            audioRef.current.addEventListener('ended', () => {
+                setIsPlaying(false)
+            })
+        }
+
+        if (isPlaying) {
+            audioRef.current.pause()
+            setIsPlaying(false)
+        } else {
+            audioRef.current.play()
+            setIsPlaying(true)
+        }
+    }
+
     const groupedMatches = groupByDate(filteredMatches)
     const groups = getAllTeams()
 
@@ -209,6 +242,28 @@ function WorldCupCalendar() {
                     <strong>{pendingMatches.length}</strong>
                     <p>Pendientes</p>
                 </article>
+            </section>
+
+            <section className="anthem-card">
+                <div>
+                    <span>🎵</span>
+                    <div>
+                        <h2>Himno oficial del Mundial 2026</h2>
+                        <p>Dai Dai - Shakira, Burna Boy. Solo apto para días de Mundial.</p>
+                    </div>
+                </div>
+
+                <button onClick={toggleDaiDai}>
+                    {isPlaying
+                        ? '⏸ Pausar'
+                        : '▶ Reproducir'}
+                </button>
+
+                {isPlaying && (
+                    <p className="anthem-now-playing">
+                        🎶 SONANDO AHORA: DAI DAI
+                    </p>
+                )}
             </section>
 
             {view === 'Partidos' && (
