@@ -123,7 +123,7 @@ function Ranking() {
                             <strong>{player.points} pts</strong>
 
                             <p>
-                                {player.exact_hits} exactos · {player.winner_hits} ganadores
+                                {player.exact_hits || 0} exactos · {player.winner_hits || 0} ganadores · {player.key_player_hits || 0} goleadores
                             </p>
                         </article>
                     ))}
@@ -154,7 +154,7 @@ function Ranking() {
                                     <h3>{player.name}</h3>
 
                                     <p>
-                                        {player.exact_hits} resultados exactos · {player.winner_hits} ganadores
+                                        {player.exact_hits || 0} resultados exactos · {player.winner_hits || 0} ganadores · {player.key_player_hits || 0} goleadores
                                     </p>
                                 </div>
 

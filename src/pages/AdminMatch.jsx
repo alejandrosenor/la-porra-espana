@@ -206,7 +206,8 @@ function AdminMatch() {
                 .update({
                     points: playerData.points + points,
                     winner_hits: playerData.winner_hits + (winnerHit ? 1 : 0),
-                    exact_hits: playerData.exact_hits + (exactHit ? 1 : 0)
+                    exact_hits: playerData.exact_hits + (exactHit ? 1 : 0),
+                    key_player_hits: (playerData.key_player_hits || 0) + (isKeyPlayerHit(bet) ? 1 : 0)
                 })
                 .eq('id', playerData.id)
         }
