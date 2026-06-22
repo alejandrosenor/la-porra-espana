@@ -127,7 +127,7 @@ function Dashboard() {
         if (match.status === 'closed') return true
 
         const now = new Date()
-        const matchDate = new Date(match.match_date)
+        const matchDate = parseMatchDate(match.match_date)
         const closingDate = new Date(matchDate)
 
         closingDate.setHours(closingDate.getHours() - 2)
@@ -177,7 +177,7 @@ function Dashboard() {
     }
 
     function getOpeningDate(match) {
-        const matchDate = new Date(match.match_date)
+        const matchDate = parseMatchDate(match.match_date)
         const openingDate = new Date(matchDate)
         openingDate.setDate(openingDate.getDate() - 2)
         return openingDate
@@ -206,7 +206,7 @@ function Dashboard() {
     function isBettingOpen(match) {
         const now = new Date()
 
-        const matchDate = new Date(match.match_date)
+        const matchDate = parseMatchDate(match.match_date)
 
         const openingDate = new Date(matchDate)
         openingDate.setDate(openingDate.getDate() - 2)
@@ -338,6 +338,22 @@ function Dashboard() {
         }
 
         setComments(comments.filter((item) => item.id !== comment.id))
+    }
+
+    function parseMatchDate(dateValue) {
+        if (!dateValue) return null
+
+        return new Date(dateValue.replace(' ', 'T'))
+    }
+
+    function formatMatchDate(dateValue, options) {
+        const date = parseMatchDate(dateValue)
+
+        if (!date || Number.isNaN(date.getTime())) {
+            return 'Fecha pendiente'
+        }
+
+        return date.toLocaleString('es-ES', options)
     }
 
     const nextMatch = matches.find((match) => match.status !== 'closed')
@@ -637,7 +653,7 @@ function Dashboard() {
                     </h2>
 
                     <p className="next-date">
-                        {new Date(nextMatch.match_date + 'Z').toLocaleString('es-ES', {
+                        {formatMatchDate(nextMatch.match_date, {
                             day: '2-digit',
                             month: 'long',
                             hour: '2-digit',
@@ -676,7 +692,7 @@ function Dashboard() {
                                 </h3>
 
                                 <p className="match-date">
-                                    {new Date(match.match_date + 'Z').toLocaleString('es-ES', {
+                                    {formatMatchDate(match.match_date, {
                                         weekday: 'short',
                                         day: '2-digit',
                                         month: 'short',

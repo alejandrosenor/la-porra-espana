@@ -217,12 +217,12 @@ function Match() {
     const SPAIN_PLAYERS = [
         '🚫 Nadie marca',
 
-        '⭐ Lamine Yamal',
-        '⭐ Nico Williams',
-        '⭐ Mikel Oyarzabal',
-        '⭐ Ferran Torres',
-        '⭐ Dani Olmo',
-        '⭐ Pedri',
+        'Lamine Yamal',
+        'Nico Williams',
+        'Mikel Oyarzabal',
+        'Ferran Torres',
+        'Dani Olmo',
+        'Pedri',
 
         'Unai Simón',
         'Joan García',
