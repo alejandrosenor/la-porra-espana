@@ -89,52 +89,175 @@ function Stats() {
         )
     }
 
-    function topBy(field) {
-        if (!players.length) return null
+    function topPlayersBy(field) {
+        const maxValue = Math.max(...players.map((p) => p[field] || 0))
 
-        return [...players].sort((a, b) => {
-            return (b[field] || 0) - (a[field] || 0)
-        })[0]
-    }
-
-    function getHighestSingleBet() {
-        return [...bets].sort((a, b) => (b.points || 0) - (a.points || 0))[0]
-    }
-
-    function getMostEditedPlayer() {
-        const editsByPlayer = {}
-
-        bets.forEach((bet) => {
-            editsByPlayer[bet.player_id] =
-                (editsByPlayer[bet.player_id] || 0) + (bet.edit_count || 0)
-        })
-
-        const winnerId = Object.keys(editsByPlayer).sort(
-            (a, b) => editsByPlayer[b] - editsByPlayer[a]
-        )[0]
+        if (!players.length || maxValue === 0) {
+            return {
+                players: [],
+                value: 0
+            }
+        }
 
         return {
-            player: players.find((p) => p.id === winnerId),
-            edits: editsByPlayer[winnerId] || 0
+            players: players.filter((p) => (p[field] || 0) === maxValue),
+            value: maxValue
         }
     }
 
-    function getMostOptimisticPlayer() {
-        const spainWins = {}
+    function StatWinners({ result, label }) {
+        if (!result.players.length) {
+            return renderEmptyStat()
+        }
+
+        const visiblePlayers = result.players.slice(0, 4)
+        const hiddenCount = result.players.length - visiblePlayers.length
+
+        return (
+            <>
+                <strong className="stats-summary-title">
+                    {result.players.length === 1
+                        ? <PlayerName player={result.players[0]} />
+                        : `${result.players.length} jugadores empatados`}
+                </strong>
+
+                {result.players.length > 1 && (
+                    <div className="stats-compact-list">
+                        {visiblePlayers.map((player) => (
+                            <span key={player.id}>
+                                <PlayerName player={player} />
+                            </span>
+                        ))}
+
+                        {hiddenCount > 0 && (
+                            <span className="stats-more-chip">
+                                +{hiddenCount} más
+                            </span>
+                        )}
+                    </div>
+                )}
+
+                <small>
+                    {result.value} {label}
+                </small>
+            </>
+        )
+    }
+
+    function BetWinners({ result, label }) {
+        if (!result.bets.length) {
+            return renderEmptyStat()
+        }
+
+        const visibleBets = result.bets.slice(0, 4)
+        const hiddenCount = result.bets.length - visibleBets.length
+
+        return (
+            <>
+                <strong className="stats-summary-title">
+                    {result.bets.length === 1
+                        ? <PlayerName player={result.bets[0].players} />
+                        : `${result.bets.length} jugadores empatados`}
+                </strong>
+
+                {result.bets.length > 1 && (
+                    <div className="stats-compact-list">
+                        {visibleBets.map((bet) => (
+                            <span key={bet.id}>
+                                <PlayerName player={bet.players} />
+                            </span>
+                        ))}
+
+                        {hiddenCount > 0 && (
+                            <span className="stats-more-chip">
+                                +{hiddenCount} más
+                            </span>
+                        )}
+                    </div>
+                )}
+
+                <small>
+                    {result.value} {label}
+                </small>
+            </>
+        )
+    }
+
+    function hasValue(player, field) {
+        return player && (player[field] || 0) > 0
+    }
+
+    function renderEmptyStat() {
+        return (
+            <>
+                <strong>Sin datos definidos</strong>
+                <small>Todavía no hay información suficiente</small>
+            </>
+        )
+    }
+
+    function getHighestSingleBets() {
+        const validBets = bets.filter((bet) => (bet.points || 0) > 0)
+
+        if (!validBets.length) {
+            return {
+                bets: [],
+                value: 0
+            }
+        }
+
+        const maxValue = Math.max(...validBets.map((bet) => bet.points || 0))
+
+        return {
+            bets: validBets.filter((bet) => (bet.points || 0) === maxValue),
+            value: maxValue
+        }
+    }
+
+    function getMostEditedPlayers() {
+        const totals = {}
+
+        bets.forEach((bet) => {
+            totals[bet.player_id] =
+                (totals[bet.player_id] || 0) + (bet.edit_count || 0)
+        })
+
+        const maxValue = Math.max(0, ...Object.values(totals))
+
+        if (maxValue === 0) {
+            return {
+                players: [],
+                value: 0
+            }
+        }
+
+        return {
+            players: players.filter((player) => totals[player.id] === maxValue),
+            value: maxValue
+        }
+    }
+
+    function getMostOptimisticPlayers() {
+        const totals = {}
 
         bets.forEach((bet) => {
             if (bet.winner === 'España') {
-                spainWins[bet.player_id] = (spainWins[bet.player_id] || 0) + 1
+                totals[bet.player_id] = (totals[bet.player_id] || 0) + 1
             }
         })
 
-        const winnerId = Object.keys(spainWins).sort(
-            (a, b) => spainWins[b] - spainWins[a]
-        )[0]
+        const maxValue = Math.max(0, ...Object.values(totals))
+
+        if (maxValue === 0) {
+            return {
+                players: [],
+                value: 0
+            }
+        }
 
         return {
-            player: players.find((p) => p.id === winnerId),
-            count: spainWins[winnerId] || 0
+            players: players.filter((player) => totals[player.id] === maxValue),
+            value: maxValue
         }
     }
 
@@ -146,26 +269,31 @@ function Stats() {
         })[0]
     }
 
-    function getHydrationWinner(type) {
+    function getHydrationWinners(type) {
         const totals = {}
 
         drinksData.forEach((item) => {
             const value = item[type] || 0
 
-            if (!totals[item.player_id]) {
-                totals[item.player_id] = {
-                    total: 0,
-                    player: item.players
-                }
-            }
-
-            totals[item.player_id].total += value
+            totals[item.player_id] = (totals[item.player_id] || 0) + value
         })
 
-        return Object.values(totals).sort((a, b) => b.total - a.total)[0]
+        const maxValue = Math.max(0, ...Object.values(totals))
+
+        if (maxValue === 0) {
+            return {
+                players: [],
+                value: 0
+            }
+        }
+
+        return {
+            players: players.filter((player) => totals[player.id] === maxValue),
+            value: maxValue
+        }
     }
 
-    function getBarKing() {
+    function getBarKings() {
         const totals = {}
 
         drinksData.forEach((item) => {
@@ -174,33 +302,39 @@ function Stats() {
                 (item.drinks || 0) +
                 (item.summer_wines || 0)
 
-            if (!totals[item.player_id]) {
-                totals[item.player_id] = {
-                    total: 0,
-                    player: item.players
-                }
-            }
-
-            totals[item.player_id].total += total
+            totals[item.player_id] = (totals[item.player_id] || 0) + total
         })
 
-        return Object.values(totals).sort((a, b) => b.total - a.total)[0]
+        const maxValue = Math.max(0, ...Object.values(totals))
+
+        if (maxValue === 0) {
+            return {
+                players: [],
+                value: 0
+            }
+        }
+
+        return {
+            players: players.filter((player) => totals[player.id] === maxValue),
+            value: maxValue
+        }
     }
 
-    const exactKing = topBy('exact_hits')
-    const winnerKing = topBy('winner_hits')
-    const pointsLeader = topBy('points')
-    const bestBet = getHighestSingleBet()
-    const mostEdited = getMostEditedPlayer()
-    const optimist = getMostOptimisticPlayer()
+    const exactKing = topPlayersBy('exact_hits')
+    const winnerKing = topPlayersBy('winner_hits')
+    const pointsLeader = topPlayersBy('points')
+    const goalKing = topPlayersBy('key_player_hits')
+    const bestBets = getHighestSingleBets()
+    const mostEdited = getMostEditedPlayers()
+    const optimist = getMostOptimisticPlayers()
     const biggestPrediction = getBiggestPrediction()
 
-    const barKing = getBarKing()
-    const beerKing = getHydrationWinner('beers')
-    const drinkKing = getHydrationWinner('drinks')
-    const summerWineKing = getHydrationWinner('summer_wines')
-    const healthyKing = getHydrationWinner('soft_drinks')
-    const waterKing = getHydrationWinner('waters')
+    const barKing = getBarKings()
+    const beerKing = getHydrationWinners('beers')
+    const drinkKing = getHydrationWinners('drinks')
+    const summerWineKing = getHydrationWinners('summer_wines')
+    const healthyKing = getHydrationWinners('soft_drinks')
+    const waterKing = getHydrationWinners('waters')
 
     return (
         <main className="stats-page with-bottom-nav">
@@ -217,133 +351,131 @@ function Stats() {
                 <article className="stat-card featured-stat">
                     <span>👑</span>
                     <p>Líder actual</p>
-                    <strong>
-                        <PlayerName player={pointsLeader} />
-                    </strong>
-                    <small>
-                        {pointsLeader ? `${pointsLeader.points} puntos` : 'Todavía no hay ranking'}
-                    </small>
+
+                    <StatWinners
+                        result={pointsLeader}
+                        label="puntos"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🎯</span>
                     <p>Rey del exacto</p>
-                    <strong>
-                        <PlayerName player={exactKing} />
-                    </strong>
-                    <small>
-                        {exactKing ? `${exactKing.exact_hits} resultados exactos` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={exactKing}
+                        label="resultados exactos"
+                    />
                 </article>
 
                 <article className="stat-card">
-                    <span>⚽</span>
+                    <span>⭐</span>
                     <p>Más ganadores</p>
-                    <strong>
-                        <PlayerName player={winnerKing} />
-                    </strong>
-                    <small>
-                        {winnerKing ? `${winnerKing.winner_hits} ganadores acertados` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={winnerKing}
+                        label="ganadores acertados"
+                    />
+                </article>
+
+                <article className="stat-card">
+                    <span>🥅</span>
+                    <p>Rey del gol</p>
+
+                    <StatWinners
+                        result={goalKing}
+                        label="goleadores acertados"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🔥</span>
                     <p>Mejor apuesta</p>
-                    <strong>
-                        <PlayerName player={bestBet?.players} />
-                    </strong>
-                    <small>
-                        {bestBet ? `${bestBet.points} puntos en un partido` : ''}
-                    </small>
+
+                    <BetWinners
+                        result={bestBets}
+                        label="puntos en un partido"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🇪🇸</span>
                     <p>Más optimista</p>
-                    <strong>
-                        <PlayerName player={optimist.player} />
-                    </strong>
-                    <small>
-                        {optimist.count} apuestas a victoria de España
-                    </small>
+
+                    <StatWinners
+                        result={optimist}
+                        label="apuestas a victoria de España"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>✏️</span>
                     <p>Más indeciso</p>
-                    <strong>
-                        <PlayerName player={mostEdited.player} />
-                    </strong>
-                    <small>
-                        {mostEdited.edits} cambios de apuesta
-                    </small>
+
+                    <StatWinners
+                        result={mostEdited}
+                        label="cambios de apuesta"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🍻</span>
                     <p>Rey de la barra</p>
-                    <strong>
-                        <PlayerName player={barKing?.player} />
-                    </strong>
-                    <small>
-                        {barKing ? `${barKing.total} bebidas alcohólicas` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={barKing}
+                        label="bebidas alcohólicas"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🍺</span>
                     <p>Cervecero oficial</p>
-                    <strong>
-                        <PlayerName player={beerKing?.player} />
-                    </strong>
-                    <small>
-                        {beerKing ? `${beerKing.total} cervezas` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={beerKing}
+                        label="cervezas"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🥃</span>
                     <p>Borrachera</p>
-                    <strong>
-                        <PlayerName player={drinkKing?.player} />
-                    </strong>
-                    <small>
-                        {drinkKing ? `${drinkKing.total} copas` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={drinkKing}
+                        label="copas"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🍷</span>
                     <p>Amante del tinto de verano</p>
-                    <strong>
-                        <PlayerName player={summerWineKing?.player} />
-                    </strong>
-                    <small>
-                        {summerWineKing ? `${summerWineKing.total} tintos de verano` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={summerWineKing}
+                        label="tintos de verano"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>🥤</span>
                     <p>Coca-Cola lovers</p>
-                    <strong>
-                        <PlayerName player={healthyKing?.player} />
-                    </strong>
-                    <small>
-                        {healthyKing ? `${healthyKing.total} refrescos` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={healthyKing}
+                        label="refrescos"
+                    />
                 </article>
 
                 <article className="stat-card">
                     <span>💧</span>
                     <p>Hidratado premium</p>
-                    <strong>
-                        <PlayerName player={waterKing?.player} />
-                    </strong>
-                    <small>
-                        {waterKing ? `${waterKing.total} aguas` : ''}
-                    </small>
+
+                    <StatWinners
+                        result={waterKing}
+                        label="aguas"
+                    />
                 </article>
             </section>
 

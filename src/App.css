@@ -3207,3 +3207,55 @@ select {
   color: rgba(255, 255, 255, 0.65);
   font-weight: 800;
 }
+
+.stats-summary-title {
+  display: block;
+  margin-top: 10px;
+  font-size: 24px !important;
+  line-height: 1.1;
+  font-weight: 950;
+}
+
+.stats-compact-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 4px;
+}
+
+.stats-compact-list>span,
+.stats-more-chip {
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-compact-list .stats-player-name {
+  gap: 5px;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.stats-compact-list .stats-player-name span:last-child {
+  font-size: 13px !important;
+}
+
+.stats-compact-list .stats-inline-avatar {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.stats-compact-list .stats-inline-emoji {
+  font-size: 16px !important;
+}
+
+.stats-more-chip {
+  color: #ffd84a;
+  font-size: 13px;
+  font-weight: 950;
+}
