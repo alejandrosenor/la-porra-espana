@@ -485,11 +485,9 @@ function Dashboard() {
                         </div>
                     </div>
 
-                    {player?.is_admin && (
-                        <button onClick={() => navigate('/admin/board/new')}>
-                            Publicar
-                        </button>
-                    )}
+                    <button onClick={() => navigate('/admin/board/new')}>
+                        Publicar
+                    </button>
                 </div>
 
                 <article className="press-card">
@@ -506,7 +504,7 @@ function Dashboard() {
                     <div className="board-posts-list">
                         {boardPosts.map((post) => (
                             <article className="board-post-card" key={post.id}>
-                                {player?.is_admin && (
+                                {(player?.is_admin || post.created_by === player?.id) && (
                                     <button
                                         className="delete-post-btn"
                                         onClick={() => deletePost(post.id)}

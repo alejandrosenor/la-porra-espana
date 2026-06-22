@@ -12,11 +12,6 @@ function AdminBoardPost() {
     const [imageUrl, setImageUrl] = useState('')
     const [uploadingImage, setUploadingImage] = useState(false)
 
-    if (!player?.is_admin) {
-        navigate('/dashboard')
-        return null
-    }
-
     async function publishPost() {
         if (!title.trim() || !description.trim()) {
             alert('Título y descripción son obligatorios')
