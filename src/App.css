@@ -1951,12 +1951,47 @@ select {
 }
 
 .worldcup-page {
+  position: relative;
   min-height: 100vh;
+  overflow: hidden;
   padding: 20px;
   margin-bottom: 100px;
   background:
-    radial-gradient(circle at top, rgba(255, 216, 74, 0.12), transparent 30%),
-    #13070a;
+    radial-gradient(circle at 20% 0%, rgba(255, 216, 74, 0.12), transparent 28%),
+    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.10), transparent 26%),
+    linear-gradient(180deg, #061b11 0%, #0b2618 42%, #06140d 100%);
+}
+
+.worldcup-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  background:
+    linear-gradient(90deg, transparent 49.6%, rgba(255, 255, 255, 0.55) 49.8%, rgba(255, 255, 255, 0.55) 50.2%, transparent 50.4%),
+    radial-gradient(circle at 50% 50%, transparent 0 68px, rgba(255, 255, 255, 0.55) 69px 71px, transparent 72px),
+    linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)) center 15% / 78% 2px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)) center 85% / 78% 2px no-repeat,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)) 11% center / 2px 70% no-repeat,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)) 89% center / 2px 70% no-repeat;
+}
+
+.worldcup-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 8% 18%, rgba(255, 216, 74, 0.13), transparent 18%),
+    radial-gradient(circle at 92% 18%, rgba(255, 216, 74, 0.13), transparent 18%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.45));
+}
+
+.worldcup-page>* {
+  position: relative;
+  z-index: 1;
 }
 
 .worldcup-filters {
