@@ -32,15 +32,17 @@ function Ranking() {
                     rival_flag,
                     match_order,
                     status
+                ),
+                players (
+                    id,
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
                 )
             `)
             .not('result_message', 'is', null)
             .order('created_at', { ascending: false })
-
-        if (playersError || betsError) {
-            console.log(playersError || betsError)
-            return
-        }
 
         setPlayers(playersData || [])
         setBets(betsData || [])
@@ -137,9 +139,74 @@ function Ranking() {
         })
     }
 
+    function getRoundLoser() {
+        const closedBets = bets
+            .filter((bet) => bet.matches?.status === 'closed')
+            .sort((a, b) => b.matches.match_order - a.matches.match_order)
+
+        const lastMatchOrder = closedBets[0]?.matches?.match_order
+
+        if (!lastMatchOrder) return null
+
+        const lastRoundBets = closedBets.filter(
+            (bet) => bet.matches?.match_order === lastMatchOrder
+        )
+
+        const minPoints = Math.min(...lastRoundBets.map((bet) => bet.points || 0))
+
+        const losers = lastRoundBets.filter(
+            (bet) => (bet.points || 0) === minPoints
+        )
+
+        return losers[Math.floor(Math.random() * losers.length)]
+    }
+
+    function getLoserComment(playerName) {
+        const customComments = {
+            Pilu: [
+                'Sigue reclamando el gol de Cucurella.',
+                'El comité de apelación sigue reunido.',
+                'Insiste en que aquello era gol de Cucu.'
+            ],
+            Nacho: [
+                'Sigue buscando a Dani Olmo sobre el césped.',
+                'Todavía espera que su goleador toque una pelota.',
+                'El goleador elegido pidió no ser molestado.'
+            ],
+            Cámara: [
+                'El VAR le rompió el corazón.',
+                'Ferran marcó... pero el fuera de juego también.',
+                'La bandera del línea acabó con su ilusión.'
+            ],
+            Adri: [
+                'La tecnología volvió a ganar.',
+                'La app sigue esperando su apuesta.',
+                'Apostar sigue siendo una aventura.'
+            ],
+            Gabi: [
+                'Mikel Merino sigue sin enterarse de que iba convocado por su porra.',
+                'Su goleador ni la olió.',
+                'Merino sigue en busca y captura.'
+            ]
+        }
+
+        const generic = [
+            'Ni la olió.',
+            'Día complicado en la oficina.',
+            'La porra fue por otro camino.',
+            'Toca revisar la estrategia.',
+            'El Mundial no perdona.'
+        ]
+
+        const comments = customComments[playerName] || generic
+
+        return comments[Math.floor(Math.random() * comments.length)]
+    }
+
     const podium = players.slice(0, 3)
     const rest = players.slice(3)
     const rankingEvolution = getRankingEvolution()
+    const roundLoser = getRoundLoser()
 
     return (
         <main className="ranking-page ranking-pretty-page with-bottom-nav">
@@ -212,6 +279,23 @@ function Ranking() {
                             </article>
                         ))}
                     </div>
+                </section>
+            )}
+
+            {roundLoser && (
+                <section className="round-loser-card">
+                    <span>🥶 Jornada complicada</span>
+
+                    <h2>
+                        {renderPlayerAvatar(roundLoser.players, 'round-loser-avatar')}
+                        {roundLoser.players?.name}
+                    </h2>
+
+                    <p>{getLoserComment(roundLoser.players?.name)}</p>
+
+                    <small>
+                        Última jornada: {roundLoser.points || 0} puntos
+                    </small>
                 </section>
             )}
 
