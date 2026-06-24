@@ -3537,3 +3537,75 @@ select {
     transform: scale(.99);
   }
 }
+
+.ranking-evolution-card {
+  margin: 22px 0;
+  padding: 20px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ranking-evolution-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 14px 2px 4px;
+  scroll-snap-type: x mandatory;
+}
+
+.ranking-evolution-round {
+  min-width: 260px;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  scroll-snap-align: start;
+}
+
+.evolution-round-header strong {
+  display: block;
+  margin-bottom: 12px;
+  color: #ffd84a;
+}
+
+.evolution-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.evolution-row:last-child {
+  border-bottom: 0;
+}
+
+.evolution-position {
+  color: #ffd84a;
+  font-weight: 950;
+}
+
+.evolution-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 900;
+}
+
+.evolution-avatar-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.evolution-player img {
+  width: 24px;
+  height: 24px;
+}
+
+.evolution-row strong {
+  color: white;
+}

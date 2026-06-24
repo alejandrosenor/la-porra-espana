@@ -24,7 +24,16 @@ function Ranking() {
 
         const { data: betsData, error: betsError } = await supabase
             .from('bets')
-            .select('*')
+            .select(`
+                *,
+                matches (
+                    id,
+                    rival,
+                    rival_flag,
+                    match_order,
+                    status
+                )
+            `)
             .not('result_message', 'is', null)
             .order('created_at', { ascending: false })
 
@@ -89,8 +98,48 @@ function Ranking() {
         return player.avatar
     }
 
+    function getRankingEvolution() {
+        const closedMatchIds = [
+            ...new Set(
+                bets
+                    .filter((bet) => bet.matches?.status === 'closed')
+                    .sort((a, b) => a.matches.match_order - b.matches.match_order)
+                    .map((bet) => bet.match_id)
+            )
+        ]
+
+        return closedMatchIds.map((matchId) => {
+            const matchBets = bets.filter((bet) => bet.match_id === matchId)
+            const matchInfo = matchBets[0]?.matches
+
+            const table = players
+                .map((player) => {
+                    const totalUntilMatch = bets
+                        .filter(
+                            (bet) =>
+                                bet.player_id === player.id &&
+                                bet.matches?.status === 'closed' &&
+                                bet.matches?.match_order <= matchInfo.match_order
+                        )
+                        .reduce((acc, bet) => acc + (bet.points || 0), 0)
+
+                    return {
+                        ...player,
+                        evolutionPoints: totalUntilMatch
+                    }
+                })
+                .sort((a, b) => b.evolutionPoints - a.evolutionPoints)
+
+            return {
+                match: matchInfo,
+                table
+            }
+        })
+    }
+
     const podium = players.slice(0, 3)
     const rest = players.slice(3)
+    const rankingEvolution = getRankingEvolution()
 
     return (
         <main className="ranking-page ranking-pretty-page with-bottom-nav">
@@ -127,6 +176,42 @@ function Ranking() {
                             </p>
                         </article>
                     ))}
+                </section>
+            )}
+
+            {rankingEvolution.length > 0 && (
+                <section className="ranking-evolution-card">
+                    <div className="section-title-row">
+                        <h2>Evolución del ranking 📈</h2>
+                        <span>{rankingEvolution.length} jornadas</span>
+                    </div>
+
+                    <div className="ranking-evolution-scroll">
+                        {rankingEvolution.map((round) => (
+                            <article className="ranking-evolution-round" key={round.match.id}>
+                                <div className="evolution-round-header">
+                                    <strong>
+                                        🇪🇸 vs {round.match.rival_flag} {round.match.rival}
+                                    </strong>
+                                </div>
+
+                                {round.table.slice(0, 5).map((player, index) => (
+                                    <div className="evolution-row" key={player.id}>
+                                        <span className="evolution-position">
+                                            #{index + 1}
+                                        </span>
+
+                                        <span className="evolution-player">
+                                            {renderPlayerAvatar(player, 'evolution-avatar-img')}
+                                            {player.name}
+                                        </span>
+
+                                        <strong>{player.evolutionPoints} pts</strong>
+                                    </div>
+                                ))}
+                            </article>
+                        ))}
+                    </div>
                 </section>
             )}
 
