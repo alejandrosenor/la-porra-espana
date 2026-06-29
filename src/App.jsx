@@ -18,6 +18,7 @@ import WorldCupCalendar from './pages/WorldCupCalendar'
 import AdminWorldCupMatch from './pages/AdminWorldCupMatch'
 import Rules from './pages/Rules'
 import AdminBoardPost from './pages/AdminBoardPost'
+import AdminSuggestions from './pages/AdminSuggestions'
 
 function App() {
 
@@ -56,6 +57,7 @@ function App() {
       <Route path="/admin/world-cup-match/:id" element={<AdminWorldCupMatch />} />
       <Route path="/rules" element={<Rules />} />
       <Route path="/admin/board/new" element={<AdminBoardPost />} />
+      <Route path="/admin/suggestions" element={<AdminSuggestions />} />
     </Routes>
   )
 }

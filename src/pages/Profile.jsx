@@ -66,6 +66,7 @@ function Profile() {
         '/stickers/marcos.png',
         '/stickers/curtois.png',
         '/stickers/mister.png',
+        '/stickers/maroto.png',
         '/stickers/flag.png',
         '/stickers/logo.png'
     ]

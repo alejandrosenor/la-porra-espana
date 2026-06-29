@@ -22,6 +22,9 @@ function Dashboard() {
     const [openComments, setOpenComments] = useState({})
     const [currentPlayer, setCurrentPlayer] = useState(player)
     const [maintenanceMode, setMaintenanceMode] = useState(false)
+    const [suggestions, setSuggestions] = useState([])
+    const [suggestionTitle, setSuggestionTitle] = useState('')
+    const [suggestionDescription, setSuggestionDescription] = useState('')
 
     useEffect(() => {
         loadData()
@@ -111,6 +114,22 @@ function Dashboard() {
                 )
             `)
             .order('created_at', { ascending: true })
+
+        const { data: suggestionsData } = await supabase
+            .from('suggestions')
+            .select(`
+                *,
+                players (
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(5)
+
+        setSuggestions(suggestionsData || [])
 
         setCurrentPlayer(freshPlayer)
         setMaintenanceMode(settings?.maintenance_mode || false)
@@ -290,6 +309,33 @@ function Dashboard() {
                 {playerData?.avatar || '👤'}
             </span>
         )
+    }
+
+    async function sendSuggestion() {
+        if (!suggestionTitle.trim()) {
+            alert('Pon al menos un título para la sugerencia')
+            return
+        }
+
+        const { error } = await supabase
+            .from('suggestions')
+            .insert({
+                player_id: player.id,
+                title: suggestionTitle.trim(),
+                description: suggestionDescription.trim() || null,
+                status: 'pending'
+            })
+
+        if (error) {
+            console.log(error)
+            alert('Error enviando sugerencia')
+            return
+        }
+
+        setSuggestionTitle('')
+        setSuggestionDescription('')
+        alert('Sugerencia enviada 💡')
+        loadData()
     }
 
     async function publishComment(postId) {
@@ -502,6 +548,10 @@ function Dashboard() {
                     </button>
                 )}
 
+                <button className="hero-admin-button" onClick={() => navigate('/admin/suggestions')}>
+                    💡 Sugerencias
+                </button>
+
                 {player?.is_admin && (
                     <button
                         className="hero-admin-button"
@@ -535,6 +585,51 @@ function Dashboard() {
                 <button onClick={() => navigate('/rules')}>
                     Ver reglas
                 </button>
+            </section>
+
+            <section className="suggestions-card">
+                <div className="section-title-row">
+                    <h2>💡 Buzón de sugerencias</h2>
+                    <span>Ideas para la app</span>
+                </div>
+
+                <p className="suggestions-intro">
+                    ¿Se te ocurre una mejora, una tontería o una nueva estadística absurda?
+                    Déjala aquí para que el comité la estudie.
+                </p>
+
+                <input
+                    type="text"
+                    placeholder="Título de la sugerencia"
+                    value={suggestionTitle}
+                    onChange={(e) => setSuggestionTitle(e.target.value)}
+                />
+
+                <textarea
+                    placeholder="Explica un poco la idea..."
+                    value={suggestionDescription}
+                    onChange={(e) => setSuggestionDescription(e.target.value)}
+                />
+
+                <button onClick={sendSuggestion}>
+                    Enviar sugerencia
+                </button>
+
+                {suggestions.length > 0 && (
+                    <div className="suggestions-list">
+                        {suggestions.map((suggestion) => (
+                            <article key={suggestion.id}>
+                                <strong>{suggestion.title}</strong>
+                                {suggestion.description && (
+                                    <p>{suggestion.description}</p>
+                                )}
+                                <small>
+                                    {suggestion.players?.avatar} {suggestion.players?.name} · Pendiente
+                                </small>
+                            </article>
+                        ))}
+                    </div>
+                )}
             </section>
 
             <section className="world-board">

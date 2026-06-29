@@ -10,6 +10,7 @@ function Stats() {
     const [players, setPlayers] = useState([])
     const [bets, setBets] = useState([])
     const [drinksData, setDrinksData] = useState([])
+    const [worldCupVisits, setWorldCupVisits] = useState([])
 
     useEffect(() => {
         loadStats()
@@ -48,6 +49,25 @@ function Stats() {
                     avatar_image_url
                 )
             `)
+
+        const { data: visitsData, error: visitsError } = await supabase
+            .from('world_cup_visits')
+            .select(`
+                *,
+                players (
+                    id,
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                )
+            `)
+
+        if (visitsError) {
+            console.log(visitsError)
+        } else {
+            setWorldCupVisits(visitsData || [])
+        }
 
         setPlayers(playersData || [])
         setBets(betsData || [])
@@ -320,6 +340,31 @@ function Stats() {
         }
     }
 
+    function getWorldCupVisitKing() {
+        const visitsByPlayer = {}
+
+        worldCupVisits.forEach((visit) => {
+            const playerId = visit.player_id
+
+            if (!visitsByPlayer[playerId]) {
+                visitsByPlayer[playerId] = {
+                    player: visit.players,
+                    total: 0
+                }
+            }
+
+            visitsByPlayer[playerId].total += 1
+        })
+
+        const ranking = Object.values(visitsByPlayer)
+            .filter((item) => item.player)
+            .sort((a, b) => b.total - a.total)
+
+        return ranking[0] || null
+    }
+
+    const worldCupVisitKing = getWorldCupVisitKing()
+
     const exactKing = topPlayersBy('exact_hits')
     const winnerKing = topPlayersBy('winner_hits')
     const pointsLeader = topPlayersBy('points')
@@ -416,6 +461,22 @@ function Stats() {
                         result={mostEdited}
                         label="cambios de apuesta"
                     />
+                </article>
+
+                <article className="stat-card">
+                    <span>🌍</span>
+                    <p>Vicente Maroto</p>
+
+                    {worldCupVisitKing && worldCupVisitKing.total > 0 ? (
+                        <>
+                            <strong>
+                                <PlayerName player={worldCupVisitKing.player} />
+                            </strong>
+                            <small>{worldCupVisitKing.total} visitas a Mundial</small>
+                        </>
+                    ) : (
+                        renderEmptyStat()
+                    )}
                 </article>
 
                 <article className="stat-card">

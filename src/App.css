@@ -3811,3 +3811,156 @@ select {
   border-color: rgba(255, 216, 74, .35) !important;
   box-shadow: 0 18px 42px rgba(0, 0, 0, .32);
 }
+
+.suggestions-card {
+  margin-top: 18px;
+  padding: 20px;
+  margin-bottom: 22px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.075);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.suggestions-intro {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, .72);
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.suggestions-card input,
+.suggestions-card textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .08);
+  color: white;
+  font-size: 16px;
+  outline: none;
+  font-family: inherit;
+}
+
+.suggestions-card textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.suggestions-card button {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px;
+  background: #ffd84a;
+  color: #2a080c;
+  font-weight: 950;
+}
+
+.suggestions-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.suggestions-list article {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.suggestions-list strong {
+  display: block;
+  color: white;
+}
+
+.suggestions-list p {
+  margin: 6px 0;
+  color: rgba(255, 255, 255, .7);
+  font-weight: 700;
+}
+
+.suggestions-list small {
+  color: #ffd84a;
+  font-weight: 850;
+}
+
+.admin-suggestions-list {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-suggestion-card {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .075);
+  border: 1px solid rgba(255, 255, 255, .08);
+  display: grid;
+  gap: 14px;
+}
+
+.admin-suggestion-card h2 {
+  margin: 10px 0 6px;
+}
+
+.admin-suggestion-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, .72);
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.admin-suggestion-card small {
+  display: block;
+  margin-top: 10px;
+  color: #ffd84a;
+  font-weight: 850;
+}
+
+.suggestion-status {
+  display: inline-block;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.suggestion-status.pending {
+  background: rgba(255, 216, 74, .16);
+  color: #ffd84a;
+}
+
+.suggestion-status.reviewing {
+  background: rgba(100, 170, 255, .16);
+  color: #75b7ff;
+}
+
+.suggestion-status.approved {
+  background: rgba(61, 220, 132, .16);
+  color: #3ddc84;
+}
+
+.suggestion-status.done {
+  background: rgba(180, 120, 255, .18);
+  color: #c69cff;
+}
+
+.suggestion-status.rejected {
+  background: rgba(255, 122, 122, .16);
+  color: #ff7a7a;
+}
+
+.suggestion-admin-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.suggestion-admin-actions button {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(255, 255, 255, .1);
+  color: white;
+  font-weight: 900;
+}

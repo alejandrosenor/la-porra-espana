@@ -16,6 +16,7 @@ function WorldCupCalendar() {
 
     useEffect(() => {
         loadMatches()
+        registerVisit()
     }, [])
 
     useEffect(() => {
@@ -193,6 +194,20 @@ function WorldCupCalendar() {
         } else {
             audioRef.current.play()
             setIsPlaying(true)
+        }
+    }
+
+    async function registerVisit() {
+        if (!player?.id) return
+
+        const { error } = await supabase
+            .from('world_cup_visits')
+            .insert({
+                player_id: player.id
+            })
+
+        if (error) {
+            console.log('Error registrando visita mundial:', error)
         }
     }
 
