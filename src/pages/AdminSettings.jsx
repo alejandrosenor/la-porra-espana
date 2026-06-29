@@ -216,6 +216,14 @@ function AdminSettings() {
                     </p>
 
                     <p>
+                        El botón de reseteo de bebidas le pondrá a Cámara TODAS las bebidas registradas a 0. Por si vuelve a ponerse 1000 bebidas de golpe..
+                    </p>
+
+                    <p>
+                        Penalizar a Cámara implica negarle al acceso a TODAS las funciones de la aplicación, incluidas las apuestas. Si el estado aparece como "Habilitado" significa que tiene acceso a la aplicación. Si aparece como "Penalizado" significa que algo ha liado y ha sido penalizado, lo que le negará el acceso a cualquier función de la aplicación.
+                    </p>
+
+                    <p>
                         Estado actual:{' '}
                         <b>
                             {camara?.is_penalized
