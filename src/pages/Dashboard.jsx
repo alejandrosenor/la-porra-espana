@@ -361,15 +361,19 @@ function Dashboard() {
     const FAKE_PRESS = [
         '📰 La Gaceta de La Porra: Pilu sigue defendiendo que el gol fue de Cucurella. La FIFA discrepa.',
         '📰 Marca Porra: Cámara todavía reclama el gol anulado de Ferran Torres.',
-        '📰 Mundo Deportivo de La Porra: Ferran marcó. El fuera de juego también.',
-        '📰 Diario As Porra: Gabi asegura que Mikel Merino estuvo a punto de marcar. Muy a punto.',
-        '📰 Mundo Porra: Adri continúa negociando con la tecnología para poder apostar.',
-        '📰 Última Hora: Pilu ha llenado una segunda botella de cáscaras de pipas.',
+        '📰 Mundo Deportivo de La Porra: Gabi conquista el liderato tras clavar el 1-0. La redacción sigue sin creérselo.',
+        '📰 Diario As Porra: Gabi fue el único visionario. El resto ya busca excusas.',
+        '📰 Mundo Porra: Ferran estrelló un balón en el larguero y dejó a Gabi a centímetros de perder el exacto.',
+        '📰 Última Hora: Pilu ha llenado una tercera botella de cáscaras de pipas.',
         '📰 20 Minutos Porra: Dani sigue defendiendo el trono de la apuesta más loca.',
-        '📰 El Chiringuito de La Porra: Nacho sigue buscando a Dani Olmo sobre el césped.',
-        '📰 Porra Today: ¿Blanca liderará la clasificación de refrescos tras el España - Arabia?.',
-        '📰 La Voz de La Porra: Ángel acierta el goleador y pide respeto para los visionarios.',
-        '📰 Noticias FIFA: Arabia Saudita solicita que Pilu deje de contar goles en propia como asistencias de Cucurella.'
+        '📰 El Chiringuito de La Porra: Blanca insiste en que "Laminado Yamal" sigue siendo el mejor jugador del torneo.',
+        '📰 Porra Today: Lamine y Oyarzabal fueron los goleadores favoritos... y decidieron tomarse el día libre.',
+        '📰 La Voz de La Porra: Álex Baena marca y deja a toda la porra sin un solo acierto de goleador.',
+        '📰 Rugby Today: Uruguay preguntó por error dónde se apoyaba el balón para ensayar.',
+        '📰 Mundo Arbitral: Un uruguayo acabó expulsado. El árbitro aún pidió perdón por haber sacado una tarjeta.',
+        '📰 Comité Técnico: El árbitro asegura que vio todas las faltas... simplemente decidió ignorarlas.',
+        '📰 Diario Médico: España pide parte de lesiones tras sobrevivir al amistoso de rugby disputado contra Uruguay.',
+        '📰 Noticias FIFA: El árbitro encontró la tarjeta en el minuto 89.'
     ]
 
     return (
