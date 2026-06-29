@@ -91,73 +91,75 @@ function WorldCupCalendar() {
     function getAllTeams() {
         const teams = {}
 
-        matches.forEach((match) => {
-            const group = match.stage
+        matches
+            .filter((match) => match.stage?.startsWith('Grupo'))
+            .forEach((match) => {
+                const group = match.stage
 
-            if (!teams[group]) teams[group] = {}
+                if (!teams[group]) teams[group] = {}
 
-            if (!teams[group][match.home_team]) {
-                teams[group][match.home_team] = {
-                    name: match.home_team,
-                    flag: match.home_flag,
-                    played: 0,
-                    wins: 0,
-                    draws: 0,
-                    losses: 0,
-                    points: 0,
-                    goalsFor: 0,
-                    goalsAgainst: 0,
-                    goalDifference: 0
+                if (!teams[group][match.home_team]) {
+                    teams[group][match.home_team] = {
+                        name: match.home_team,
+                        flag: match.home_flag,
+                        played: 0,
+                        wins: 0,
+                        draws: 0,
+                        losses: 0,
+                        points: 0,
+                        goalsFor: 0,
+                        goalsAgainst: 0,
+                        goalDifference: 0
+                    }
                 }
-            }
 
-            if (!teams[group][match.away_team]) {
-                teams[group][match.away_team] = {
-                    name: match.away_team,
-                    flag: match.away_flag,
-                    played: 0,
-                    wins: 0,
-                    draws: 0,
-                    losses: 0,
-                    points: 0,
-                    goalsFor: 0,
-                    goalsAgainst: 0,
-                    goalDifference: 0
+                if (!teams[group][match.away_team]) {
+                    teams[group][match.away_team] = {
+                        name: match.away_team,
+                        flag: match.away_flag,
+                        played: 0,
+                        wins: 0,
+                        draws: 0,
+                        losses: 0,
+                        points: 0,
+                        goalsFor: 0,
+                        goalsAgainst: 0,
+                        goalDifference: 0
+                    }
                 }
-            }
 
-            if (match.status !== 'closed') return
+                if (match.status !== 'closed') return
 
-            const home = teams[group][match.home_team]
-            const away = teams[group][match.away_team]
+                const home = teams[group][match.home_team]
+                const away = teams[group][match.away_team]
 
-            home.played += 1
-            away.played += 1
+                home.played += 1
+                away.played += 1
 
-            home.goalsFor += match.home_goals
-            home.goalsAgainst += match.away_goals
+                home.goalsFor += match.home_goals
+                home.goalsAgainst += match.away_goals
 
-            away.goalsFor += match.away_goals
-            away.goalsAgainst += match.home_goals
+                away.goalsFor += match.away_goals
+                away.goalsAgainst += match.home_goals
 
-            if (match.home_goals > match.away_goals) {
-                home.wins += 1
-                home.points += 3
-                away.losses += 1
-            } else if (match.home_goals < match.away_goals) {
-                away.wins += 1
-                away.points += 3
-                home.losses += 1
-            } else {
-                home.draws += 1
-                away.draws += 1
-                home.points += 1
-                away.points += 1
-            }
+                if (match.home_goals > match.away_goals) {
+                    home.wins += 1
+                    home.points += 3
+                    away.losses += 1
+                } else if (match.home_goals < match.away_goals) {
+                    away.wins += 1
+                    away.points += 3
+                    home.losses += 1
+                } else {
+                    home.draws += 1
+                    away.draws += 1
+                    home.points += 1
+                    away.points += 1
+                }
 
-            home.goalDifference = home.goalsFor - home.goalsAgainst
-            away.goalDifference = away.goalsFor - away.goalsAgainst
-        })
+                home.goalDifference = home.goalsFor - home.goalsAgainst
+                away.goalDifference = away.goalsFor - away.goalsAgainst
+            })
 
         return teams
     }
@@ -271,6 +273,20 @@ function WorldCupCalendar() {
                     {nextSpainMatch && (
                         <section className="worldcup-feature-card spain-feature">
                             <p>🇪🇸 Próximo partido de España</p>
+
+                            <h2>
+                                {nextSpainMatch.home_flag} {nextSpainMatch.home_team}
+                                <span> vs </span>
+                                {nextSpainMatch.away_flag} {nextSpainMatch.away_team}
+                            </h2>
+
+                            <strong>{formatShortDate(nextSpainMatch.match_date)}</strong>
+                        </section>
+                    )}
+
+                    {nextSpainMatch && nextSpainMatch.stage === 'Dieciseisavos' && (
+                        <section className="worldcup-feature-card knockout-spain-card">
+                            <p>🔥 España en dieciseisavos</p>
 
                             <h2>
                                 {nextSpainMatch.home_flag} {nextSpainMatch.home_team}
