@@ -21,6 +21,7 @@ function Dashboard() {
     const [commentTexts, setCommentTexts] = useState({})
     const [openComments, setOpenComments] = useState({})
     const [currentPlayer, setCurrentPlayer] = useState(player)
+    const [maintenanceMode, setMaintenanceMode] = useState(false)
 
     useEffect(() => {
         loadData()
@@ -44,6 +45,12 @@ function Dashboard() {
         if (freshPlayer) {
             localStorage.setItem('player', JSON.stringify(freshPlayer))
         }
+
+        const { data: settings } = await supabase
+            .from('competition_settings')
+            .select('maintenance_mode')
+            .eq('id', 1)
+            .single()
 
         const { data: matchesData } = await supabase
             .from('matches')
@@ -106,6 +113,7 @@ function Dashboard() {
             .order('created_at', { ascending: true })
 
         setCurrentPlayer(freshPlayer)
+        setMaintenanceMode(settings?.maintenance_mode || false)
         setComments(commentsData || [])
         setBoardPosts(boardData || [])
         setFakePress(
@@ -398,6 +406,30 @@ function Dashboard() {
                         Usted está penalizado por el administrador para todas las funciones de esta aplicación.
                     </p>
                 </section>
+            </main>
+        )
+    }
+
+    if (maintenanceMode && !player?.is_admin) {
+        return (
+            <main className="maintenance-page">
+
+                <section className="maintenance-card">
+
+                    <span>🛠️</span>
+
+                    <h1>Aplicación en mantenimiento</h1>
+
+                    <p>
+                        Estamos realizando mejoras en La Porra del Mundial.
+                    </p>
+
+                    <p>
+                        Vuelve a intentarlo dentro de unos minutos.
+                    </p>
+
+                </section>
+
             </main>
         )
     }

@@ -9,6 +9,7 @@ function AdminSettings() {
 
     const [potAmount, setPotAmount] = useState(0)
     const [camara, setCamara] = useState(null)
+    const [maintenanceMode, setMaintenanceMode] = useState(false)
 
     useEffect(() => {
         if (!player?.is_admin) {
@@ -46,6 +47,9 @@ function AdminSettings() {
         }
 
         setCamara(camaraData)
+
+        setPotAmount(data?.pot_amount || 0)
+        setMaintenanceMode(data?.maintenance_mode || false)
     }
 
     async function saveSettings() {
@@ -55,7 +59,8 @@ function AdminSettings() {
         const { error } = await supabase
             .from('competition_settings')
             .update({
-                pot_amount: Number(potAmount)
+                pot_amount: Number(potAmount),
+                maintenance_mode: maintenanceMode
             })
             .eq('id', 1)
 
@@ -205,6 +210,45 @@ function AdminSettings() {
                         Guardar configuración
                     </button>
                 </div>
+            </section>
+
+            <section className="admin-create-card">
+                <div className="admin-message-info">
+                    <strong>🛠️ Estado de la aplicación</strong>
+
+                    <p>
+                        Activa el modo mantenimiento si necesitas bloquear temporalmente la app para todos los jugadores.
+                    </p>
+
+                    <p>
+                        Los administradores podrán seguir entrando para arreglar cosas.
+                    </p>
+                </div>
+
+                <button
+                    className={
+                        maintenanceMode
+                            ? 'app-status-button maintenance'
+                            : 'app-status-button online'
+                    }
+                    onClick={() => setMaintenanceMode(!maintenanceMode)}
+                >
+                    <span>
+                        {maintenanceMode ? '🔴' : '🟢'}
+                    </span>
+
+                    <div>
+                        <strong>
+                            {maintenanceMode ? 'MANTENIMIENTO' : 'ONLINE'}
+                        </strong>
+
+                        <small>
+                            {maintenanceMode
+                                ? 'La app está bloqueada para jugadores'
+                                : 'La app funciona con normalidad'}
+                        </small>
+                    </div>
+                </button>
             </section>
 
             <section className="admin-create-card camara-control-card">
