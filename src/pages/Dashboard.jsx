@@ -20,6 +20,7 @@ function Dashboard() {
     const [comments, setComments] = useState([])
     const [commentTexts, setCommentTexts] = useState({})
     const [openComments, setOpenComments] = useState({})
+    const [currentPlayer, setCurrentPlayer] = useState(player)
 
     useEffect(() => {
         loadData()
@@ -34,6 +35,16 @@ function Dashboard() {
     }, [])
 
     async function loadData() {
+        const { data: freshPlayer } = await supabase
+            .from('players')
+            .select('*')
+            .eq('id', player.id)
+            .single()
+
+        if (freshPlayer) {
+            localStorage.setItem('player', JSON.stringify(freshPlayer))
+        }
+
         const { data: matchesData } = await supabase
             .from('matches')
             .select('*')
@@ -94,6 +105,7 @@ function Dashboard() {
             `)
             .order('created_at', { ascending: true })
 
+        setCurrentPlayer(freshPlayer)
         setComments(commentsData || [])
         setBoardPosts(boardData || [])
         setFakePress(
@@ -375,6 +387,20 @@ function Dashboard() {
         '📰 Diario Médico: España pide parte de lesiones tras sobrevivir al amistoso de rugby disputado contra Uruguay.',
         '📰 Noticias FIFA: El árbitro encontró la tarjeta en el minuto 89.'
     ]
+
+    if (currentPlayer?.is_penalized) {
+        return (
+            <main className="penalized-page">
+                <section className="penalized-card">
+                    <span>🚫</span>
+                    <h1>Acceso penalizado</h1>
+                    <p>
+                        Usted está penalizado por el administrador para todas las funciones de esta aplicación.
+                    </p>
+                </section>
+            </main>
+        )
+    }
 
     return (
         <main className="dashboard-page dashboard-home with-bottom-nav">

@@ -8,6 +8,7 @@ function AdminSettings() {
     const player = JSON.parse(localStorage.getItem('player'))
 
     const [potAmount, setPotAmount] = useState(0)
+    const [camara, setCamara] = useState(null)
 
     useEffect(() => {
         if (!player?.is_admin) {
@@ -32,6 +33,19 @@ function AdminSettings() {
         }
 
         setPotAmount(data?.pot_amount || 0)
+
+        const { data: camaraData, error: camaraError } = await supabase
+            .from('players')
+            .select('*')
+            .eq('name', 'Cámara')
+            .maybeSingle()
+
+        if (camaraError) {
+            console.log(camaraError)
+            return
+        }
+
+        setCamara(camaraData)
     }
 
     async function saveSettings() {
@@ -53,6 +67,76 @@ function AdminSettings() {
 
         alert('Configuración guardada 💰')
         navigate('/dashboard')
+    }
+
+    async function resetCamaraDrinks() {
+        if (!camara) {
+            alert('No encuentro a Cámara')
+            return
+        }
+
+        const confirmed = confirm(
+            '¿Seguro que quieres poner TODAS las bebidas de Cámara a cero?'
+        )
+
+        if (!confirmed) return
+
+        const { error } = await supabase
+            .from('drinks')
+            .update({
+                beers: 0,
+                drinks: 0,
+                summer_wines: 0,
+                soft_drinks: 0,
+                waters: 0
+            })
+            .eq('player_id', camara.id)
+
+        if (error) {
+            console.log(error)
+            alert('Error reseteando bebidas de Cámara')
+            return
+        }
+
+        alert('Cámara vuelve a estar sobrio. Bebidas a cero')
+    }
+
+    async function setCamaraPenalty(value) {
+        if (!camara) {
+            alert('No encuentro a Cámara')
+            return
+        }
+
+        const confirmed = confirm(
+            value
+                ? '¿Penalizar a Cámara y bloquearle todas las funciones?'
+                : '¿Quitar penalización a Cámara y devolverle el acceso?'
+        )
+
+        if (!confirmed) return
+
+        const { data, error } = await supabase
+            .from('players')
+            .update({
+                is_penalized: value
+            })
+            .eq('id', camara.id)
+            .select()
+            .single()
+
+        if (error) {
+            console.log(error)
+            alert('Error actualizando penalización')
+            return
+        }
+
+        setCamara(data)
+
+        alert(
+            value
+                ? 'Cámara ha sido penalizado por el administrador 🚨'
+                : 'Cámara ha sido rehabilitado por el administrador ✅'
+        )
     }
 
     return (
@@ -121,6 +205,48 @@ function AdminSettings() {
                         Guardar configuración
                     </button>
                 </div>
+            </section>
+
+            <section className="admin-create-card camara-control-card">
+                <div className="admin-message-info">
+                    <strong>🚨 Panel Anti-Cámara</strong>
+
+                    <p>
+                        Herramientas especiales para controlar excesos, trampas, bugs aprovechados y demás obras de ingeniería social.
+                    </p>
+
+                    <p>
+                        Estado actual:{' '}
+                        <b>
+                            {camara?.is_penalized
+                                ? 'Penalizado'
+                                : 'Habilitado'}
+                        </b>
+                    </p>
+                </div>
+
+                <button
+                    className="delete-match-button"
+                    onClick={resetCamaraDrinks}
+                >
+                    Resetear bebidas de Cámara
+                </button>
+
+                {camara?.is_penalized ? (
+                    <button
+                        className="create-match-button"
+                        onClick={() => setCamaraPenalty(false)}
+                    >
+                        ✅ Rehabilitar a Cámara
+                    </button>
+                ) : (
+                    <button
+                        className="delete-match-button"
+                        onClick={() => setCamaraPenalty(true)}
+                    >
+                        🚫 Penalizar a Cámara
+                    </button>
+                )}
             </section>
         </main>
     )
