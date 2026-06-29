@@ -34,7 +34,7 @@ function Profile() {
         '☕', '🧃', '🍹', '🍸', '🥃',
 
         // Deportes y competición
-        '👺', '🏀', '🏈', '⚾', '🎾',
+        '🇪🇸', '🏀', '🏈', '⚾', '🎾',
         '🏉', '🥇', '🥈', '🥉', '🏅',
 
         // Tecnología y objetos
@@ -63,9 +63,9 @@ function Profile() {
         '/stickers/mbappe.png',
         '/stickers/vini.png',
         '/stickers/haaland.png',
+        '/stickers/marcos.png',
         '/stickers/curtois.png',
         '/stickers/mister.png',
-        '/stickers/espa.png',
         '/stickers/flag.png',
         '/stickers/logo.png'
     ]

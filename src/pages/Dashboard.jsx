@@ -675,6 +675,7 @@ function Dashboard() {
                     const statusText = getMatchStatus(match, betDone, notOpenYet)
                     const missingBets = players.length - getBetsCount(match.id)
                     const missingPlayers = getMissingPlayers(match.id)
+                    const drinksBlocked = player?.name === 'Cámara'
 
                     return (
                         <article key={match.id} className="pretty-match-card">
@@ -747,7 +748,11 @@ function Dashboard() {
                                     </button>
                                 )}
 
-                                {match.status === 'closed' ? (
+                                {drinksBlocked ? (
+                                    <button disabled className="disabled-drinks-btn">
+                                        Bloqueado. Hable con el admin
+                                    </button>
+                                ) : match.status === 'closed' ? (
                                     <button disabled className="disabled-drinks-btn">
                                         Hidratado
                                     </button>
