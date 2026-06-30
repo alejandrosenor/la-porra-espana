@@ -11,6 +11,7 @@ function Stats() {
     const [bets, setBets] = useState([])
     const [drinksData, setDrinksData] = useState([])
     const [worldCupVisits, setWorldCupVisits] = useState([])
+    const [disciplinaryCards, setDisciplinaryCards] = useState([])
 
     useEffect(() => {
         loadStats()
@@ -69,6 +70,20 @@ function Stats() {
             setWorldCupVisits(visitsData || [])
         }
 
+        const { data: cardsData } = await supabase
+            .from('disciplinary_cards')
+            .select(`
+                *,
+                players (
+                    id,
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                )
+            `)
+
+        setDisciplinaryCards(cardsData || [])
         setPlayers(playersData || [])
         setBets(betsData || [])
         setDrinksData(hydrationData || [])
@@ -363,6 +378,30 @@ function Stats() {
         return ranking[0] || null
     }
 
+    function getCardKing(type) {
+        const totals = {}
+
+        disciplinaryCards
+            .filter((card) => card.card_type === type)
+            .forEach((card) => {
+                if (!card.player_id) return
+
+                if (!totals[card.player_id]) {
+                    totals[card.player_id] = {
+                        player: card.players,
+                        total: 0
+                    }
+                }
+
+                totals[card.player_id].total += 1
+            })
+
+        return Object.values(totals).sort((a, b) => b.total - a.total)[0] || null
+    }
+
+    const yellowKing = getCardKing('yellow')
+    const redKing = getCardKing('red')
+
     const worldCupVisitKing = getWorldCupVisitKing()
 
     const exactKing = topPlayersBy('exact_hits')
@@ -473,6 +512,38 @@ function Stats() {
                                 <PlayerName player={worldCupVisitKing.player} />
                             </strong>
                             <small>{worldCupVisitKing.total} visitas a Mundial</small>
+                        </>
+                    ) : (
+                        renderEmptyStat()
+                    )}
+                </article>
+
+                <article className="stat-card">
+                    <span>🟨</span>
+                    <p>Más conflictivo</p>
+
+                    {yellowKing ? (
+                        <>
+                            <strong>
+                                <PlayerName player={yellowKing.player} />
+                            </strong>
+                            <small>{yellowKing.total} amarillas</small>
+                        </>
+                    ) : (
+                        renderEmptyStat()
+                    )}
+                </article>
+
+                <article className="stat-card">
+                    <span>🟥</span>
+                    <p>Expulsado del Mundial</p>
+
+                    {redKing ? (
+                        <>
+                            <strong>
+                                <PlayerName player={redKing.player} />
+                            </strong>
+                            <small>{redKing.total} rojas</small>
                         </>
                     ) : (
                         renderEmptyStat()

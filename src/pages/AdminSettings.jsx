@@ -10,6 +10,11 @@ function AdminSettings() {
     const [potAmount, setPotAmount] = useState(0)
     const [camara, setCamara] = useState(null)
     const [maintenanceMode, setMaintenanceMode] = useState(false)
+    const [players, setPlayers] = useState([])
+    const [selectedPlayerId, setSelectedPlayerId] = useState('')
+    const [cardType, setCardType] = useState('yellow')
+    const [cardReason, setCardReason] = useState('')
+    const [disciplinaryCards, setDisciplinaryCards] = useState([])
 
     useEffect(() => {
         if (!player?.is_admin) {
@@ -46,8 +51,29 @@ function AdminSettings() {
             return
         }
 
-        setCamara(camaraData)
+        const { data: playersData } = await supabase
+            .from('players')
+            .select('*')
+            .order('name')
 
+        setPlayers(playersData || [])
+
+        const { data: cardsData } = await supabase
+            .from('disciplinary_cards')
+            .select(`
+                *,
+                players (
+                    id,
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                )
+            `)
+            .order('created_at', { ascending: false })
+
+        setDisciplinaryCards(cardsData || [])
+        setCamara(camaraData)
         setPotAmount(data?.pot_amount || 0)
         setMaintenanceMode(data?.maintenance_mode || false)
     }
@@ -142,6 +168,137 @@ function AdminSettings() {
                 ? 'Cámara ha sido penalizado por el administrador 🚨'
                 : 'Cámara ha sido rehabilitado por el administrador ✅'
         )
+    }
+
+    async function addDisciplinaryCard() {
+        if (!selectedPlayerId) {
+            alert('Selecciona un jugador')
+            return
+        }
+
+        if (!cardReason.trim()) {
+            alert('Escribe el motivo de la tarjeta')
+            return
+        }
+
+        const confirmed = confirm(
+            `¿Añadir ${cardType === 'yellow' ? 'amarilla' : 'roja'} disciplinaria?`
+        )
+
+        if (!confirmed) return
+
+        const { error } = await supabase
+            .from('disciplinary_cards')
+            .insert({
+                player_id: selectedPlayerId,
+                card_type: cardType,
+                reason: cardReason.trim(),
+                created_by: player.id
+            })
+
+        if (error) {
+            console.log(error)
+            alert('Error añadiendo tarjeta')
+            return
+        }
+
+        setCardReason('')
+        alert('Tarjeta añadida al expediente 👮‍♂️')
+        loadSettings()
+    }
+
+    async function clearPlayerCards() {
+        if (!selectedPlayerId) {
+            alert('Selecciona un jugador')
+            return
+        }
+
+        const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
+
+        const confirmed = confirm(
+            `¿Limpiar todo el expediente disciplinario de ${selectedPlayer?.name}?`
+        )
+
+        if (!confirmed) return
+
+        const { error } = await supabase
+            .from('disciplinary_cards')
+            .delete()
+            .eq('player_id', selectedPlayerId)
+
+        if (error) {
+            console.log(error)
+            alert('Error limpiando expediente')
+            return
+        }
+
+        alert('Expediente limpio 😇')
+        loadSettings()
+    }
+
+    async function setPlayerPenalty(value) {
+        if (!selectedPlayerId) {
+            alert('Selecciona un jugador')
+            return
+        }
+
+        const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
+
+        const confirmed = confirm(
+            value
+                ? `¿Penalizar todas las funciones de ${selectedPlayer?.name}?`
+                : `¿Rehabilitar a ${selectedPlayer?.name}?`
+        )
+
+        if (!confirmed) return
+
+        const { error } = await supabase
+            .from('players')
+            .update({ is_penalized: value })
+            .eq('id', selectedPlayerId)
+
+        if (error) {
+            console.log(error)
+            alert('Error actualizando penalización')
+            return
+        }
+
+        alert(value ? 'Jugador penalizado 🚫' : 'Jugador rehabilitado ✅')
+        loadSettings()
+    }
+
+    async function resetPlayerDrinks() {
+        if (!selectedPlayerId) {
+            alert('Selecciona un jugador')
+            return
+        }
+
+        const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
+
+        const confirmed = confirm(
+            `¿Poner a cero todas las bebidas de ${selectedPlayer?.name}?`
+        )
+
+        if (!confirmed) return
+
+        const { error } = await supabase
+            .from('drinks')
+            .update({
+                beers: 0,
+                drinks: 0,
+                summer_wines: 0,
+                soft_drinks: 0,
+                waters: 0
+            })
+            .eq('player_id', selectedPlayerId)
+
+        if (error) {
+            console.log(error)
+            alert('Error reseteando bebidas')
+            return
+        }
+
+        alert('Bebidas reseteadas 🍻')
     }
 
     return (
@@ -249,6 +406,110 @@ function AdminSettings() {
                         </small>
                     </div>
                 </button>
+            </section>
+
+            <section className="admin-create-card disciplinary-card">
+                <div className="admin-message-info">
+                    <strong>👮‍♂️ Comité Disciplinario</strong>
+
+                    <p>
+                        Desde aquí puedes añadir tarjetas, penalizar jugadores, rehabilitarlos o resetear sus bebidas.
+                    </p>
+                </div>
+
+                <label>
+                    Jugador
+                    <select
+                        value={selectedPlayerId}
+                        onChange={(e) => setSelectedPlayerId(e.target.value)}
+                    >
+                        <option value="">Selecciona jugador</option>
+
+                        {players.map((item) => (
+                            <option key={item.id} value={item.id}>
+                                {item.name}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <label>
+                    Tipo de tarjeta
+                    <select
+                        value={cardType}
+                        onChange={(e) => setCardType(e.target.value)}
+                    >
+                        <option value="yellow">🟨 Amarilla</option>
+                        <option value="red">🟥 Roja</option>
+                    </select>
+                </label>
+
+                <label>
+                    Motivo
+                    <textarea
+                        placeholder="Ej: Añadir 1000 bebidas aprovechando un bug."
+                        value={cardReason}
+                        onChange={(e) => setCardReason(e.target.value)}
+                        maxLength={250}
+                    />
+                </label>
+
+                <button
+                    className="create-match-button"
+                    onClick={addDisciplinaryCard}
+                >
+                    Añadir tarjeta
+                </button>
+
+                <div className="disciplinary-actions-grid">
+                    <button onClick={resetPlayerDrinks}>
+                        🍻 Reset bebidas
+                    </button>
+
+                    <button onClick={() => setPlayerPenalty(true)}>
+                        🚫 Penalizar
+                    </button>
+
+                    <button onClick={() => setPlayerPenalty(false)}>
+                        ✅ Rehabilitar
+                    </button>
+
+                    <button onClick={clearPlayerCards}>
+                        🧹 Limpiar expediente
+                    </button>
+                </div>
+
+                <div className="disciplinary-history">
+                    <h2>Últimas sanciones</h2>
+
+                    {disciplinaryCards.length === 0 ? (
+                        <p className="empty-history">
+                            No hay sanciones todavía. Sorprendente.
+                        </p>
+                    ) : (
+                        disciplinaryCards.slice(0, 8).map((card) => (
+                            <article
+                                key={card.id}
+                                className={`disciplinary-history-card ${card.card_type}`}
+                            >
+                                <strong>
+                                    {card.card_type === 'yellow' ? '🟨' : '🟥'} {card.players?.name}
+                                </strong>
+
+                                <p>{card.reason}</p>
+
+                                <small>
+                                    {new Date(card.created_at).toLocaleString('es-ES', {
+                                        day: '2-digit',
+                                        month: 'short',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </small>
+                            </article>
+                        ))
+                    )}
+                </div>
             </section>
 
             <section className="admin-create-card camara-control-card">

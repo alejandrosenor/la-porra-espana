@@ -15,6 +15,7 @@ function Profile() {
     const [selectedAvatar, setSelectedAvatar] = useState(player.avatar || '')
     const [selectedSticker, setSelectedSticker] = useState(player.avatar_image_url || '')
     const [drinksData, setDrinksData] = useState([])
+    const [disciplinaryCards, setDisciplinaryCards] = useState([])
 
     const AVATAR_OPTIONS = [
         // Originales
@@ -108,11 +109,17 @@ function Profile() {
             .select('*')
             .eq('player_id', player.id)
 
+        const { data: myCardsData } = await supabase
+            .from('disciplinary_cards')
+            .select('*')
+            .eq('player_id', player.id)
+
         setAllPlayers(playerData || [])
         setRanking(playersData || [])
         setMyBets(betsData || [])
         setSelectedAvatar(playerData.avatar)
         setDrinksData(hydrationData || [])
+        setDisciplinaryCards(myCardsData || [])
     }
 
     function logout() {
@@ -145,6 +152,8 @@ function Profile() {
         totalBeers +
         totalDrinks +
         totalSummerWines
+    const yellowCards = disciplinaryCards.filter((card) => card.card_type === 'yellow').length
+    const redCards = disciplinaryCards.filter((card) => card.card_type === 'red').length
 
     function getPlayerTitle() {
         if (position === 1) return 'Oráculo del Mundial'
@@ -173,6 +182,11 @@ function Profile() {
         if (currentPlayer.points >= 10) achievements.push('🏃‍➡️ Pistoletazo de salida')
         if (currentPlayer.points >= 20) achievements.push('🔝 Buen ritmo de carrera')
         if (currentPlayer.points >= 25) achievements.push('🏆 Leyenda')
+        if (yellowCards === 0 && redCards === 0) achievements.push('😇 Expediente limpio')
+        if (yellowCards >= 1) achievements.push('🟨 Primera amarilla')
+        if (yellowCards >= 3) achievements.push('😈 Cliente habitual')
+        if (redCards >= 1) achievements.push('🚨 Suspendido')
+        if (redCards >= 2) achievements.push('🟥 Buscado por la FIFA')
         if (totalBeers >= 1) achievements.push('🍺 Primera cerveza')
         if (totalBeers >= 10) achievements.push('🍻 Catador de cervezas')
         if (totalSummerWines >= 10) achievements.push('🍷 Veranito')

@@ -301,6 +301,61 @@ function Rules() {
                     </div>
 
                     <div className="achievement-rule">
+                        <span>😇</span>
+                        <div>
+                            <strong>Expediente limpio</strong>
+                            <div className="achievement-rarity rare">
+                                RARO
+                            </div>
+                            <p>Terminar sin recibir ninguna tarjeta disciplinaria.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🟨</span>
+                        <div>
+                            <strong>Primera amarilla</strong>
+                            <div className="achievement-rarity common">
+                                COMÚN
+                            </div>
+                            <p>Recibir tu primera tarjeta amarilla del Comité Disciplinario.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>😈</span>
+                        <div>
+                            <strong>Cliente habitual</strong>
+                            <div className="achievement-rarity epic">
+                                ÉPICO
+                            </div>
+                            <p>Acumular 3 tarjetas amarillas.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🚨</span>
+                        <div>
+                            <strong>Suspendido</strong>
+                            <div className="achievement-rarity epic">
+                                ÉPICO
+                            </div>
+                            <p>Recibir tu primera tarjeta roja.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
+                        <span>🟥</span>
+                        <div>
+                            <strong>Buscado por la FIFA</strong>
+                            <div className="achievement-rarity legendary">
+                                LEGENDARIO
+                            </div>
+                            <p>Recibir dos tarjetas rojas durante la competición.</p>
+                        </div>
+                    </div>
+
+                    <div className="achievement-rule">
                         <span>🍺</span>
                         <div>
                             <strong>Primera cerveza</strong>
