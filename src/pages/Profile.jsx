@@ -113,6 +113,7 @@ function Profile() {
             .from('disciplinary_cards')
             .select('*')
             .eq('player_id', player.id)
+            .order('created_at', { ascending: false })
 
         setAllPlayers(playerData || [])
         setRanking(playersData || [])
@@ -154,6 +155,14 @@ function Profile() {
         totalSummerWines
     const yellowCards = disciplinaryCards.filter((card) => card.card_type === 'yellow').length
     const redCards = disciplinaryCards.filter((card) => card.card_type === 'red').length
+    const lastCard = disciplinaryCards[0]
+
+    function getDisciplinaryStatus() {
+        if (redCards > 0) return '🚫 Sancionado temporalmente'
+        if (yellowCards >= 3) return '⚠️ Conflictivo'
+        if (yellowCards > 0) return '👀 Bajo vigilancia'
+        return '😇 Expediente limpio'
+    }
 
     function getPlayerTitle() {
         if (position === 1) return 'Oráculo del Mundial'
@@ -505,6 +514,55 @@ function Profile() {
                         <small>Aguas</small>
                     </div>
                 </div>
+            </section>
+
+            <section className="profile-disciplinary-card">
+                <div className="section-title-row">
+                    <h2>👮 Expediente disciplinario</h2>
+                    <span>{yellowCards + redCards} sanciones</span>
+                </div>
+
+                <div className="disciplinary-counts">
+                    <article>
+                        <span>🟨</span>
+                        <strong>{yellowCards}</strong>
+                        <p>Amarillas</p>
+                    </article>
+
+                    <article>
+                        <span>🟥</span>
+                        <strong>{redCards}</strong>
+                        <p>Rojas</p>
+                    </article>
+                </div>
+
+                <div className="disciplinary-status-box">
+                    <span>Estado</span>
+                    <strong>{getDisciplinaryStatus()}</strong>
+                </div>
+
+                {lastCard ? (
+                    <article className={`disciplinary-case-file ${lastCard.card_type}`}>
+                        <span>📄 Expediente nº{lastCard.case_number || '---'}</span>
+
+                        <h3>
+                            {lastCard.card_type === 'yellow' ? '🟨 Amarilla' : '🟥 Roja directa'}
+                        </h3>
+
+                        <p>{lastCard.reason}</p>
+
+                        <small>
+                            {new Date(lastCard.created_at).toLocaleString('es-ES', {
+                                day: '2-digit',
+                                month: 'short',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </small>
+                    </article>
+                ) : (
+                    <p className="empty-history">Sin sanciones. De momento.</p>
+                )}
             </section>
 
             <section className="achievements-card">

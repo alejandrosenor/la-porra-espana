@@ -25,6 +25,7 @@ function Dashboard() {
     const [suggestions, setSuggestions] = useState([])
     const [suggestionTitle, setSuggestionTitle] = useState('')
     const [suggestionDescription, setSuggestionDescription] = useState('')
+    const [disciplinaryCards, setDisciplinaryCards] = useState([])
 
     useEffect(() => {
         loadData()
@@ -129,8 +130,22 @@ function Dashboard() {
             .order('created_at', { ascending: false })
             .limit(5)
 
-        setSuggestions(suggestionsData || [])
+        const { data: disciplinaryData } = await supabase
+            .from('disciplinary_cards')
+            .select(`
+                *,
+                player:players!disciplinary_cards_player_id_fkey (
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(5)
 
+        setDisciplinaryCards(disciplinaryData || [])
+        setSuggestions(suggestionsData || [])
         setCurrentPlayer(freshPlayer)
         setMaintenanceMode(settings?.maintenance_mode || false)
         setComments(commentsData || [])
@@ -548,9 +563,11 @@ function Dashboard() {
                     </button>
                 )}
 
-                <button className="hero-admin-button" onClick={() => navigate('/admin/suggestions')}>
-                    💡 Sugerencias
-                </button>
+                {player?.is_admin && (
+                    <button className="hero-admin-button" onClick={() => navigate('/admin/suggestions')}>
+                        💡 Sugerencias
+                    </button>
+                )}
 
                 {player?.is_admin && (
                     <button
@@ -770,6 +787,33 @@ function Dashboard() {
                                             </div>
                                         )}
                                     </div>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            <section className="disciplinary-home-card">
+                <div className="section-title-row">
+                    <h2>👮 Unidad Disciplinaria del Mundial</h2>
+                    <span>Últimas sanciones</span>
+                </div>
+
+                {disciplinaryCards.length === 0 ? (
+                    <p className="empty-history">No hay sanciones. Milagro.</p>
+                ) : (
+                    <div className="disciplinary-home-list">
+                        {disciplinaryCards.map((card) => (
+                            <article key={card.id} className={card.card_type}>
+                                <span>{card.card_type === 'yellow' ? '🟨' : '🟥'}</span>
+
+                                <div>
+                                    <strong>
+                                        Expediente FIFA-PORRA nº{card.case_number || '---'} · {card.player?.avatar} {card.player?.name}
+                                    </strong>
+
+                                    <p>{card.reason}</p>
                                 </div>
                             </article>
                         ))}

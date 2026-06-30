@@ -532,7 +532,7 @@ function Stats() {
                             <strong>
                                 <PlayerName player={yellowKing.player} />
                             </strong>
-                            <small>{yellowKing.total} amarillas</small>
+                            <small>{yellowKing.total} tarjetas amarillas</small>
                         </>
                     ) : (
                         renderEmptyStat()
@@ -548,7 +548,7 @@ function Stats() {
                             <strong>
                                 <PlayerName player={redKing.player} />
                             </strong>
-                            <small>{redKing.total} rojas</small>
+                            <small>{redKing.total} tarjetas rojas</small>
                         </>
                     ) : (
                         renderEmptyStat()

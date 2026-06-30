@@ -196,6 +196,17 @@ function AdminSettings() {
                 created_by: player.id
             })
 
+        const selectedPlayer = players.find((p) => p.id === selectedPlayerId)
+
+        await supabase
+            .from('activity_feed')
+            .insert({
+                player_id: selectedPlayerId,
+                icon: cardType === 'yellow' ? '🟨' : '🟥',
+                type: 'disciplinary_card',
+                message: `${selectedPlayer?.name} recibe ${cardType === 'yellow' ? 'tarjeta amarilla' : 'tarjeta roja'} del Comité Disciplinario. Motivo: ${cardReason.trim()}`
+            })
+
         if (error) {
             console.log(error)
             alert('Error añadiendo tarjeta')
