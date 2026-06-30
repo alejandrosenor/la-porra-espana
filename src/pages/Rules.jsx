@@ -121,6 +121,60 @@ function Rules() {
                 </article>
 
                 <article className="stat-card">
+                    <span>👮</span>
+                    <p>Unidad Disciplinaria del Mundial</p>
+
+                    <small>
+                        La Unidad Disciplinaria del Mundial, también conocida como UDM, es el organismo oficial de La Porra encargado de vigilar comportamientos sospechosos, protestas excesivas, lloros por el VAR, abusos de bugs y cualquier acto que atente contra el buen nombre de la competición.
+                    </small>
+
+                    <small>
+                        Las tarjetas NO afectan directamente a la puntuación del ranking, salvo que el administrador decida aplicar una penalización adicional.
+                    </small>
+
+                    <small>
+                        <br/><br/>🟨 Tarjeta amarilla: Aviso disciplinario por conducta dudosa, quejas reiteradas, comportamiento sospechoso o acciones que merezcan quedar registradas en el expediente.
+                    </small>
+
+                    <small>
+                        🟥 Tarjeta roja: Sanción grave por aprovechar fallos de la aplicación, alterar estadísticas, manipular datos o realizar acciones consideradas inadmisibles por el Comité.
+                    </small>
+
+                    <small>
+                        <br/><br/>📄 Expediente disciplinario: Cada tarjeta genera un expediente oficial con número, jugador sancionado, tipo de tarjeta, motivo y fecha. El expediente será visible en el perfil del jugador y en las últimas sanciones del inicio.
+                    </small>
+
+                    <small>
+                        🚫 Penalización administrativa: En casos graves, la administración podrá limitar temporalmente funciones de la aplicación a un jugador, incluyendo apuestas, hidratación, publicaciones en el tablón o acceso a determinadas herramientas.
+                    </small>
+
+                    <small>
+                        <br/><br/>⚖️ Nota del Comité: La UDM actuará siempre con imparcialidad, rigor institucional y un nivel de cachondeo absolutamente incompatible con cualquier organismo serio.
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🍻</span>
+                    <p>Hidratación</p>
+
+                    <small>
+                        🍺 Cervezas
+                        <br />
+                        🥃 Copas
+                        <br />
+                        🍷 Tintos de verano
+                        <br />
+                        🥤 Refrescos
+                        <br />
+                        💧 Agua
+                    </small>
+
+                    <small>
+                        Esto es absurdo y no afecta al ranking. Simplemente optas a salir en estadísticas divertidas.
+                    </small>
+                </article>
+
+                <article className="stat-card">
                     <span>🏅</span>
                     <p>Logros</p>
 
@@ -431,27 +485,6 @@ function Rules() {
                             <p>Registrar 10 aguas.</p>
                         </div>
                     </div>
-                </article>
-
-                <article className="stat-card">
-                    <span>🍻</span>
-                    <p>Hidratación</p>
-
-                    <small>
-                        🍺 Cervezas
-                        <br />
-                        🥃 Copas
-                        <br />
-                        🍷 Tintos de verano
-                        <br />
-                        🥤 Refrescos
-                        <br />
-                        💧 Agua
-                    </small>
-
-                    <small>
-                        Esto es absurdo y no afecta al ranking. Simplemente optas a salir en estadísticas divertidas.
-                    </small>
                 </article>
 
                 <article className="stat-card featured-stat">

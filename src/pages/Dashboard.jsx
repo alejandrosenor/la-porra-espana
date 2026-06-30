@@ -798,6 +798,12 @@ function Dashboard() {
                 <div className="section-title-row">
                     <h2>👮 Unidad Disciplinaria del Mundial</h2>
                     <span>Últimas sanciones</span>
+                    <button
+                        className="udm-rules-button"
+                        onClick={() => navigate('/rules')}
+                    >
+                        📖 Ver reglas UDM
+                    </button>
                 </div>
 
                 {disciplinaryCards.length === 0 ? (
