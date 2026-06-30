@@ -26,6 +26,7 @@ function Dashboard() {
     const [suggestionTitle, setSuggestionTitle] = useState('')
     const [suggestionDescription, setSuggestionDescription] = useState('')
     const [disciplinaryCards, setDisciplinaryCards] = useState([])
+    const [matchFilter, setMatchFilter] = useState('next')
 
     useEffect(() => {
         loadData()
@@ -457,6 +458,51 @@ function Dashboard() {
         '📰 Noticias FIFA: El árbitro encontró la tarjeta en el minuto 89.'
     ]
 
+    const openMatches = matches.filter((match) => match.status !== 'closed')
+    const closedMatches = matches.filter((match) => match.status === 'closed')
+
+    function scrollToNextMatch() {
+        const element = document.getElementById('next-match-card')
+
+        if (element) {
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            })
+        }
+    }
+
+    function getFilteredMatches() {
+        if (matchFilter === 'next') {
+            return openMatches
+        }
+
+        if (matchFilter === 'closed') {
+            return closedMatches
+        }
+
+        if (matchFilter === 'spain') {
+            return matches.filter(
+                (match) =>
+                    match.home_team === 'España' ||
+                    match.away_team === 'España' ||
+                    match.rival
+            )
+        }
+
+        if (matchFilter === 'knockout') {
+            return matches.filter(
+                (match) =>
+                    match.stage !== 'Fase de grupos' &&
+                    !match.stage?.toLowerCase().includes('grupo')
+            )
+        }
+
+        return matches
+    }
+
+    const visibleMatches = getFilteredMatches()
+
     if (currentPlayer?.is_penalized) {
         return (
             <main className="penalized-page">
@@ -525,6 +571,13 @@ function Dashboard() {
                     onClick={() => navigate('/ranking')}
                 >
                     🏆 Ranking
+                </button>
+
+                <button
+                    className="hero-ranking-button"
+                    onClick={scrollToNextMatch}
+                >
+                    🎯 Ir al próximo partido
                 </button>
 
                 {player?.is_admin && (
@@ -603,6 +656,25 @@ function Dashboard() {
                     Ver reglas
                 </button>
             </section>
+
+            {nextMatch && (
+                <section className="next-match-card">
+                    <p className="next-label">Próximo partido</p>
+
+                    <h2>
+                        🇪🇸 España vs {nextMatch.rival_flag} {nextMatch.rival}
+                    </h2>
+
+                    <p className="next-date">
+                        {formatMatchDate(nextMatch.match_date, {
+                            day: '2-digit',
+                            month: 'long',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}
+                    </p>
+                </section>
+            )}
 
             <section className="suggestions-card">
                 <div className="section-title-row">
@@ -849,32 +921,43 @@ function Dashboard() {
                 )}
             </section>
 
-            {nextMatch && (
-                <section className="next-match-card">
-                    <p className="next-label">Próximo partido</p>
-
-                    <h2>
-                        🇪🇸 España vs {nextMatch.rival_flag} {nextMatch.rival}
-                    </h2>
-
-                    <p className="next-date">
-                        {formatMatchDate(nextMatch.match_date, {
-                            day: '2-digit',
-                            month: 'long',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })}
-                    </p>
-                </section>
-            )}
-
-            <section className="matches-section pretty-matches">
+            <section className="matches-section pretty-matches" id="next-match-card">
                 <div className="section-title-row">
                     <h2>Partidos</h2>
-                    <span>{matches.length} partidos</span>
+                    <span>{visibleMatches.length} partidos</span>
                 </div>
 
-                {matches.map((match) => {
+                <section className="match-filter-tabs">
+                    <button
+                        className={matchFilter === 'next' ? 'active' : ''}
+                        onClick={() => setMatchFilter('next')}
+                    >
+                        🔜 Próximos
+                    </button>
+
+                    <button
+                        className={matchFilter === 'closed' ? 'active' : ''}
+                        onClick={() => setMatchFilter('closed')}
+                    >
+                        ✅ Finalizados
+                    </button>
+
+                    <button
+                        className={matchFilter === 'knockout' ? 'active' : ''}
+                        onClick={() => setMatchFilter('knockout')}
+                    >
+                        🏆 Eliminatorias
+                    </button>
+
+                    <button
+                        className={matchFilter === 'all' ? 'active' : ''}
+                        onClick={() => setMatchFilter('all')}
+                    >
+                        📋 Todos
+                    </button>
+                </section>
+
+                {visibleMatches.map((match) => {
                     const betDone = hasBet(match.id)
                     const bettingClosed = isBettingClosed(match)
                     const revealed = shouldRevealBets(match)
@@ -957,7 +1040,7 @@ function Dashboard() {
 
                                 {drinksBlocked ? (
                                     <button disabled className="disabled-drinks-btn">
-                                        Bloqueado. Hable con el admin
+                                        Estás sancionado
                                     </button>
                                 ) : match.status === 'closed' ? (
                                     <button disabled className="disabled-drinks-btn">
