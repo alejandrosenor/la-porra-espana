@@ -62,12 +62,12 @@ function AdminSettings() {
             .from('disciplinary_cards')
             .select(`
                 *,
-                players (
-                    id,
-                    name,
-                    avatar,
-                    avatar_type,
-                    avatar_image_url
+                player:players!disciplinary_cards_player_id_fkey (
+                id,
+                name,
+                avatar,
+                avatar_type,
+                avatar_image_url
                 )
             `)
             .order('created_at', { ascending: false })
@@ -493,7 +493,7 @@ function AdminSettings() {
                                 className={`disciplinary-history-card ${card.card_type}`}
                             >
                                 <strong>
-                                    {card.card_type === 'yellow' ? '🟨' : '🟥'} {card.players?.name}
+                                    {card.card_type === 'yellow' ? '🟨' : '🟥'} {card.player?.name}
                                 </strong>
 
                                 <p>{card.reason}</p>

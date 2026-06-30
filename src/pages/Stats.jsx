@@ -70,11 +70,11 @@ function Stats() {
             setWorldCupVisits(visitsData || [])
         }
 
-        const { data: cardsData } = await supabase
+        const { data: cardsData, error: cardsError } = await supabase
             .from('disciplinary_cards')
             .select(`
                 *,
-                players (
+                player:players!disciplinary_cards_player_id_fkey (
                     id,
                     name,
                     avatar,
@@ -83,7 +83,12 @@ function Stats() {
                 )
             `)
 
-        setDisciplinaryCards(cardsData || [])
+        if (cardsError) {
+            console.log(cardsError)
+        } else {
+            setDisciplinaryCards(cardsData || [])
+        }
+
         setPlayers(playersData || [])
         setBets(betsData || [])
         setDrinksData(hydrationData || [])
@@ -388,7 +393,7 @@ function Stats() {
 
                 if (!totals[card.player_id]) {
                     totals[card.player_id] = {
-                        player: card.players,
+                        player: card.player,
                         total: 0
                     }
                 }
