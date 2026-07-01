@@ -15,6 +15,7 @@ function AdminSettings() {
     const [cardType, setCardType] = useState('yellow')
     const [cardReason, setCardReason] = useState('')
     const [disciplinaryCards, setDisciplinaryCards] = useState([])
+    const [worldFinished, setWorldFinished] = useState(false)
 
     useEffect(() => {
         if (!player?.is_admin) {
@@ -76,6 +77,7 @@ function AdminSettings() {
         setCamara(camaraData)
         setPotAmount(data?.pot_amount || 0)
         setMaintenanceMode(data?.maintenance_mode || false)
+        setWorldFinished(data?.world_finished || false)
     }
 
     async function saveSettings() {
@@ -310,6 +312,37 @@ function AdminSettings() {
         }
 
         alert('Bebidas reseteadas 🍻')
+    }
+
+    async function finishWorldCup() {
+        const firstConfirm = confirm(
+            '¿Seguro que quieres finalizar el Mundial? Se desbloqueará el Museo del Mundial 2026.'
+        )
+
+        if (!firstConfirm) return
+
+        const secondConfirm = confirm(
+            'Última confirmación: esta acción marca el Mundial como finalizado.'
+        )
+
+        if (!secondConfirm) return
+
+        const { error } = await supabase
+            .from('competition_settings')
+            .update({
+                world_finished: true,
+                finished_at: new Date().toISOString()
+            })
+            .eq('id', 1)
+
+        if (error) {
+            console.log(error)
+            alert('Error finalizando el Mundial')
+            return
+        }
+
+        alert('Mundial finalizado. El Museo queda inaugurado 🏛️')
+        loadSettings()
     }
 
     return (
@@ -569,6 +602,33 @@ function AdminSettings() {
                         onClick={() => setCamaraPenalty(true)}
                     >
                         🚫 Penalizar a Cámara
+                    </button>
+                )}
+            </section>
+
+            <section className="admin-create-card world-finish-card">
+                <div className="admin-message-info">
+                    <strong>🏁 Final del Mundial</strong>
+
+                    <p>
+                        Cuando el Mundial termine, puedes inaugurar el Museo del Mundial 2026.
+                    </p>
+
+                    <p>
+                        Se conservarán ranking, estadísticas, sanciones, logros y recuerdos de la competición.
+                    </p>
+                </div>
+
+                {worldFinished ? (
+                    <div className="world-finished-badge">
+                        🏛️ Museo inaugurado
+                    </div>
+                ) : (
+                    <button
+                        className="finish-world-button"
+                        onClick={finishWorldCup}
+                    >
+                        🏆 Finalizar Mundial
                     </button>
                 )}
             </section>

@@ -27,6 +27,7 @@ function Dashboard() {
     const [suggestionDescription, setSuggestionDescription] = useState('')
     const [disciplinaryCards, setDisciplinaryCards] = useState([])
     const [matchFilter, setMatchFilter] = useState('next')
+    const [worldFinished, setWorldFinished] = useState(false)
 
     useEffect(() => {
         loadData()
@@ -160,6 +161,7 @@ function Dashboard() {
         setMyBets(myBetsData || [])
         setAllBets(allBetsData || [])
         setPlayers(playersData || [])
+        setWorldFinished(settingsData?.world_finished || false)
     }
 
     function hasBet(matchId) {
@@ -669,6 +671,24 @@ function Dashboard() {
                     Ver reglas
                 </button>
             </section>
+
+            {worldFinished && (
+                <section className="museum-open-card">
+                    <span>🏛️</span>
+
+                    <div>
+                        <p>Mundial finalizado</p>
+                        <h2>El Museo del Mundial 2026 ya está abierto</h2>
+                        <small>
+                            Revive la clasificación final, premios, sanciones, mejores apuestas y recuerdos de La Porra.
+                        </small>
+                    </div>
+
+                    <button onClick={() => navigate('/world-cup')}>
+                        Entrar al Museo
+                    </button>
+                </section>
+            )}
 
             {nextMatch && (
                 <section className="next-match-card">

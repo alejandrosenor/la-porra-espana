@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import BottomNav from '../components/BottomNav'
+import WorldCupMuseum from './WorldCupMuseum'
 import '../App.css'
 
 function WorldCupCalendar() {
@@ -13,6 +14,7 @@ function WorldCupCalendar() {
     const [filter, setFilter] = useState('Todos')
     const [view, setView] = useState('Partidos')
     const [isPlaying, setIsPlaying] = useState(false)
+    const [worldFinished, setWorldFinished] = useState(false)
 
     useEffect(() => {
         loadMatches()
@@ -37,7 +39,14 @@ function WorldCupCalendar() {
             .select('*')
             .order('match_date')
 
+        const { data: settingsData } = await supabase
+            .from('competition_settings')
+            .select('world_finished')
+            .eq('id', 1)
+            .single()
+
         setMatches(data || [])
+        setWorldFinished(settingsData?.world_finished || false)
     }
 
     const stages = ['Todos', ...new Set(matches.map((m) => m.stage))]
@@ -213,6 +222,10 @@ function WorldCupCalendar() {
 
     const groupedMatches = groupByDate(filteredMatches)
     const groups = getAllTeams()
+
+    if (worldFinished) {
+        return <WorldCupMuseum />
+    }
 
     return (
         <main className="worldcup-page with-bottom-nav">
