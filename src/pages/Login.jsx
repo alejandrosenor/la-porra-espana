@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import '../App.css'
@@ -9,6 +9,14 @@ function Login() {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+
+    useEffect(() => {
+        const savedPlayer = localStorage.getItem('player')
+
+        if (savedPlayer) {
+            navigate('/dashboard')
+        }
+    }, [navigate])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
