@@ -175,7 +175,7 @@ function Dashboard() {
     }
 
     function shouldRevealBets(match) {
-        return isBettingClosed(match) || allPlayersUsedEdit(match.id)
+        return isBettingClosed(match)
     }
 
     function isBettingClosed(match) {
@@ -499,6 +499,19 @@ function Dashboard() {
         }
 
         return matches
+    }
+
+    function getMatchStageClass(match) {
+        const stage = match.stage?.toLowerCase() || ''
+
+        if (stage.includes('semi')) return 'stage-semis'
+        if (stage.includes('cuartos')) return 'stage-quarters'
+        if (stage.includes('octavos')) return 'stage-round16'
+        if (stage.includes('dieciseisavos')) return 'stage-round32'
+        if (stage === 'final') return 'stage-final'
+        if (stage.includes('grupo')) return 'stage-groups'
+
+        return ''
     }
 
     const visibleMatches = getFilteredMatches()
@@ -923,8 +936,15 @@ function Dashboard() {
 
             <section className="matches-section pretty-matches" id="next-match-card">
                 <div className="section-title-row">
-                    <h2>Partidos</h2>
-                    <span>{visibleMatches.length} partidos</span>
+                    <div className="matches-title-hero">
+                        <div>
+                            <span className="matches-kicker">⚔️ Apuestas de La Porra</span>
+                            <h2>Partidos</h2>
+                            <p>Elige tu apuesta, revisa horarios y prepárate para sufrir.</p>
+                        </div>
+
+                        <strong>{visibleMatches.length} partidos</strong>
+                    </div>
                 </div>
 
                 <section className="match-filter-tabs">
@@ -968,27 +988,47 @@ function Dashboard() {
                     const drinksBlocked = player?.name === 'Cámara'
 
                     return (
-                        <article key={match.id} className="pretty-match-card">
+                        <article
+                            key={match.id}
+                            className={`pretty-match-card ${getMatchStageClass(match)} ${match.status !== 'closed' ? 'alive' : ''}`}
+                        >
                             <div className="pretty-match-main">
                                 {match.stage && (
                                     <p className="match-stage">🏆 {match.stage}</p>
                                 )}
 
-                                <h3>
-                                    <span>🇪🇸 España</span>
-                                    <small>vs</small>
-                                    <span>{match.rival_flag} {match.rival}</span>
-                                </h3>
+                                <div className="pretty-match-teams">
+                                    <div>
+                                        <span className="team-flag">🇪🇸</span>
+                                        <strong>España</strong>
+                                        <small>ES</small>
+                                    </div>
 
-                                <p className="match-date">
-                                    {formatMatchDate(match.match_date, {
-                                        weekday: 'short',
-                                        day: '2-digit',
-                                        month: 'short',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
-                                </p>
+                                    <span className="match-vs">VS</span>
+
+                                    <div>
+                                        <span className="team-flag">{match.rival_flag}</span>
+                                        <strong>{match.rival}</strong>
+                                        <small>{match.rival_code || ''}</small>
+                                    </div>
+                                </div>
+
+                                <div className="match-info-line">
+                                    <span>
+                                        📅 {formatMatchDate(match.match_date, {
+                                            weekday: 'short',
+                                            day: '2-digit',
+                                            month: 'short'
+                                        })}
+                                    </span>
+
+                                    <span>
+                                        🕘 {formatMatchDate(match.match_date, {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
 
                                 {!revealed && match.status !== 'closed' && (
                                     <p className="missing-bets">

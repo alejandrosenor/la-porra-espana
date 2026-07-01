@@ -84,18 +84,18 @@ function RevealedBets() {
         )
     }
 
+    function isKnockoutMatch() {
+        return match?.stage && match.stage !== 'Fase de grupos'
+    }
+
     function getCollectivePrediction() {
-        const spainVotes = bets.filter(
-            (bet) => bet.winner === 'España'
-        ).length
+        const field = isKnockoutMatch() ? 'qualified_team' : 'winner'
 
-        const drawVotes = bets.filter(
-            (bet) => bet.winner === 'Empate'
-        ).length
-
-        const rivalVotes = bets.filter(
-            (bet) => bet.winner === match.rival
-        ).length
+        const spainVotes = bets.filter((bet) => bet[field] === 'España').length
+        const drawVotes = isKnockoutMatch()
+            ? 0
+            : bets.filter((bet) => bet[field] === 'Empate').length
+        const rivalVotes = bets.filter((bet) => bet[field] === match.rival).length
 
         const total = bets.length || 1
 
@@ -135,8 +135,7 @@ function RevealedBets() {
     const isClosed = match.status === 'closed'
     const canReveal =
         match.status === 'closed' ||
-        isBettingClosedByTime() ||
-        allPlayersUsedEdit()
+        isBettingClosedByTime()
 
     if (!canReveal) {
         return (
@@ -277,12 +276,21 @@ function RevealedBets() {
                         </div>
 
                         <div className="revealed-bet">
-                            <p>Ganador apostado</p>
-                            <strong>{bet.winner}</strong>
+                            <p>
+                                {isKnockoutMatch()
+                                    ? 'Equipo que pasa'
+                                    : 'Ganador apostado'}
+                            </p>
+
+                            <strong>
+                                {isKnockoutMatch()
+                                    ? bet.qualified_team
+                                    : bet.winner}
+                            </strong>
                         </div>
 
                         <div className="revealed-score">
-                            <p>Resultado apostado</p>
+                            <p>Resultado apostado {isKnockoutMatch() ? '(90’)' : ''}</p>
                             <strong>
                                 España {bet.spain_goals} - {bet.rival_goals} {match.rival}
                             </strong>

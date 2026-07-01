@@ -43,6 +43,7 @@ function AdminMatch() {
     const [keyPlayerResults, setKeyPlayerResults] = useState([])
     const [players, setPlayers] = useState([])
     const [bets, setBets] = useState([])
+    const [qualifiedTeam, setQualifiedTeam] = useState('')
 
     useEffect(() => {
         if (!player?.is_admin) {
@@ -85,6 +86,16 @@ function AdminMatch() {
         if (data.spain_goals !== null) setSpainGoals(data.spain_goals)
         if (data.rival_goals !== null) setRivalGoals(data.rival_goals)
         setKeyPlayerResults(data.key_player_results || [])
+        setQualifiedTeam(data.qualified_team || '')
+    }
+
+    function isKnockoutMatch() {
+        return match?.stage && match.stage !== 'Fase de grupos'
+    }
+
+    function getQualifiedTeamHit(bet) {
+        if (!isKnockoutMatch()) return false
+        return bet.qualified_team === qualifiedTeam
     }
 
     function getRealWinner() {
@@ -103,7 +114,10 @@ function AdminMatch() {
     function calculatePoints(bet) {
         let points = 0
 
-        const winnerHit = bet.winner === getRealWinner()
+        const winnerHit = isKnockoutMatch()
+            ? getQualifiedTeamHit(bet)
+            : bet.winner === getRealWinner()
+
         const exactHit =
             bet.spain_goals === spainGoals &&
             bet.rival_goals === rivalGoals
@@ -116,7 +130,10 @@ function AdminMatch() {
     }
 
     function buildResultMessage(bet) {
-        const winnerHit = bet.winner === getRealWinner()
+        const winnerHit = isKnockoutMatch()
+            ? getQualifiedTeamHit(bet)
+            : bet.winner === getRealWinner()
+
         const exactHit =
             bet.spain_goals === spainGoals &&
             bet.rival_goals === rivalGoals
@@ -126,15 +143,19 @@ function AdminMatch() {
         let message = ''
 
         if (winnerHit) {
-            message += `🟢 +3 Acertó ganador (${getRealWinner()}). `
+            message += isKnockoutMatch()
+                ? `🟢 +3 Acertó quién pasa (${qualifiedTeam}). `
+                : `🟢 +3 Acertó ganador (${getRealWinner()}). `
         } else {
-            message += `🔴 No acertó ganador. Apostó ${bet.winner}. `
+            message += isKnockoutMatch()
+                ? `🔴 No acertó quién pasa. Apostó ${bet.qualified_team || 'Sin elegir'}. `
+                : `🔴 No acertó ganador. Apostó ${bet.winner}. `
         }
 
         if (exactHit) {
-            message += `🟢 +5 Clavó el resultado exacto (${spainGoals}-${rivalGoals}). `
+            message += `🟢 +5 Clavó el resultado exacto a 90' (${spainGoals}-${rivalGoals}). `
         } else {
-            message += `🔴 Falló el resultado exacto. Apostó ${bet.spain_goals}-${bet.rival_goals}. `
+            message += `🔴 Falló el resultado exacto a 90'. Apostó ${bet.spain_goals}-${bet.rival_goals}. `
         }
 
         if (keyPlayerHit) {
@@ -163,6 +184,11 @@ function AdminMatch() {
             return
         }
 
+        if (isKnockoutMatch() && !qualifiedTeam) {
+            alert('Selecciona qué equipo pasa la eliminatoria')
+            return
+        }
+
         const confirmed = confirm('¿Seguro que quieres cerrar el partido y calcular puntos?')
 
         if (!confirmed) return
@@ -179,7 +205,9 @@ function AdminMatch() {
         }
 
         for (const bet of bets) {
-            const winnerHit = bet.winner === getRealWinner()
+            const winnerHit = isKnockoutMatch()
+                ? getQualifiedTeamHit(bet)
+                : bet.winner === getRealWinner()
             const exactHit =
                 bet.spain_goals === spainGoals &&
                 bet.rival_goals === rivalGoals
@@ -225,6 +253,7 @@ function AdminMatch() {
             .update({
                 spain_goals: spainGoals,
                 rival_goals: rivalGoals,
+                qualified_team: isKnockoutMatch() ? qualifiedTeam : null,
                 key_player_results: keyPlayerResults,
                 status: 'closed'
             })
@@ -398,6 +427,30 @@ function AdminMatch() {
                         +
                     </button>
                 </div>
+
+                {isKnockoutMatch() && (
+                    <div className="bet-section">
+                        <h2>Equipo que pasa la eliminatoria</h2>
+
+                        <div className="winner-options">
+                            <button
+                                disabled={match.status === 'closed'}
+                                className={qualifiedTeam === 'España' ? 'selected' : ''}
+                                onClick={() => setQualifiedTeam('España')}
+                            >
+                                🇪🇸 España
+                            </button>
+
+                            <button
+                                disabled={match.status === 'closed'}
+                                className={qualifiedTeam === match.rival ? 'selected' : ''}
+                                onClick={() => setQualifiedTeam(match.rival)}
+                            >
+                                {match.rival_flag} {match.rival}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <div className="bet-section">
                     <h2>Goleadores de España del partido</h2>

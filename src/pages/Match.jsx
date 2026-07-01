@@ -19,6 +19,7 @@ function Match() {
     const [isClosed, setIsClosed] = useState(false)
     const [allMatchBets, setAllMatchBets] = useState([])
     const [keyPlayer, setKeyPlayer] = useState('')
+    const [qualifiedTeam, setQualifiedTeam] = useState('')
 
     useEffect(() => {
         loadData()
@@ -79,7 +80,12 @@ function Match() {
             setSpainGoals(betData.spain_goals)
             setRivalGoals(betData.rival_goals)
             setKeyPlayer(betData.key_player || '')
+            setQualifiedTeam(betData.qualified_team || '')
         }
+    }
+
+    function isKnockoutMatch() {
+        return match?.stage && match.stage !== 'Fase de grupos'
     }
 
     function updateCountdown() {
@@ -133,6 +139,11 @@ function Match() {
     }
 
     const isValidBet = () => {
+        if (isKnockoutMatch()) {
+            if (!qualifiedTeam) return false
+            return true
+        }
+
         if (!winner) return false
         if (winner === 'Empate') return spainGoals === rivalGoals
         if (winner === 'España') return spainGoals > rivalGoals
@@ -179,7 +190,8 @@ function Match() {
                     spain_goals: spainGoals,
                     rival_goals: rivalGoals,
                     edit_count: (existingBet.edit_count || 0) + 1,
-                    key_player: keyPlayer
+                    key_player: keyPlayer,
+                    qualified_team: isKnockoutMatch() ? qualifiedTeam : null
                 })
                 .eq('id', existingBet.id)
 
@@ -201,7 +213,8 @@ function Match() {
             spain_goals: spainGoals,
             rival_goals: rivalGoals,
             edit_count: 0,
-            key_player: keyPlayer
+            key_player: keyPlayer,
+            qualified_team: isKnockoutMatch() ? qualifiedTeam : null
         })
 
         if (error) {
@@ -253,8 +266,8 @@ function Match() {
 
     const notOpenYet = isBettingNotOpenYet()
     const editable = canEditBet()
-    const revealByEdits = allPlayersUsedEdit()
-    const locked = isClosed || notOpenYet || revealByEdits || (existingBet && !editable)
+    const revealByEdits = false
+    const locked = isClosed || notOpenYet || (existingBet && !editable)
 
     return (
         <main className="match-page">
@@ -294,46 +307,68 @@ function Match() {
                     </p>
                 )}
 
-                {revealByEdits && (
-                    <p className="bet-warning">
-                        👀 Todos han usado su edición. Las apuestas ya están cerradas y reveladas.
-                    </p>
-                )}
-
                 <p className="closing-text">La apuesta se cierra en:</p>
                 <strong className={isClosed ? 'countdown closed' : 'countdown'}>
                     {timeLeft}
                 </strong>
 
-                <h2>¿Quién ganará?</h2>
+                <h2>
+                    {isKnockoutMatch()
+                        ? '¿Quién pasa la eliminatoria?'
+                        : '¿Quién ganará?'}
+                </h2>
 
                 <div className="winner-options">
                     <button
                         disabled={locked}
-                        className={winner === 'España' ? 'selected' : ''}
-                        onClick={() => setWinner('España')}
+                        className={
+                            isKnockoutMatch()
+                                ? qualifiedTeam === 'España' ? 'selected' : ''
+                                : winner === 'España' ? 'selected' : ''
+                        }
+                        onClick={() => {
+                            if (isKnockoutMatch()) {
+                                setQualifiedTeam('España')
+                            } else {
+                                setWinner('España')
+                            }
+                        }}
                     >
                         🇪🇸 España
                     </button>
 
-                    <button
-                        disabled={locked}
-                        className={winner === 'Empate' ? 'selected' : ''}
-                        onClick={() => setWinner('Empate')}
-                    >
-                        🤝 Empate
-                    </button>
+                    {!isKnockoutMatch() && (
+                        <button
+                            disabled={locked}
+                            className={winner === 'Empate' ? 'selected' : ''}
+                            onClick={() => setWinner('Empate')}
+                        >
+                            🤝 Empate
+                        </button>
+                    )}
 
                     <button
                         disabled={locked}
-                        className={winner === match.rival ? 'selected' : ''}
-                        onClick={() => setWinner(match.rival)}
+                        className={
+                            isKnockoutMatch()
+                                ? qualifiedTeam === match.rival ? 'selected' : ''
+                                : winner === match.rival ? 'selected' : ''
+                        }
+                        onClick={() => {
+                            if (isKnockoutMatch()) {
+                                setQualifiedTeam(match.rival)
+                            } else {
+                                setWinner(match.rival)
+                            }
+                        }}
                     >
                         {match.rival_flag} {match.rival}
                     </button>
                 </div>
 
-                <h2>Resultado exacto</h2>
+                <h2>
+                    Resultado exacto {isKnockoutMatch() ? '(90 minutos)' : ''}
+                </h2>
 
                 <div className="score-picker">
                     <button
@@ -400,9 +435,19 @@ function Match() {
                 </div>
 
                 <p className="rules">
-                    Acertar ganador: +3 puntos<br />
-                    Acertar resultado exacto: +5 puntos<br />
-                    Acertar goleador: +1 punto
+                    {isKnockoutMatch() ? (
+                        <>
+                            Acertar quién pasa: +3 puntos<br />
+                            Acertar resultado exacto a 90’: +5 puntos<br />
+                            Acertar goleador: +1 punto
+                        </>
+                    ) : (
+                        <>
+                            Acertar ganador: +3 puntos<br />
+                            Acertar resultado exacto: +5 puntos<br />
+                            Acertar goleador: +1 punto
+                        </>
+                    )}
                 </p>
 
                 {(!existingBet || editable) && !isClosed && !notOpenYet && !allPlayersHaveBet() && (

@@ -239,7 +239,7 @@ function Ranking() {
                             <strong>{player.points} pts</strong>
 
                             <p>
-                                {player.exact_hits || 0} exactos · {player.winner_hits || 0} ganadores · {player.key_player_hits || 0} goleadores
+                                {player.exact_hits || 0} exactos · {player.winner_hits || 0} clasificados · {player.key_player_hits || 0} goleadores
                             </p>
                         </article>
                     ))}
@@ -323,7 +323,7 @@ function Ranking() {
                                     <h3>{player.name}</h3>
 
                                     <p>
-                                        {player.exact_hits || 0} resultados exactos · {player.winner_hits || 0} ganadores · {player.key_player_hits || 0} goleadores
+                                        {player.exact_hits || 0} resultados exactos · {player.winner_hits || 0} clasificados · {player.key_player_hits || 0} goleadores
                                     </p>
                                 </div>
 
@@ -333,7 +333,7 @@ function Ranking() {
                             </div>
 
                             {lastBet?.result_message && (
-                                <p
+                                <div
                                     className={
                                         lastBet.points > 0
                                             ? 'ranking-message-box positive'
@@ -341,7 +341,7 @@ function Ranking() {
                                     }
                                 >
                                     {renderResultMessage(lastBet.result_message)}
-                                </p>
+                                </div>
                             )}
                         </article>
                     )

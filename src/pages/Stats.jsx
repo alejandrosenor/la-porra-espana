@@ -281,7 +281,11 @@ function Stats() {
         const totals = {}
 
         bets.forEach((bet) => {
-            if (bet.winner === 'España') {
+            const trustedSpain =
+                bet.winner === 'España' ||
+                bet.qualified_team === 'España'
+
+            if (trustedSpain) {
                 totals[bet.player_id] = (totals[bet.player_id] || 0) + 1
             }
         })
@@ -404,6 +408,30 @@ function Stats() {
         return Object.values(totals).sort((a, b) => b.total - a.total)[0] || null
     }
 
+    function getMostKnockoutBelievers() {
+        const totals = {}
+
+        bets.forEach((bet) => {
+            if (bet.qualified_team === 'España') {
+                totals[bet.player_id] = (totals[bet.player_id] || 0) + 1
+            }
+        })
+
+        const maxValue = Math.max(0, ...Object.values(totals))
+
+        if (maxValue === 0) {
+            return {
+                players: [],
+                value: 0
+            }
+        }
+
+        return {
+            players: players.filter((player) => totals[player.id] === maxValue),
+            value: maxValue
+        }
+    }
+
     const yellowKing = getCardKing('yellow')
     const redKing = getCardKing('red')
 
@@ -416,6 +444,7 @@ function Stats() {
     const bestBets = getHighestSingleBets()
     const mostEdited = getMostEditedPlayers()
     const optimist = getMostOptimisticPlayers()
+    const knockoutBeliever = getMostKnockoutBelievers()
     const biggestPrediction = getBiggestPrediction()
 
     const barKing = getBarKings()
@@ -459,11 +488,21 @@ function Stats() {
 
                 <article className="stat-card">
                     <span>⭐</span>
-                    <p>Más ganadores</p>
+                    <p>Más clasificados</p>
 
                     <StatWinners
                         result={winnerKing}
-                        label="ganadores acertados"
+                        label="clasificados acertados"
+                    />
+                </article>
+
+                <article className="stat-card">
+                    <span>🛡️</span>
+                    <p>Fe en eliminatorias</p>
+
+                    <StatWinners
+                        result={knockoutBeliever}
+                        label="veces apostando a España pasando"
                     />
                 </article>
 
@@ -493,7 +532,7 @@ function Stats() {
 
                     <StatWinners
                         result={optimist}
-                        label="apuestas a victoria de España"
+                        label="apuestas confiando en España"
                     />
                 </article>
 

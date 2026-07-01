@@ -9,7 +9,6 @@ function Rules() {
 
     const [playersCount, setPlayersCount] = useState(0)
     const entryFee = 5
-    const knockoutFee = 2
 
     useEffect(() => {
         loadPlayersCount()
@@ -41,8 +40,8 @@ function Rules() {
                     <span>🏆</span>
                     <p>Sistema de puntuación</p>
 
-                    <strong>+3 puntos Equipo ganador</strong>
                     <strong>+5 puntos Resultado exacto</strong>
+                    <strong>+3 puntos Ganador / Equipo clasificado</strong>
                     <strong>+1 punto Jugador goleador</strong>
 
                     <small>Máximo: 9 puntos por partido</small>
@@ -66,6 +65,27 @@ function Rules() {
 
                     <small>
                         👀 Existe la posibilidad de que se revelen antes del cierre: únicamente si TODOS los jugadores han editado su apuesta. Cuando el último de estos guarda el cambio, se revelarían
+                    </small>
+                </article>
+
+                <article className="stat-card">
+                    <span>🛡️</span>
+                    <p>Eliminatorias</p>
+
+                    <small>
+                        En dieciseisavos y siguientes rondas, el resultado exacto se apuesta sobre los 90 minutos.
+                    </small>
+
+                    <small>
+                        También se apuesta qué equipo pasa la eliminatoria, aunque sea en prórroga o penaltis.
+                    </small>
+
+                    <small>
+                        Acertar quién pasa suma +3 puntos.
+                    </small>
+
+                    <small>
+                        Acertar el resultado exacto a los 90 minutos suma +5 puntos.
                     </small>
                 </article>
 
@@ -133,7 +153,7 @@ function Rules() {
                     </small>
 
                     <small>
-                        <br/><br/>🟨 Tarjeta amarilla: Aviso disciplinario por conducta dudosa, quejas reiteradas, comportamiento sospechoso o acciones que merezcan quedar registradas en el expediente.
+                        <br /><br />🟨 Tarjeta amarilla: Aviso disciplinario por conducta dudosa, quejas reiteradas, comportamiento sospechoso o acciones que merezcan quedar registradas en el expediente.
                     </small>
 
                     <small>
@@ -141,7 +161,7 @@ function Rules() {
                     </small>
 
                     <small>
-                        <br/><br/>📄 Expediente disciplinario: Cada tarjeta genera un expediente oficial con número, jugador sancionado, tipo de tarjeta, motivo y fecha. El expediente será visible en el perfil del jugador y en las últimas sanciones del inicio.
+                        <br /><br />📄 Expediente disciplinario: Cada tarjeta genera un expediente oficial con número, jugador sancionado, tipo de tarjeta, motivo y fecha. El expediente será visible en el perfil del jugador y en las últimas sanciones del inicio.
                     </small>
 
                     <small>
@@ -149,7 +169,7 @@ function Rules() {
                     </small>
 
                     <small>
-                        <br/><br/>⚖️ Nota del Comité: La UDM actuará siempre con imparcialidad, rigor institucional y un nivel de cachondeo absolutamente incompatible con cualquier organismo serio.
+                        <br /><br />⚖️ Nota del Comité: La UDM actuará siempre con imparcialidad, rigor institucional y un nivel de cachondeo absolutamente incompatible con cualquier organismo serio.
                     </small>
                 </article>
 
@@ -495,23 +515,6 @@ function Rules() {
 
                     <small>
                         {playersCount} jugadores × {entryFee} €
-                    </small>
-                </article>
-
-                <article className="stat-card">
-                    <span>🏆</span>
-                    <p>Fase eliminatoria</p>
-
-                    <small>
-                        Si España llega a dieciseisavos:
-                    </small>
-
-                    <small>
-                        +2 € por jugador por cada partido.
-                    </small>
-
-                    <small>
-                        (+{playersCount * knockoutFee} € al bote por partido)
                     </small>
                 </article>
 

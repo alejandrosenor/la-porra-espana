@@ -427,7 +427,7 @@ function Profile() {
 
                 <article>
                     <span>⭐</span>
-                    <p>Ganadores</p>
+                    <p>Clasificados</p>
                     <strong>{currentPlayer.winner_hits}</strong>
                 </article>
 
@@ -453,7 +453,7 @@ function Profile() {
                     <div>
                         <span>⭐</span>
                         <strong>+{streak.winnerPoints}</strong>
-                        <small>Ganador</small>
+                        <small>Clasificado</small>
                     </div>
 
                     <div>
@@ -606,12 +606,15 @@ function Profile() {
                                 </strong>
 
                                 <p>
-                                    Tu apuesta: {bet.winner} · España {bet.spain_goals}-{bet.rival_goals} {bet.matches?.rival}
+                                    Tu apuesta:{' '}
+                                    {bet.matches?.stage !== 'Fase de grupos'
+                                        ? `${bet.qualified_team || 'Sin elegir'} pasa · 90': España ${bet.spain_goals}-${bet.rival_goals} ${bet.matches?.rival}`
+                                        : `${bet.winner} · España ${bet.spain_goals}-${bet.rival_goals} ${bet.matches?.rival}`}
                                 </p>
 
                                 {bet.matches?.status === 'closed' && (
                                     <small>
-                                        Resultado real: España {bet.matches?.spain_goals}-{bet.matches?.rival_goals} {bet.matches?.rival}
+                                        Resultado 90': España {bet.matches?.spain_goals}-{bet.matches?.rival_goals} {bet.matches?.rival}
                                     </small>
                                 )}
                             </div>
