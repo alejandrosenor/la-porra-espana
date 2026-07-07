@@ -16,6 +16,10 @@ function AdminSettings() {
     const [cardReason, setCardReason] = useState('')
     const [disciplinaryCards, setDisciplinaryCards] = useState([])
     const [worldFinished, setWorldFinished] = useState(false)
+    const [selectedPointsPlayerId, setSelectedPointsPlayerId] = useState('')
+    const [manualPoints, setManualPoints] = useState(0)
+    const [manualReason, setManualReason] = useState('')
+    const [manualAdjustments, setManualAdjustments] = useState([])
 
     useEffect(() => {
         if (!player?.is_admin) {
@@ -73,6 +77,25 @@ function AdminSettings() {
             `)
             .order('created_at', { ascending: false })
 
+        const { data: adjustmentsData } = await supabase
+            .from('manual_point_adjustments')
+            .select(`
+                *,
+                player:players!manual_point_adjustments_player_id_fkey (
+                    name,
+                    avatar,
+                    avatar_type,
+                    avatar_image_url
+                ),
+                admin:players!manual_point_adjustments_admin_id_fkey (
+                    name,
+                    avatar
+                )
+            `)
+            .order('created_at', { ascending: false })
+            .limit(8)
+
+        setManualAdjustments(adjustmentsData || [])
         setDisciplinaryCards(cardsData || [])
         setCamara(camaraData)
         setPotAmount(data?.pot_amount || 0)
@@ -345,6 +368,78 @@ function AdminSettings() {
         loadSettings()
     }
 
+    async function applyManualPoints() {
+        if (!selectedPointsPlayerId) {
+            alert('Selecciona un jugador')
+            return
+        }
+
+        if (manualPoints === 0) {
+            alert('Selecciona una cantidad de puntos')
+            return
+        }
+
+        if (!manualReason.trim()) {
+            alert('Escribe un motivo para el ajuste')
+            return
+        }
+
+        const selectedPlayer = players.find((p) => p.id === selectedPointsPlayerId)
+
+        const confirmed = confirm(
+            `¿Aplicar ${manualPoints > 0 ? '+' : ''}${manualPoints} puntos a ${selectedPlayer?.name}?`
+        )
+
+        if (!confirmed) return
+
+        const { data: freshPlayer, error: playerError } = await supabase
+            .from('players')
+            .select('points')
+            .eq('id', selectedPointsPlayerId)
+            .single()
+
+        if (playerError) {
+            console.log(playerError)
+            alert('Error leyendo puntos actuales')
+            return
+        }
+
+        const { error: updateError } = await supabase
+            .from('players')
+            .update({
+                points: (freshPlayer.points || 0) + manualPoints
+            })
+            .eq('id', selectedPointsPlayerId)
+
+        if (updateError) {
+            console.log(updateError)
+            alert('Error actualizando puntos')
+            return
+        }
+
+        const { error: logError } = await supabase
+            .from('manual_point_adjustments')
+            .insert({
+                player_id: selectedPointsPlayerId,
+                admin_id: player.id,
+                points: manualPoints,
+                reason: manualReason.trim()
+            })
+
+        if (logError) {
+            console.log(logError)
+            alert('Puntos actualizados, pero error guardando historial')
+            return
+        }
+
+        alert('Corrección aplicada 🛠️')
+
+        setSelectedPointsPlayerId('')
+        setManualPoints(0)
+        setManualReason('')
+        loadSettings()
+    }
+
     return (
         <main className="admin-create-page">
             <header className="admin-create-header">
@@ -450,6 +545,103 @@ function AdminSettings() {
                         </small>
                     </div>
                 </button>
+            </section>
+
+            <section className="admin-create-card manual-points-card">
+                <div className="admin-message-info">
+                    <strong>🛠️ Ajuste manual de puntos</strong>
+
+                    <p>
+                        Herramienta para corregir puntuaciones si algún cálculo falla o hay que aplicar una decisión administrativa.
+                    </p>
+
+                    <p>
+                        Todo ajuste queda registrado en el historial.
+                    </p>
+                </div>
+
+                <label>
+                    Jugador
+                    <select
+                        value={selectedPointsPlayerId}
+                        onChange={(e) => setSelectedPointsPlayerId(e.target.value)}
+                    >
+                        <option value="">Selecciona jugador</option>
+
+                        {players.map((item) => (
+                            <option key={item.id} value={item.id}>
+                                {item.name} · {item.points} pts
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <div className="manual-points-buttons">
+                    {[1, 3, 5].map((value) => (
+                        <button
+                            key={value}
+                            className={manualPoints === value ? 'selected positive' : 'positive'}
+                            onClick={() => setManualPoints(value)}
+                        >
+                            +{value}
+                        </button>
+                    ))}
+
+                    {[-1, -3, -5].map((value) => (
+                        <button
+                            key={value}
+                            className={manualPoints === value ? 'selected negative' : 'negative'}
+                            onClick={() => setManualPoints(value)}
+                        >
+                            {value}
+                        </button>
+                    ))}
+                </div>
+
+                <label>
+                    Motivo
+                    <textarea
+                        placeholder="Ej: Corrección por incidencia del sistema de puntos."
+                        value={manualReason}
+                        onChange={(e) => setManualReason(e.target.value)}
+                        maxLength={250}
+                    />
+                </label>
+
+                <button
+                    className="create-match-button"
+                    onClick={applyManualPoints}
+                >
+                    💾 Aplicar corrección
+                </button>
+
+                <div className="manual-adjustments-history">
+                    <h2>Últimos ajustes</h2>
+
+                    {manualAdjustments.length === 0 ? (
+                        <p className="empty-history">Todavía no hay ajustes manuales.</p>
+                    ) : (
+                        manualAdjustments.map((item) => (
+                            <article key={item.id}>
+                                <strong className={item.points > 0 ? 'positive' : 'negative'}>
+                                    {item.points > 0 ? '+' : ''}{item.points} pts · {item.player?.avatar} {item.player?.name}
+                                </strong>
+
+                                <p>{item.reason}</p>
+
+                                <small>
+                                    Admin: {item.admin?.avatar} {item.admin?.name} ·{' '}
+                                    {new Date(item.created_at).toLocaleString('es-ES', {
+                                        day: '2-digit',
+                                        month: 'short',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </small>
+                            </article>
+                        ))
+                    )}
+                </div>
             </section>
 
             <section className="admin-create-card disciplinary-card">

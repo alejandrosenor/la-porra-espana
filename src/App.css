@@ -5288,3 +5288,75 @@ select {
     transform: translateY(-10px);
   }
 }
+
+.manual-points-card {
+  margin-top: 22px;
+}
+
+.manual-points-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.manual-points-buttons button {
+  border: 0;
+  border-radius: 18px;
+  padding: 16px;
+  color: white;
+  font-size: 18px;
+  font-weight: 1000;
+  border: 1px solid rgba(255, 255, 255, .12);
+}
+
+.manual-points-buttons button.positive {
+  background: linear-gradient(135deg, rgba(61, 220, 132, .24), rgba(255, 255, 255, .07));
+}
+
+.manual-points-buttons button.negative {
+  background: linear-gradient(135deg, rgba(255, 80, 80, .26), rgba(255, 255, 255, .07));
+}
+
+.manual-points-buttons button.selected {
+  outline: 2px solid #ffd84a;
+  box-shadow: 0 0 22px rgba(255, 216, 74, .24);
+}
+
+.manual-adjustments-history {
+  margin-top: 20px;
+}
+
+.manual-adjustments-history h2 {
+  margin: 0 0 12px;
+}
+
+.manual-adjustments-history article {
+  padding: 14px;
+  border-radius: 18px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .09);
+}
+
+.manual-adjustments-history strong {
+  display: block;
+}
+
+.manual-adjustments-history strong.positive {
+  color: #3ddc84;
+}
+
+.manual-adjustments-history strong.negative {
+  color: #ff7a7a;
+}
+
+.manual-adjustments-history p {
+  margin: 6px 0;
+  color: rgba(255, 255, 255, .75);
+  font-weight: 750;
+}
+
+.manual-adjustments-history small {
+  color: rgba(255, 255, 255, .52);
+  font-weight: 800;
+}
