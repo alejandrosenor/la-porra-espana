@@ -16,6 +16,15 @@ function Profile() {
     const [selectedSticker, setSelectedSticker] = useState(player.avatar_image_url || '')
     const [drinksData, setDrinksData] = useState([])
     const [disciplinaryCards, setDisciplinaryCards] = useState([])
+    const [closedMatches, setClosedMatches] = useState([])
+    const [selectedDrinkMatchId, setSelectedDrinkMatchId] = useState('')
+    const [drinkForm, setDrinkForm] = useState({
+        beers: 0,
+        drinks: 0,
+        summer_wines: 0,
+        soft_drinks: 0,
+        waters: 0
+    })
 
     const AVATAR_OPTIONS = [
         // Originales
@@ -76,6 +85,18 @@ function Profile() {
         loadProfile()
     }, [])
 
+    function formatMatchDate(date) {
+        if (!date) return ''
+
+        return new Date(date).toLocaleString('es-ES', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
     async function loadProfile() {
         const { data: playersData } = await supabase
             .from('players')
@@ -115,10 +136,32 @@ function Profile() {
             .eq('player_id', player.id)
             .order('created_at', { ascending: false })
 
+        const { data: closedMatchesData } = await supabase
+            .from('matches')
+            .select(`
+                *,
+                spain_goals,
+                rival_goals,
+                rival,
+                rival_flag,
+                stage
+            `)
+            .eq('status', 'closed')
+            .order('match_order', { ascending: false })
+
+        setClosedMatches(closedMatchesData || [])
         setAllPlayers(playerData || [])
         setRanking(playersData || [])
         setMyBets(betsData || [])
-        setSelectedAvatar(playerData.avatar)
+
+        const me = playerData.find(p => p.id === player.id)
+
+        if (me) {
+            setSelectedAvatar(me.avatar || '')
+            setSelectedSticker(me.avatar_image_url || '')
+            setAvatarType(me.avatar_type || 'emoji')
+        }
+
         setDrinksData(hydrationData || [])
         setDisciplinaryCards(myCardsData || [])
     }
@@ -370,6 +413,111 @@ function Profile() {
         )
     }
 
+    function changeDrinkValue(field, amount) {
+        setDrinkForm((prev) => ({
+            ...prev,
+            [field]: Math.max(0, prev[field] + amount)
+        }))
+    }
+
+    function resetDrinkForm() {
+        setDrinkForm({
+            beers: 0,
+            drinks: 0,
+            summer_wines: 0,
+            soft_drinks: 0,
+            waters: 0
+        })
+    }
+
+    async function saveForgottenDrinks() {
+        if (!selectedDrinkMatchId) {
+            alert('Selecciona el partido')
+            return
+        }
+
+        const total =
+            drinkForm.beers +
+            drinkForm.drinks +
+            drinkForm.summer_wines +
+            drinkForm.soft_drinks +
+            drinkForm.waters
+
+        if (total === 0) {
+            alert('No has añadido ninguna bebida')
+            return
+        }
+
+        if (total > 10) {
+            alert('Máximo 10 bebidas por corrección. Si necesitas más, habla con el admin.')
+            return
+        }
+
+        const confirmed = confirm(
+            `¿Añadir ${total} bebida${total > 1 ? 's' : ''} a este partido? El mal uso puede ser sancionado por la UDM.`
+        )
+
+        if (!confirmed) return
+
+        const existingDrink = drinksData.find(
+            (item) => item.match_id === selectedDrinkMatchId
+        )
+
+        if (existingDrink) {
+            const { error } = await supabase
+                .from('drinks')
+                .update({
+                    beers: (existingDrink.beers || 0) + drinkForm.beers,
+                    drinks: (existingDrink.drinks || 0) + drinkForm.drinks,
+                    summer_wines: (existingDrink.summer_wines || 0) + drinkForm.summer_wines,
+                    soft_drinks: (existingDrink.soft_drinks || 0) + drinkForm.soft_drinks,
+                    waters: (existingDrink.waters || 0) + drinkForm.waters
+                })
+                .eq('id', existingDrink.id)
+
+            if (error) {
+                console.log(error)
+                alert('Error guardando bebidas')
+                return
+            }
+        } else {
+            const { error } = await supabase
+                .from('drinks')
+                .insert({
+                    player_id: player.id,
+                    match_id: selectedDrinkMatchId,
+                    beers: drinkForm.beers,
+                    drinks: drinkForm.drinks,
+                    summer_wines: drinkForm.summer_wines,
+                    soft_drinks: drinkForm.soft_drinks,
+                    waters: drinkForm.waters
+                })
+
+            if (error) {
+                console.log(error)
+                alert('Error guardando bebidas')
+                return
+            }
+        }
+
+        alert('Bebidas añadidas')
+        setSelectedDrinkMatchId('')
+        resetDrinkForm()
+        loadProfile()
+    }
+
+    function canAddForgottenDrinks(match) {
+        if (player.name !== 'Cámara') return true
+
+        // Cabo Verde: aún no participaba
+        if (match.rival === 'Cabo Verde') return false
+
+        // Austria: estaba sancionado sin bebidas
+        if (match.rival === 'Austria') return false
+
+        return true
+    }
+
     const streak = getCurrentStreak()
 
     const hydration = getHydrationTotals()
@@ -514,6 +662,108 @@ function Profile() {
                         <small>Aguas</small>
                     </div>
                 </div>
+            </section>
+
+            <section className="forgotten-drinks-card">
+                <div className="section-title-row">
+                    <h2>🍻 Regularización de hidratación</h2>
+                    <span>Partidos cerrados</span>
+                </div>
+
+                <p>
+                    Selecciona el partido en el que olvidaste registrar tus bebidas. La Unidad Disciplinaria del Mundial revisará todas las modificaciones realizadas, si abusas o no es correcto se te sancionará.
+                </p>
+
+                <div className="forgotten-match-list">
+
+                    {closedMatches
+                        .filter(canAddForgottenDrinks)
+                        .map((match) => {
+
+                            const existingDrink = drinksData.find(
+                                d => d.match_id === match.id
+                            )
+
+                            const totalRegistered =
+                                (existingDrink?.beers || 0) +
+                                (existingDrink?.drinks || 0) +
+                                (existingDrink?.summer_wines || 0) +
+                                (existingDrink?.soft_drinks || 0) +
+                                (existingDrink?.waters || 0)
+
+                            return (
+
+                                <button
+                                    key={match.id}
+                                    type="button"
+                                    className={`forgotten-match-button ${selectedDrinkMatchId === match.id ? 'selected' : ''
+                                        }`}
+                                    onClick={() => setSelectedDrinkMatchId(match.id)}
+                                >
+                                    <div className="forgotten-match-stage">
+                                        🏆 {match.stage}
+                                    </div>
+
+                                    <strong>
+                                        🇪🇸 España {match.spain_goals}-{match.rival_goals} {match.rival_flag} {match.rival}
+                                    </strong>
+
+                                    <small>
+                                        {formatMatchDate(match.match_date)}
+                                    </small>
+
+                                    <div className="drink-status">
+                                        {totalRegistered > 0
+                                            ? `🍺 ${totalRegistered} bebidas registradas`
+                                            : '⚠️ Sin bebidas registradas'}
+                                    </div>
+                                </button>
+                            )
+                        })
+                    }
+
+                    {closedMatches.filter(canAddForgottenDrinks).length === 0 && (
+                        <div className="forgotten-match-empty">
+                            No hay partidos disponibles.
+                        </div>
+                    )}
+
+                </div>
+
+                {player.name === 'Cámara' && (
+                    <p className="forgotten-drinks-warning">
+                        👮 Algunos partidos no aparecen porque todavía no participabas o
+                        porque estabas sancionado por la UDM.
+                    </p>
+                )}
+
+                <div className="forgotten-drinks-grid">
+                    {[
+                        ['beers', '🍺', 'Cervezas'],
+                        ['drinks', '🥃', 'Copas'],
+                        ['summer_wines', '🍷', 'Tintos'],
+                        ['soft_drinks', '🥤', 'Refrescos'],
+                        ['waters', '💧', 'Aguas']
+                    ].map(([field, icon, label]) => (
+                        <article key={field}>
+                            <span>{icon}</span>
+                            <strong>{drinkForm[field]}</strong>
+                            <small>{label}</small>
+
+                            <div>
+                                <button onClick={() => changeDrinkValue(field, -1)}>-</button>
+                                <button onClick={() => changeDrinkValue(field, 1)}>+</button>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+
+                <button
+                    className="save-forgotten-drinks-button"
+                    onClick={saveForgottenDrinks}
+                >
+                    Guardar bebidas olvidadas
+                </button>
             </section>
 
             <section className="profile-disciplinary-card">
