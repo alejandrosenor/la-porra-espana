@@ -443,21 +443,29 @@ function Dashboard() {
     const nextMatch = matches.find((match) => match.status !== 'closed')
 
     const FAKE_PRESS = [
-        '📰 La Gaceta de La Porra: Pilu sigue defendiendo que el gol fue de Cucurella. La FIFA discrepa.',
-        '📰 Marca Porra: Cámara todavía reclama el gol anulado de Ferran Torres.',
-        '📰 Mundo Deportivo de La Porra: Gabi conquista el liderato tras clavar el 1-0. La redacción sigue sin creérselo.',
-        '📰 Diario As Porra: Gabi fue el único visionario. El resto ya busca excusas.',
-        '📰 Mundo Porra: Ferran estrelló un balón en el larguero y dejó a Gabi a centímetros de perder el exacto.',
-        '📰 Última Hora: Pilu ha llenado una tercera botella de cáscaras de pipas.',
+        '📰 La Gaceta de La Porra: España elimina a Portugal. Cristiano ya busca vuelos de vuelta a casa.',
+        '📰 Marca Porra: El Bicho hace las maletas. España ya está en cuartos de final.',
+        '📰 Mundo Deportivo de La Porra: Pilu solicita oficialmente repetir el partido. "Cristiano merecía otra oportunidad".',
+        '📰 Diario As Porra: Pilu sigue defendiendo a Cristiano. La UDM estudia si sancionarlo como conflicto de intereses.',
+        '📰 Mundo Porra: Gabi conserva el liderato. Como todos sumaron 3 puntos, nadie consiguió darle caza.',
+        '📰 Última Hora: Pilu ha llenado otra botella completa de cáscaras de pipas. Los servicios de limpieza piden refuerzos.',
         '📰 20 Minutos Porra: Dani sigue defendiendo el trono de la apuesta más loca.',
         '📰 El Chiringuito de La Porra: Blanca insiste en que "Laminado Yamal" sigue siendo el mejor jugador del torneo.',
         '📰 Porra Today: Lamine y Oyarzabal fueron los goleadores favoritos... y decidieron tomarse el día libre.',
-        '📰 La Voz de La Porra: Álex Baena marca y deja a toda la porra sin un solo acierto de goleador.',
-        '📰 Rugby Today: Uruguay preguntó por error dónde se apoyaba el balón para ensayar.',
-        '📰 Mundo Arbitral: Un uruguayo acabó expulsado. El árbitro aún pidió perdón por haber sacado una tarjeta.',
-        '📰 Comité Técnico: El árbitro asegura que vio todas las faltas... simplemente decidió ignorarlas.',
-        '📰 Diario Médico: España pide parte de lesiones tras sobrevivir al amistoso de rugby disputado contra Uruguay.',
-        '📰 Noticias FIFA: El árbitro encontró la tarjeta en el minuto 89.'
+        '📰 La Voz de La Porra: Nadie acertó el resultado exacto. El 1-0 volvió a sorprender absolutamente a todos.',
+        '📰 Rugby Today: Mikel Merino marca. La porra apostó en masa por Lamine y Oyarzabal... otra vez será.',
+        '📰 Mundo Arbitral: El único resultado exacto del Mundial sigue siendo el de Gabi. El resto continúa buscando la inspiración.',
+        '📰 Comité Técnico: Ángel prometió que esta vez clavaba el resultado. El 2-0 acabó siendo ciencia ficción.',
+        '📰 Comité Disciplinario: Adri acumula dos partidos consecutivos sin apostar. La tarjeta roja ya calienta en la banda.',
+        '📰 Noticias FIFA: Todos menos Blanca cenaron kebab. La investigación sigue abierta para descubrir el motivo.',
+        '📰 Hydration News: Cámara vuelve oficialmente a hidratarse tras cumplir su sanción. Coca-Cola, agua y cerveza inauguran su nueva etapa.',
+        '📰 Mundo Fashion: Señor estrena camiseta de Cucurella mientras Pilu responde luciendo la de Lamine. El mercado textil entra en ebullición.',
+        '📰 Mundo Arbitral: Portugal reclama que España jugó con doce. El jugador número doce respondía al nombre de Mikel Merino.',
+        '📰 UEFA Insider: Cristiano abandona el Mundial. Pilu también, emocionalmente.',
+        '📰 Diario de Cuartos: Próxima parada: Bélgica. La selección ya prepara el asalto a las semifinales.',
+        '📰 La Porra Analytics: Tras cuatro partidos, absolutamente nadie consigue alcanzar el nivel profético de Gabi.',
+        '📰 Noticias FIFA: La organización confirma que acertar goleadores este año es más difícil que ganar la Champions.',
+        '📰 Rumores de Vestuario: Bélgica ya ha pedido ver las estadísticas de Gabi antes del partido.'
     ]
 
     const openMatches = matches.filter((match) => match.status !== 'closed')
@@ -1005,7 +1013,7 @@ function Dashboard() {
                     const statusText = getMatchStatus(match, betDone, notOpenYet)
                     const missingBets = players.length - getBetsCount(match.id)
                     const missingPlayers = getMissingPlayers(match.id)
-                    const drinksBlocked = player?.name === 'Cámara'
+                    const drinksBlocked = player?.name === 'Adri'
 
                     return (
                         <article
