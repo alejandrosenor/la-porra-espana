@@ -227,6 +227,81 @@ function WorldCupCalendar() {
         return <WorldCupMuseum />
     }
 
+    const SPAIN_ROAD_TO_FINAL = [
+        {
+            id: 1,
+            stage: 'Fase de grupos',
+            rival: 'Cabo Verde',
+            rivalFlag: '🇨🇻',
+            score: '0 - 0',
+            detail: 'Primer paso completado',
+            status: 'completed'
+        },
+        {
+            id: 2,
+            stage: 'Fase de grupos',
+            rival: 'Arabia Saudita',
+            rivalFlag: '🇸🇦',
+            score: '4 - 0',
+            detail: 'España mantiene el rumbo',
+            status: 'completed'
+        },
+        {
+            id: 3,
+            stage: 'Fase de grupos',
+            rival: 'Uruguay',
+            rivalFlag: '🇺🇾',
+            score: '1 - 0',
+            detail: 'España cierra la fase de grupos',
+            status: 'completed'
+        },
+        {
+            id: 4,
+            stage: 'Dieciseisavos',
+            rival: 'Austria',
+            rivalFlag: '🇦🇹',
+            score: '3 - 0',
+            detail: 'Primera eliminatoria superada',
+            status: 'completed'
+        },
+        {
+            id: 5,
+            stage: 'Octavos de final',
+            rival: 'Portugal',
+            rivalFlag: '🇵🇹',
+            score: '1 - 0',
+            detail: 'Cristiano y Portugal, eliminados',
+            status: 'completed'
+        },
+        {
+            id: 6,
+            stage: 'Cuartos de final',
+            rival: 'Bélgica',
+            rivalFlag: '🇧🇪',
+            score: '2 - 1',
+            detail: 'España se mete entre las cuatro mejores',
+            status: 'completed'
+        },
+        {
+            id: 7,
+            stage: 'Semifinal',
+            rival: 'Francia',
+            rivalFlag: '🇫🇷',
+            score: '2 - 0',
+            detail: 'Oyarzabal y Pedro Porro llevan a España a la final',
+            status: 'completed'
+        },
+        {
+            id: 8,
+            stage: 'La Gran Final',
+            rival: 'Por decidir',
+            rivalFlag: '❓',
+            score: '19 JUL',
+            detail: 'Argentina o Inglaterra. Un último paso.',
+            status: 'next'
+        }
+    ]
+
     return (
         <main className="worldcup-page with-bottom-nav">
             <header className="ranking-hero">
@@ -237,42 +312,6 @@ function WorldCupCalendar() {
                     <h1>Mundial 2026 📅</h1>
                 </div>
             </header>
-
-            <section className="worldcup-tabs">
-                <button
-                    className={view === 'Partidos' ? 'active' : ''}
-                    onClick={() => setView('Partidos')}
-                >
-                    Partidos
-                </button>
-
-                <button
-                    className={view === 'Clasificación' ? 'active' : ''}
-                    onClick={() => setView('Clasificación')}
-                >
-                    Clasificación
-                </button>
-            </section>
-
-            <section className="worldcup-summary-grid">
-                <article>
-                    <span>📅</span>
-                    <strong>{matches.length}</strong>
-                    <p>Partidos cargados</p>
-                </article>
-
-                <article>
-                    <span>✅</span>
-                    <strong>{playedMatches.length}</strong>
-                    <p>Jugados</p>
-                </article>
-
-                <article>
-                    <span>⏳</span>
-                    <strong>{pendingMatches.length}</strong>
-                    <p>Pendientes</p>
-                </article>
-            </section>
 
             <section className="anthem-card">
                 <div>
@@ -296,180 +335,82 @@ function WorldCupCalendar() {
                 )}
             </section>
 
-            {view === 'Partidos' && (
-                <>
-                    {nextSpainMatch && (
-                        <section className="worldcup-feature-card spain-feature">
-                            <p>🇪🇸 Próximo partido de España</p>
+            <section className="spain-road-section">
+                <div className="spain-road-heading">
+                    <div>
+                        <span>🇪🇸 Camino a la gloria</span>
+                        <h2>El camino de España</h2>
+                        <p>
+                            Siete obstáculos superados. Solo queda uno.
+                        </p>
+                    </div>
 
-                            <h2>
-                                {nextSpainMatch.home_flag} {nextSpainMatch.home_team}
-                                <span> vs </span>
-                                {nextSpainMatch.away_flag} {nextSpainMatch.away_team}
-                            </h2>
+                    <div className="spain-road-stars">
+                        ⭐
+                        <small>A por la segunda</small>
+                    </div>
+                </div>
 
-                            <strong>{formatShortDate(nextSpainMatch.match_date)}</strong>
-                        </section>
-                    )}
+                <div className="spain-road-timeline">
+                    {SPAIN_ROAD_TO_FINAL.map((match, index) => (
+                        <article
+                            key={match.id}
+                            className={`spain-road-match ${match.status}`}
+                        >
+                            <div className="spain-road-line">
+                                <span className="spain-road-dot">
+                                    {match.status === 'completed' ? '✓' : '🏆'}
+                                </span>
 
-                    {nextSpainMatch && nextSpainMatch.stage === 'Dieciseisavos' && (
-                        <section className="worldcup-feature-card knockout-spain-card">
-                            <p>🔥 España en dieciseisavos</p>
-
-                            <h2>
-                                {nextSpainMatch.home_flag} {nextSpainMatch.home_team}
-                                <span> vs </span>
-                                {nextSpainMatch.away_flag} {nextSpainMatch.away_team}
-                            </h2>
-
-                            <strong>{formatShortDate(nextSpainMatch.match_date)}</strong>
-                        </section>
-                    )}
-
-                    {nextMatch && (
-                        <section className="worldcup-feature-card">
-                            <p>🔥 Próximo partido del Mundial</p>
-
-                            <h2>
-                                {nextMatch.home_flag} {nextMatch.home_team}
-                                <span> vs </span>
-                                {nextMatch.away_flag} {nextMatch.away_team}
-                            </h2>
-
-                            <strong>{formatShortDate(nextMatch.match_date)}</strong>
-                        </section>
-                    )}
-
-                    <section className="worldcup-filters">
-                        {stages.map((stage) => (
-                            <button
-                                key={stage}
-                                className={filter === stage ? 'active' : ''}
-                                onClick={() => setFilter(stage)}
-                            >
-                                {stage}
-                            </button>
-                        ))}
-                    </section>
-
-                    <section className="worldcup-list">
-                        {Object.entries(groupedMatches).map(([date, dateMatches]) => (
-                            <div key={date} className="worldcup-day">
-                                <h2>{date}</h2>
-
-                                {dateMatches.map((match) => {
-                                    const isSpainMatch =
-                                        match.home_team === 'España' || match.away_team === 'España'
-
-                                    return (
-                                        <article
-                                            className={
-                                                isSpainMatch
-                                                    ? 'worldcup-match-card spain-match'
-                                                    : 'worldcup-match-card'
-                                            }
-                                            key={match.id}
-                                        >
-                                            <div>
-                                                <p>{match.stage}</p>
-
-                                                <strong>
-                                                    {match.home_flag} {match.home_team}
-                                                    <span> vs </span>
-                                                    {match.away_flag} {match.away_team}
-                                                </strong>
-
-                                                <small>{formatTime(match.match_date)}</small>
-                                            </div>
-
-                                            <div className="worldcup-right">
-                                                {match.status === 'closed' ? (
-                                                    <span className="worldcup-score">
-                                                        {match.home_goals} - {match.away_goals}
-                                                    </span>
-                                                ) : (
-                                                    <span className="worldcup-status">
-                                                        Programado
-                                                    </span>
-                                                )}
-
-                                                {player?.is_admin && (
-                                                    <button
-                                                        className="worldcup-admin-button"
-                                                        onClick={() => navigate(`/admin/world-cup-match/${match.id}`)}
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </article>
-                                    )
-                                })}
+                                {index < SPAIN_ROAD_TO_FINAL.length - 1 && (
+                                    <span className="spain-road-connector" />
+                                )}
                             </div>
-                        ))}
-                    </section>
-                </>
-            )}
 
-            {view === 'Clasificación' && (
-                <section className="groups-standings">
-                    {Object.entries(groups).map(([groupName, groupTeams]) => {
-                        const sortedTeams = sortGroup(groupTeams)
-                        const topScorer = getGroupTopScorer(sortedTeams)
+                            <div className="spain-road-content">
+                                <div className="spain-road-stage-row">
+                                    <span>{match.stage}</span>
 
-                        return (
-                            <article className="group-table-card" key={groupName}>
-                                <div className="section-title-row">
-                                    <h2>{groupName}</h2>
-                                    <span>
-                                        Máx. goles: {topScorer?.flag} {topScorer?.name} ({topScorer?.goalsFor})
-                                    </span>
+                                    {match.status === 'completed' ? (
+                                        <strong>SUPERADO</strong>
+                                    ) : (
+                                        <strong>PRÓXIMAMENTE</strong>
+                                    )}
                                 </div>
 
-                                <div className="group-table">
-                                    <div className="group-table-header">
-                                        <span>Equipo</span>
-                                        <span>PJ</span>
-                                        <span>G</span>
-                                        <span>E</span>
-                                        <span>P</span>
-                                        <span>Pts</span>
-                                        <span>GF</span>
-                                        <span>GC</span>
-                                        <span>DG</span>
+                                <div className="spain-road-result">
+                                    <div className="spain-road-team">
+                                        <span>🇪🇸</span>
+                                        <strong>España</strong>
                                     </div>
 
-                                    {sortedTeams.map((team, index) => (
-                                        <div
-                                            className={
-                                                index < 2
-                                                    ? 'group-table-row qualified'
-                                                    : 'group-table-row'
-                                            }
-                                            key={team.name}
-                                        >
-                                            <span className="team-name">
-                                                <b>{index + 1}</b> {team.flag} {team.name}
-                                                {index === 0 && <em> 👑</em>}
-                                            </span>
-                                            <span>{team.played}</span>
-                                            <span>{team.wins}</span>
-                                            <span>{team.draws}</span>
-                                            <span>{team.losses}</span>
-                                            <span className="points-cell">{team.points}</span>
-                                            <span>{team.goalsFor}</span>
-                                            <span>{team.goalsAgainst}</span>
-                                            <span>{team.goalDifference}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </article>
-                        )
-                    })}
-                </section>
-            )}
+                                    <div className="spain-road-score">
+                                        {match.score}
+                                    </div>
 
-            <BottomNav />
+                                    <div className="spain-road-team rival">
+                                        <span>{match.rivalFlag}</span>
+                                        <strong>{match.rival}</strong>
+                                    </div>
+                                </div>
+
+                                <p>{match.detail}</p>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+
+                <div className="spain-road-final-message">
+                    <span>🏆</span>
+
+                    <div>
+                        <small>La historia está esperando</small>
+                        <strong>
+                            España está a un partido de ser campeona del mundo
+                        </strong>
+                    </div>
+                </div>
+            </section>
         </main>
     )
 }
